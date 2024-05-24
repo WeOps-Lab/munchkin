@@ -11,5 +11,6 @@ include(
     'components/celery.py',
     'components/minio.py',
     'components/elasticsearch.py',
+    'components/unfold.py',
     optional('local_settings.py'),
 )

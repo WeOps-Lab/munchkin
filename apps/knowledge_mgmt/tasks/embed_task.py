@@ -7,24 +7,31 @@ from elasticsearch import Elasticsearch
 from langchain_community.document_loaders import UnstructuredFileLoader
 from langchain_community.document_loaders import UnstructuredMarkdownLoader
 from langchain_elasticsearch import ElasticsearchStore
-from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from loguru import logger
 from tqdm import tqdm
 
 from apps.embed_mgmt.models import EmbedModelChoices
 from apps.knowledge_mgmt.models import KnowledgeBaseFolder, Knowledge
+from apps.knowledge_mgmt.utils import get_index_name
 from munchkin.components.elasticsearch import ELASTICSEARCH_URL
+
+load_dotenv()
 
 
 @shared_task
-def train_embed_model(knowledge_base_folder_id):
-    load_dotenv()
-
+def general_parse_embed(knowledge_base_folder_id):
+    """
+    常规方法解析知识库
+    :param knowledge_base_folder_id:
+    :return:
+    """
     logger.info(f'开始训练知识库:[{knowledge_base_folder_id}]')
 
     # 1. 获取目标知识库
     knowledge_base_folder = KnowledgeBaseFolder.objects.get(id=knowledge_base_folder_id)
-    index_name = f"knowledge_base_{knowledge_base_folder.id}"
+    index_name = get_index_name(knowledge_base_folder_id)
+
     es = Elasticsearch(ELASTICSEARCH_URL)
 
     # 检查索引是否存在
@@ -39,7 +46,7 @@ def train_embed_model(knowledge_base_folder_id):
         knowledge_base_folder.save()
 
         # 2. 初始化Embed实例
-        if knowledge_base_folder.embed_model.enbed_model == EmbedModelChoices.FASTEMBED:
+        if knowledge_base_folder.embed_model.embed_model == EmbedModelChoices.FASTEMBED:
             from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
             model_configs = knowledge_base_folder.embed_model.embed_config
             embedding = FastEmbedEmbeddings(model_name=model_configs['model'], cache_dir='models')
@@ -58,25 +65,13 @@ def train_embed_model(knowledge_base_folder_id):
 
                     file_type = os.path.splitext(knowledge.file.name)[1]
                     if file_type == '.md':
-                        loader = UnstructuredMarkdownLoader(f.name)
-                        headers_to_split_on = [
-                            ("#", "Header 1"),
-                            ("##", "Header 2"),
-                            ("###", "Header 3"),
-                        ]
-                        md_header_splits = MarkdownHeaderTextSplitter(headers_to_split_on=headers_to_split_on,
-                                                                      strip_headers=False)
-                        md_file = loader.load()[0].page_content
-                        documents = md_header_splits.split_text(md_file)
-                        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000,
-                                                                       chunk_overlap=30)
-                        knowledge_docs = text_splitter.split_documents(documents)
+                        loader = UnstructuredMarkdownLoader(f.name, mode="elements", autodetect_encoding=True)
+                        knowledge_docs = loader.load()
                     else:
                         loader = UnstructuredFileLoader(f.name, mode="elements")
-                        chunk_size = 250
-                        chunk_overlap = 30
                         text_splitter = RecursiveCharacterTextSplitter(
-                            chunk_size=chunk_size, chunk_overlap=chunk_overlap
+                            chunk_size=knowledge_base_folder.chunk_size,
+                            chunk_overlap=knowledge_base_folder.chunk_overlap
                         )
                         knowledge_docs = text_splitter.split_documents(loader.load())
                     db = ElasticsearchStore.from_documents(

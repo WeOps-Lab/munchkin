@@ -9,7 +9,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         EmbedProvider.objects.get_or_create(
             name='FastEmbed(BAAI/bge-small-en-v1.5)',
-            enbed_model=EmbedModelChoices.FASTEMBED,
+            embed_model=EmbedModelChoices.FASTEMBED,
             embed_config={
                 'model': 'BAAI/bge-small-en-v1.5',
             },
@@ -17,7 +17,7 @@ class Command(BaseCommand):
         )
         EmbedProvider.objects.get_or_create(
             name='FastEmbed(BAAI/bge-small-zh-v1.5)',
-            enbed_model=EmbedModelChoices.FASTEMBED,
+            embed_model=EmbedModelChoices.FASTEMBED,
             embed_config={
                 'model': 'BAAI/bge-small-zh-v1.5',
             },

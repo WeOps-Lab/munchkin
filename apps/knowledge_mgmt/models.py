@@ -14,11 +14,16 @@ TRAIN_STATUS_CHOICES = [
 
 class KnowledgeBaseFolder(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255, unique=True, verbose_name='知识库名称')
-    description = models.TextField(verbose_name='知识库描述')
+    name = models.CharField(max_length=255, unique=True, verbose_name='名称')
+    description = models.TextField(verbose_name='描述')
     embed_model = models.ForeignKey(EmbedProvider, on_delete=models.CASCADE, verbose_name='嵌入模型')
-    train_status = models.IntegerField(default=0, choices=TRAIN_STATUS_CHOICES, verbose_name='训练状态')
-    train_progress = models.FloatField(default=0, verbose_name='训练进度')
+    train_status = models.IntegerField(default=0, choices=TRAIN_STATUS_CHOICES, verbose_name='状态')
+    train_progress = models.FloatField(default=0, verbose_name='进度')
+
+    chunk_size = models.IntegerField(default=1000, verbose_name='分块大小')
+    chunk_overlap = models.IntegerField(default=100, verbose_name='分块重叠')
+
+    enable_general_parse = models.BooleanField(default=True, verbose_name='常规解析')
 
     def __str__(self):
         return self.name

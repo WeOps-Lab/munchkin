@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, serialize=False)),
                 ('name', models.CharField(max_length=255, unique=True, verbose_name='名称')),
-                ('enbed_model', models.CharField(choices=[('fastembed', 'FastEmbed')], max_length=255, verbose_name='嵌入模型')),
+                ('embed_model', models.CharField(choices=[('fastembed', 'FastEmbed')], max_length=255, verbose_name='嵌入模型')),
                 ('embed_config', models.JSONField(blank=True, null=True, verbose_name='嵌入配置')),
                 ('enabled', models.BooleanField(default=True, verbose_name='是否启用')),
             ],

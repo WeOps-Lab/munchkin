@@ -10,6 +10,7 @@ services:
       - bootstrap.memory_lock=false
       - xpack.security.enabled=false
       - xpack.security.http.ssl.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
       - TZ=Asia/Shanghai
     ulimits:
       memlock:

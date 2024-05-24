@@ -20,7 +20,10 @@ class RagSearchView(APIView):
         return {
             "query": {
                 "match": {
-                    'text': search_query,
+                    'text': {
+                        "query": search_query,
+                        "boost": 0.9
+                    }
                 },
             },
             "knn": {
@@ -33,6 +36,7 @@ class RagSearchView(APIView):
                         "text": "knowledge_base",
                     },
                 },
+                "boost": 0.1
             }
         }
 
@@ -45,7 +49,7 @@ class RagSearchView(APIView):
                 "ids": openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_INTEGER)),
                 "query": openapi.Schema(type=openapi.TYPE_STRING, description="查询内容"),
                 "k": openapi.Schema(type=openapi.TYPE_INTEGER, description="返回结果数量", default=10),
-                "num_candidates": openapi.Schema(type=openapi.TYPE_INTEGER, description="候选数量", default=10),
+                "num_candidates": openapi.Schema(type=openapi.TYPE_INTEGER, description="候选数量", default=1000),
                 "enable_vector_search": openapi.Schema(type=openapi.TYPE_BOOLEAN, description="是否启用向量检索"),
                 "enable_text_search": openapi.Schema(type=openapi.TYPE_BOOLEAN, description="是否启用文本检索"),
             },
@@ -61,7 +65,7 @@ class RagSearchView(APIView):
             except KnowledgeBaseFolder.DoesNotExist:
                 continue
 
-            if knowledge_base_folder.embed_model.enbed_model == EmbedModelChoices.FASTEMBED:
+            if knowledge_base_folder.embed_model.embed_model == EmbedModelChoices.FASTEMBED:
                 model_configs = knowledge_base_folder.embed_model.embed_config
                 embedding = FastEmbedEmbeddings(model_name=model_configs['model'], cache_dir='models')
 
@@ -70,7 +74,7 @@ class RagSearchView(APIView):
                 index_name=index_name,
                 body_func=lambda x: self.vector_query(x, embedding,
                                                       request.data.get('k', 10),
-                                                      request.data.get('num_candidates', 10)),
+                                                      request.data.get('num_candidates', 1000)),
                 content_field='text',
                 url=ELASTICSEARCH_URL,
             )
