@@ -65,8 +65,12 @@ def general_parse_embed(knowledge_base_folder_id):
 
                     file_type = os.path.splitext(knowledge.file.name)[1]
                     if file_type == '.md':
-                        loader = UnstructuredMarkdownLoader(f.name, mode="elements", autodetect_encoding=True)
-                        knowledge_docs = loader.load()
+                        loader = UnstructuredMarkdownLoader(f.name)
+                        text_splitter = RecursiveCharacterTextSplitter(
+                            chunk_size=knowledge_base_folder.chunk_size,
+                            chunk_overlap=knowledge_base_folder.chunk_overlap
+                        )
+                        knowledge_docs = text_splitter.split_documents(loader.load())
                     else:
                         loader = UnstructuredFileLoader(f.name, mode="elements")
                         text_splitter = RecursiveCharacterTextSplitter(
