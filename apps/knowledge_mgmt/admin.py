@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib import messages
+from django.forms import Media
 from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -28,20 +29,24 @@ class KnowledgeStackedInline(admin.StackedInline):
 class KnowledgeBaseFolderAdmin(ModelAdmin):
     list_display = ['name', 'description', 'embed_model',
                     'enable_general_parse',
-                    'train_status', 'display_train_progress']
+                    'train_status']
     search_fields = ['name']
     list_display_links = ['name']
     ordering = ['id']
     filter_horizontal = []
     actions_row = ['train_embed']
     inlines = [KnowledgeStackedInline]
-    readonly_fields = ['train_status', 'train_progress']
+    readonly_fields = ['train_status']
     save_as = True
 
-    def display_train_progress(self, obj):
-        return f"{obj.train_progress * 100}%"
-
-    display_train_progress.short_description = '进度'
+    fieldsets = (
+        ('基本信息', {
+            'fields': ('name', 'description', 'embed_model')
+        }),
+        ('分块解析', {
+            'fields': ('enable_general_parse', ('general_parse_chunk_size', 'general_parse_chunk_overlap'))
+        }),
+    )
 
     @action(description='训练', url_path="train_embed_model")
     def train_embed(self, request: HttpRequest, object_id: int):

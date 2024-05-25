@@ -1,6 +1,6 @@
 from django.core.management import BaseCommand
 
-from apps.embed_mgmt.models import EmbedProvider, EmbedModelChoices
+from apps.llm_mgmt.models import EmbedProvider, EmbedModelChoices, LLMModel, LLMModelChoices
 
 
 class Command(BaseCommand):
@@ -22,4 +22,14 @@ class Command(BaseCommand):
                 'model': 'BAAI/bge-small-zh-v1.5',
             },
             enabled=True
+        )
+
+        LLMModel.objects.get_or_create(
+            name='GPT-3.5 Turbo 16K',
+            llm_model=LLMModelChoices.GPT35_16K,
+            llm_config={
+                'openai_api_key': 'your_openai_api_key',
+                'openai_base_url': 'https://api.openai.com',
+                'temperature': 0.7,
+            }
         )

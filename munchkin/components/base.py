@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_comment_migrate',
     'debug_toolbar',
+    'django_select2',
     'import_export',
     'corsheaders',
     'rest_framework',
@@ -41,8 +42,9 @@ INSTALLED_APPS = [
 
 INSTALLED_APPS += [
     'apps.core',
-    'apps.embed_mgmt',
     'apps.knowledge_mgmt',
+    'apps.llm_mgmt',
+    'apps.bot_mgmt',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

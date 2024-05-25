@@ -2,7 +2,7 @@ from django.core.validators import FileExtensionValidator
 from django.db import models
 from django_minio_backend import MinioBackend, iso_date_prefix
 
-from apps.embed_mgmt.models import EmbedProvider
+from apps.llm_mgmt.models import EmbedProvider
 
 TRAIN_STATUS_CHOICES = [
     (0, '待训练'),
@@ -18,12 +18,10 @@ class KnowledgeBaseFolder(models.Model):
     description = models.TextField(verbose_name='描述')
     embed_model = models.ForeignKey(EmbedProvider, on_delete=models.CASCADE, verbose_name='嵌入模型')
     train_status = models.IntegerField(default=0, choices=TRAIN_STATUS_CHOICES, verbose_name='状态')
-    train_progress = models.FloatField(default=0, verbose_name='进度')
 
-    chunk_size = models.IntegerField(default=1000, verbose_name='分块大小')
-    chunk_overlap = models.IntegerField(default=100, verbose_name='分块重叠')
-
-    enable_general_parse = models.BooleanField(default=True, verbose_name='常规解析')
+    enable_general_parse = models.BooleanField(default=True, verbose_name='分块解析')
+    general_parse_chunk_size = models.IntegerField(default=1000, verbose_name='分块大小')
+    general_parse_chunk_overlap = models.IntegerField(default=100, verbose_name='分块重叠')
 
     def __str__(self):
         return self.name
