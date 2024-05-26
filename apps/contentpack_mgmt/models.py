@@ -4,7 +4,7 @@ from django_yaml_field import YAMLField
 
 from apps.channel_mgmt.models import Channel, ChannelUserGroup, ChannelUser
 from apps.knowledge_mgmt.models import KnowledgeBaseFolder
-from apps.model_provider_mgmt.models import LLMModel
+from apps.model_provider_mgmt.models import LLMModel, LLMSkill
 
 
 class ContentPack(models.Model):
@@ -63,31 +63,22 @@ class BotActions(models.Model):
     id = models.AutoField(primary_key=True)
     content_pack = models.ForeignKey(ContentPack, on_delete=models.CASCADE, verbose_name='扩展包')
 
-    name = models.CharField(max_length=255, verbose_name='技能名称', choices=ACTION_TYPE_CHOICES)
+    name = models.CharField(max_length=255, verbose_name='动作名称', choices=ACTION_TYPE_CHOICES)
     description = models.TextField(blank=True, null=True, verbose_name='描述')
 
-    llm_model = models.ForeignKey(LLMModel, on_delete=models.CASCADE, verbose_name='LLM模型', blank=True, null=True)
-    action_prompt = models.TextField(blank=True, null=True, verbose_name='动作提示词')
-
-    enable_conversation_history = models.BooleanField(default=False, verbose_name='启用对话历史')
-    conversation_window_size = models.IntegerField(default=10, verbose_name='对话窗口大小')
-
-    enable_rag = models.BooleanField(default=False, verbose_name='启用RAG')
-    knowledge_base_folders = models.ManyToManyField(KnowledgeBaseFolder, null=True, blank=True, verbose_name='知识库')
-    rag_top_k = models.IntegerField(default=5, verbose_name='RAG返回结果数量')
-    rag_num_candidates = models.IntegerField(default=1000, verbose_name='RAG向量候选数量')
+    llm_skill = models.ForeignKey(LLMSkill, on_delete=models.CASCADE, verbose_name='大模型技能', null=True, blank=True)
 
     def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name = '技能'
+        verbose_name = '动作'
         verbose_name_plural = verbose_name
 
 
 class BotActionRule(models.Model):
     id = models.AutoField(primary_key=True)
-    bot_action = models.ForeignKey(BotActions, on_delete=models.CASCADE, verbose_name='技能')
+    bot_action = models.ForeignKey(BotActions, on_delete=models.CASCADE, verbose_name='动作')
     name = models.CharField(max_length=255, verbose_name='规则名称')
     description = models.TextField(blank=True, null=True, verbose_name='描述')
     prompt = models.TextField(blank=True, null=True, verbose_name='技能提示词')
@@ -99,7 +90,7 @@ class BotActionRule(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = '技能规则'
+        verbose_name = '动作规则'
         verbose_name_plural = verbose_name
 
 

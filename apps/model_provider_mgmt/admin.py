@@ -3,7 +3,7 @@ from django.db.models import JSONField
 from django_ace import AceWidget
 from unfold.admin import ModelAdmin
 
-from apps.model_provider_mgmt.models import EmbedProvider, LLMModel
+from apps.model_provider_mgmt.models import EmbedProvider, LLMModel, LLMSkill
 
 
 @admin.register(EmbedProvider)
@@ -30,6 +30,23 @@ class LLMModelAdmin(ModelAdmin):
 
     ordering = ['id']
     filter_horizontal = []
+
+    formfield_overrides = {
+        JSONField: {
+            "widget": AceWidget(mode="json", theme='chrome', width='700px')
+        }
+    }
+
+
+@admin.register(LLMSkill)
+class LLMSkillAdmin(ModelAdmin):
+    list_display = ['name', 'llm_model', 'enable_conversation_history', 'enable_rag']
+    search_fields = ['name']
+    list_filter = ['llm_model', 'enable_conversation_history', 'enable_rag']
+    list_display_links = ['name']
+
+    ordering = ['id']
+    filter_horizontal = ['knowledge_base_folders']
 
     formfield_overrides = {
         JSONField: {

@@ -32,27 +32,9 @@ class Command(BaseCommand):
         rasa_model.content_packs.add(content_pack)
         rasa_model.save()
 
-        prompt = """
-你是WeOps运维小助手，你只能够回复与WeOps有关的问题，不是WeOps的问题，你都会回复：我不清楚。
-        要求：
-        1、像专家一样一步一步的思考问题，根据问题的类别选择合适的知识库，不符合要求的答案不要给出
-        2、你对敏感信息有很强的保密意识，包括客户名称，所以对于回复的答案中用“某客户”代替具体的客户名称
-        3、你需要对你给客户的解答负责，否则地球会毁灭，假如知识库中没有提及的，回复：需要联系产品团队进行确认
-        4、输出的内容要简洁清晰，不能有歧义
-        对话记录: 
-        {chat_history}
-        
-        问题:
-          {input}                
-        """
-        llm_model = LLMModel.objects.filter(llm_model=LLMModelChoices.GPT35_16K).first()
-        action_llm_fallback_action = BotActions.objects.create(content_pack=content_pack, name='action_llm_fallback',
-                                                               description='开放型对话',
-                                                               llm_model=llm_model,
-                                                               action_prompt=prompt,
-                                                               enable_conversation_history=True,
-                                                               conversation_window_size=10,
-                                                               enable_rag=False)
+        action_llm_fallback_action = BotActions.objects.create(content_pack=content_pack,
+                                                               name='action_llm_fallback',
+                                                               description='开放型对话')
 
         action_external_utter_action = BotActions.objects.create(content_pack=content_pack,
                                                                  name='action_external_utter',

@@ -2,8 +2,6 @@ from django.core.validators import FileExtensionValidator
 from django.db import models
 from django_minio_backend import MinioBackend, iso_date_prefix
 
-from apps.model_provider_mgmt.models import EmbedProvider
-
 TRAIN_STATUS_CHOICES = [
     (0, '待训练'),
     (1, '处理中'),
@@ -16,7 +14,8 @@ class KnowledgeBaseFolder(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, unique=True, verbose_name='名称')
     description = models.TextField(verbose_name='描述')
-    embed_model = models.ForeignKey(EmbedProvider, on_delete=models.CASCADE, verbose_name='嵌入模型')
+    embed_model = models.ForeignKey('model_provider_mgmt.EmbedProvider', on_delete=models.CASCADE,
+                                    verbose_name='嵌入模型')
     train_status = models.IntegerField(default=0, choices=TRAIN_STATUS_CHOICES, verbose_name='状态')
 
     enable_general_parse = models.BooleanField(default=True, verbose_name='分块解析')
