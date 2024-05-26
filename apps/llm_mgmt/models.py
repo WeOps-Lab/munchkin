@@ -1,5 +1,7 @@
 from django.db import models
 
+from apps.core.encoders import PrettyJSONEncoder
+
 
 class EmbedModelChoices(models.TextChoices):
     FASTEMBED = 'fastembed', 'FastEmbed'
@@ -13,7 +15,7 @@ class LLMModel(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, unique=True, verbose_name='名称')
     llm_model = models.CharField(max_length=255, choices=LLMModelChoices.choices, verbose_name='LLM模型')
-    llm_config = models.JSONField(verbose_name='LLM配置', blank=True, null=True)
+    llm_config = models.JSONField(verbose_name='LLM配置', blank=True, null=True, encoder=PrettyJSONEncoder)
 
     def __str__(self):
         return self.name
@@ -27,7 +29,7 @@ class EmbedProvider(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, unique=True, verbose_name='名称')
     embed_model = models.CharField(max_length=255, choices=EmbedModelChoices.choices, verbose_name='嵌入模型')
-    embed_config = models.JSONField(verbose_name='嵌入配置', blank=True, null=True)
+    embed_config = models.JSONField(verbose_name='嵌入配置', blank=True, null=True, encoder=PrettyJSONEncoder)
     enabled = models.BooleanField(default=True, verbose_name='是否启用')
 
     def __str__(self):

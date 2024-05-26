@@ -42,8 +42,9 @@ INSTALLED_APPS = [
 
 INSTALLED_APPS += [
     'apps.core',
-    'apps.knowledge_mgmt',
     'apps.llm_mgmt',
+    'apps.knowledge_mgmt',
+    'apps.channel_mgmt',
     'apps.bot_mgmt',
 ]
 MIDDLEWARE = [

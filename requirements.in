@@ -49,4 +49,4 @@ langchain-openai==0.1.7
 docx2txt==0.8
 
 unstructured[all-docs]
-django-select2
+django-select2==8.1.2

@@ -9,6 +9,11 @@ migrate:
 	python manage.py makemigrations
 	python manage.py migrate
 
+clean-migrate:
+	cd apps &&\
+	find . -path "*/migrations/*.py" -not -name "__init__.py" -delete &&\
+	find . -path "*/migrations/*.pyc"  -delete
+
 setup-sample-data:
 	DJANGO_SUPERUSER_USERNAME=admin DJANGO_SUPERUSER_EMAIL=admin@example.com DJANGO_SUPERUSER_PASSWORD=password python manage.py createsuperuser --noinput
 

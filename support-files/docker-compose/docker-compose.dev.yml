@@ -8,8 +8,8 @@ services:
     environment:
       - discovery.type=single-node
       - bootstrap.memory_lock=false
-      - xpack.security.enabled=false
-      - xpack.security.http.ssl.enabled=false
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=ud3Oop9Aepah
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
       - TZ=Asia/Shanghai
     ulimits:
@@ -17,7 +17,6 @@ services:
         soft: -1
         hard: -1
     restart: always
-
 
   rabbitmq:
     restart: always

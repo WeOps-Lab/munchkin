@@ -20,5 +20,6 @@ class LLMModelAdmin(ModelAdmin):
     search_fields = ['name']
     list_filter = ['llm_model']
     list_display_links = ['name']
+
     ordering = ['id']
     filter_horizontal = []

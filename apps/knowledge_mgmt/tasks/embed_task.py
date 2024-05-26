@@ -1,9 +1,8 @@
 import os.path
 import tempfile
-
+import elasticsearch
 from celery import shared_task
 from dotenv import load_dotenv
-from elasticsearch import Elasticsearch
 from langchain_community.document_loaders import UnstructuredFileLoader
 from langchain_community.document_loaders import UnstructuredMarkdownLoader
 from langchain_elasticsearch import ElasticsearchStore
@@ -14,7 +13,7 @@ from tqdm import tqdm
 from apps.llm_mgmt.models import EmbedModelChoices
 from apps.knowledge_mgmt.models import KnowledgeBaseFolder, Knowledge
 from apps.knowledge_mgmt.utils import get_index_name
-from munchkin.components.elasticsearch import ELASTICSEARCH_URL
+from munchkin.components.elasticsearch import ELASTICSEARCH_URL, ELASTICSEARCH_PASSWORD
 
 load_dotenv()
 
@@ -49,7 +48,8 @@ def general_parse_embed(knowledge_base_folder_id):
     knowledge_base_folder = KnowledgeBaseFolder.objects.get(id=knowledge_base_folder_id)
     index_name = get_index_name(knowledge_base_folder_id)
 
-    es = Elasticsearch(ELASTICSEARCH_URL)
+    es = elasticsearch.Elasticsearch(hosts=[ELASTICSEARCH_URL],
+                                     basic_auth=('elastic', ELASTICSEARCH_PASSWORD))
 
     if es.indices.exists(index=index_name):
         es.indices.delete(index=index_name)
@@ -73,7 +73,7 @@ def general_parse_embed(knowledge_base_folder_id):
             if knowledge_base_folder.enable_general_parse:
                 knowledge_docs = train_knowledgebase(knowledge, knowledge_base_folder.general_parse_chunk_size,
                                                      knowledge_base_folder.general_parse_chunk_overlap)
-            db = ElasticsearchStore.from_documents(knowledge_docs, embedding, es_url=ELASTICSEARCH_URL,
+            db = ElasticsearchStore.from_documents(knowledge_docs, embedding, es_connection=es,
                                                    index_name=index_name)
             db.client.indices.refresh(index=index_name)
 
