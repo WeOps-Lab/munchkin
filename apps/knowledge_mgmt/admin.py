@@ -6,11 +6,11 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from unfold.admin import ModelAdmin
 from unfold.decorators import action
-from apps.knowledge_mgmt.models import KnowledgeBaseFolder, Knowledge
+from apps.knowledge_mgmt.models import KnowledgeBaseFolder, FileKnowledge
 from apps.knowledge_mgmt.tasks.embed_task import general_parse_embed
 
 
-@admin.register(Knowledge)
+@admin.register(FileKnowledge)
 class KnowledgeAdmin(ModelAdmin):
     list_display = ['title', 'file']
     search_fields = ['title']
@@ -21,7 +21,7 @@ class KnowledgeAdmin(ModelAdmin):
 
 
 class KnowledgeStackedInline(admin.StackedInline):
-    model = Knowledge
+    model = FileKnowledge
     readonly_fields = ['title']
 
 
@@ -45,7 +45,7 @@ class KnowledgeBaseFolderAdmin(ModelAdmin):
         }),
         ('分块解析', {
             'fields': ('enable_general_parse', ('general_parse_chunk_size', 'general_parse_chunk_overlap'))
-        }),
+        })
     )
 
     @action(description='训练', url_path="train_embed_model")

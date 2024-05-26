@@ -10,8 +10,8 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter, MarkdownHea
 from loguru import logger
 from tqdm import tqdm
 
-from apps.llm_mgmt.models import EmbedModelChoices
-from apps.knowledge_mgmt.models import KnowledgeBaseFolder, Knowledge
+from apps.model_provider_mgmt.models import EmbedModelChoices
+from apps.knowledge_mgmt.models import KnowledgeBaseFolder, FileKnowledge
 from apps.knowledge_mgmt.utils import get_index_name
 from munchkin.components.elasticsearch import ELASTICSEARCH_URL, ELASTICSEARCH_PASSWORD
 
@@ -65,7 +65,7 @@ def general_parse_embed(knowledge_base_folder_id):
 
         logger.info(f'初始化FastEmbed模型成功')
 
-        knowledges = Knowledge.objects.filter(knowledge_base_folder=knowledge_base_folder).all()
+        knowledges = FileKnowledge.objects.filter(knowledge_base_folder=knowledge_base_folder).all()
 
         for index, knowledge in enumerate(tqdm(knowledges)):
             logger.info(f'训练知识:[{knowledge.title}]')

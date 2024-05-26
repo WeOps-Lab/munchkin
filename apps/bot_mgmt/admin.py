@@ -1,7 +1,9 @@
 from django.contrib import admin
+from django_yaml_field import YAMLField
 from unfold.admin import ModelAdmin
 
-from apps.bot_mgmt.models import Bot, BotSkill, BotSkillRule
+from apps.bot_mgmt.models import Bot, BotConversationHistory
+from django_ace import AceWidget
 
 
 @admin.register(Bot)
@@ -14,26 +16,14 @@ class BotAdmin(ModelAdmin):
     filter_horizontal = []
 
 
-@admin.register(BotSkill)
-class BotSkillAdmin(ModelAdmin):
-    list_display = ['bot', 'name', 'skill_id']
-    search_fields = ['name']
-    list_filter = ['name']
-    list_display_links = ['name']
+
+@admin.register(BotConversationHistory)
+class BotConversationHistoryAdmin(ModelAdmin):
+    list_display = ['bot', 'user', 'conversation_role', 'conversation', 'created_at']
+    search_fields = ['conversation']
+    list_filter = ['bot', 'user', 'conversation_role', 'created_at']
+    list_display_links = ['conversation']
     ordering = ['id']
     filter_horizontal = []
 
 
-@admin.register(BotSkillRule)
-class BotSkillRuleAdmin(ModelAdmin):
-    list_display = ['name', 'bot_name', 'bot_skill']
-    search_fields = ['name']
-    list_filter = ['name']
-    list_display_links = ['name']
-    ordering = ['id']
-    filter_horizontal = []
-
-    def bot_name(self, obj):
-        return obj.bot_skill.bot.name
-
-    bot_name.short_description = '机器人'

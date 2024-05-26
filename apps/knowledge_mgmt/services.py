@@ -3,7 +3,7 @@ from typing import Dict
 from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_elasticsearch import ElasticsearchRetriever
 
-from apps.llm_mgmt.models import EmbedModelChoices
+from apps.model_provider_mgmt.models import EmbedModelChoices
 from apps.knowledge_mgmt.models import KnowledgeBaseFolder
 from munchkin.components.elasticsearch import ELASTICSEARCH_URL
 

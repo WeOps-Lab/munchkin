@@ -50,3 +50,5 @@ docx2txt==0.8
 
 unstructured[all-docs]
 django-select2==8.1.2
+django-yaml-field==0.1.0
+django-ace

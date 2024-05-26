@@ -1,6 +1,6 @@
 from django.core.management import BaseCommand
 
-from apps.llm_mgmt.models import EmbedProvider, EmbedModelChoices, LLMModel, LLMModelChoices
+from apps.model_provider_mgmt.models import EmbedProvider, EmbedModelChoices, LLMModel, LLMModelChoices
 
 
 class Command(BaseCommand):

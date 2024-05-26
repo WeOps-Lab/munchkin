@@ -9,9 +9,10 @@ from langchain_core.prompts import SystemMessagePromptTemplate, HumanMessageProm
 from langchain_openai import ChatOpenAI
 from rest_framework.views import APIView
 from langchain.memory import ChatMessageHistory
-from apps.bot_mgmt.models import Bot, BotSkill
+from apps.bot_mgmt.models import Bot
+from apps.contentpack_mgmt.models import BotActions
 from apps.knowledge_mgmt.services import RagService
-from apps.llm_mgmt.models import LLMModelChoices
+from apps.model_provider_mgmt.models import LLMModelChoices
 
 
 class SkillExecuteView(APIView):
@@ -37,7 +38,7 @@ class SkillExecuteView(APIView):
         converation_history = request.data.get('converation_history', [])
 
         bot = Bot.objects.filter(id=bot_id).first()
-        bot_skill = BotSkill.objects.filter(skill_id=skill_id, bot=bot).first()
+        bot_skill = BotActions.objects.filter(skill_id=skill_id, bot=bot).first()
 
         if bot_skill.enable_rag:
             rag_context = RagService().rag_serch(ids=[bot.knowledge_base_folders],
@@ -45,7 +46,7 @@ class SkillExecuteView(APIView):
                                                  num_candidates=bot_skill.rag_num_candidates,
                                                  user_message=user_message)
             rag_result = [x + '\n' for x in rag_context]
-            skill_prompt = f"\n\n背景知识:{rag_result}\n\n{bot_skill.skill_prompt}"
+            skill_prompt = f"\n\n背景知识:{rag_result}\n\n{bot_skill.action_prompt}"
 
         if bot.llm_model.llm_model == LLMModelChoices.GPT35_16K:
             client = ChatOpenAI(

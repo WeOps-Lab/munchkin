@@ -2,7 +2,7 @@ from django.core.validators import FileExtensionValidator
 from django.db import models
 from django_minio_backend import MinioBackend, iso_date_prefix
 
-from apps.llm_mgmt.models import EmbedProvider
+from apps.model_provider_mgmt.models import EmbedProvider
 
 TRAIN_STATUS_CHOICES = [
     (0, '待训练'),
@@ -34,13 +34,14 @@ class KnowledgeBaseFolder(models.Model):
 KNKOWLEDGE_TYPES = ['md', 'docx', 'xlsx', 'csv', 'pptx', 'pdf', 'txt']
 
 
-class Knowledge(models.Model):
+class FileKnowledge(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255, verbose_name='文件名称')
     file = models.FileField(verbose_name="文件",
                             storage=MinioBackend(bucket_name='munchkin-private'),
                             upload_to=iso_date_prefix,
                             validators=[FileExtensionValidator(allowed_extensions=KNKOWLEDGE_TYPES)])
+
     knowledge_base_folder = models.ForeignKey(KnowledgeBaseFolder, verbose_name='知识', blank=True, null=True,
                                               on_delete=models.CASCADE)
 
@@ -52,5 +53,5 @@ class Knowledge(models.Model):
         super().save(force_insert, force_update, using, update_fields)
 
     class Meta:
-        verbose_name = "知识"
+        verbose_name = "文件知识"
         verbose_name_plural = verbose_name

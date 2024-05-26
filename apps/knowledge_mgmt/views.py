@@ -10,7 +10,7 @@ from loguru import logger
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.llm_mgmt.models import EmbedModelChoices
+from apps.model_provider_mgmt.models import EmbedModelChoices
 from apps.knowledge_mgmt.models import KnowledgeBaseFolder
 from apps.knowledge_mgmt.services import RagService
 from munchkin.components.elasticsearch import ELASTICSEARCH_URL

@@ -17,6 +17,10 @@ clean-migrate:
 setup-sample-data:
 	DJANGO_SUPERUSER_USERNAME=admin DJANGO_SUPERUSER_EMAIL=admin@example.com DJANGO_SUPERUSER_PASSWORD=password python manage.py createsuperuser --noinput
 
+init-data:
+	python manage.py init_llm
+	python manage.py init_channel
+	python manage.py init_bot
 run:
 	daphne -b 0.0.0.0 -p 8000 munchkin.asgi:application
 

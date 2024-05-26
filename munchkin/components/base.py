@@ -38,13 +38,16 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'django_celery_results',
     'django_minio_backend',
+    'django_yaml_field',
+    'django_ace',
 ]
 
 INSTALLED_APPS += [
     'apps.core',
-    'apps.llm_mgmt',
+    'apps.model_provider_mgmt',
     'apps.knowledge_mgmt',
     'apps.channel_mgmt',
+    'apps.contentpack_mgmt',
     'apps.bot_mgmt',
 ]
 MIDDLEWARE = [

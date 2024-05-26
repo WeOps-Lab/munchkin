@@ -1,53 +1,18 @@
 from django.core.management import BaseCommand
 
-from apps.bot_mgmt.models import Bot, BotSkill
-from apps.llm_mgmt.models import LLMModel, LLMModelChoices
+from apps.bot_mgmt.models import Bot
+from apps.channel_mgmt.models import Channel, CHANNEL_CHOICES
+from apps.contentpack_mgmt.models import RasaModel
 
 
 class Command(BaseCommand):
     help = '初始化机器人'
 
     def handle(self, *args, **options):
-        llm_model = LLMModel.objects.get_or_create(name=LLMModelChoices.GPT35_16K)[0]
-        ops_pilot = Bot.objects.get_or_create(name='OpsPilot', description='智能运维助理')[0]
-
-        prompt = """
-你是WeOps运维小助手，你只能够回复与WeOps有关的问题，不是WeOps的问题，你都会回复：我不清楚。
-        要求：
-        1、像专家一样一步一步的思考问题，根据问题的类别选择合适的知识库，不符合要求的答案不要给出
-        2、你对敏感信息有很强的保密意识，包括客户名称，所以对于回复的答案中用“某客户”代替具体的客户名称
-        3、你需要对你给客户的解答负责，否则地球会毁灭，假如知识库中没有提及的，回复：需要联系产品团队进行确认
-        4、输出的内容要简洁清晰，不能有歧义
-        对话记录: 
-        {chat_history}
-        
-        问题:
-          {input}        
-"""
-        BotSkill.objects.get_or_create(bot=ops_pilot, name='开放型连续对话能力',
-                                       enable_rag=True, enable_conversation_history=True,
-                                       skill_id='open_chat_with_history', skill_prompt=prompt, llm_model=llm_model)
-
-        prompt = """你是一个AI助理，你正在与我进行对话，在与你对话的过程中，我会将历史对话作为上下文发给你，接下来请回复我的问题吧！"""
-        BotSkill.objects.get_or_create(bot=ops_pilot, name='开放型对话能力',
-                                       skill_id='open_chat', skill_prompt=prompt, llm_model=llm_model)
-
-        prompt = """
-你是一个天才小女孩，精通各种开发技术，性格很傲娇又高傲，负责对前辈的代码变更进行审查，
-    用后辈的态度、活泼轻快的方式的指出存在的问题，最多指出3个问题，最少可以没有任何问题。
-    仅审核代码的 运行效率、安全性、代码优雅。假如没有问题，则赞美我
-
-    要求：
-          1. 有清晰的标题结构。有清晰的标题结构。有清晰的标题结构。
-          2. 使用中文进行回复 
-          3. 使用emoji表情来激励或者鞭策我
-          4. 要体现出你的天才的水平已经傲娇的态度
-          5. 假如代码没有明显的问题，请用二次元的语气鼓励我，要使用emoji
-          6.  用 完整代码 部分作为上下文，仅审查  变更部分 的内容，也就是本次commit的代码内容
-          7. 在修改建议后面，要给出示例代码，教前辈如何进行优化
-          8. 请在审查报告的开头，配合使用emoji和颜文字，来一个活泼、生动、傲娇的开场白
-          9. 整体回复不能超过1000字
-          10. 当代码写的优秀的时候，请鼓励我        
-"""
-        BotSkill.objects.get_or_create(bot=ops_pilot, name='代码审查',
-                                       skill_id='code_review', skill_prompt=prompt, llm_model=llm_model)
+        Channel.objects.filter(channel_type=CHANNEL_CHOICES.WEB).first()
+        rasa_model = RasaModel.objects.filter(name='核心模型').first()
+        ops_pilot = Bot.objects.create(name='OpsPilot', description='智能运维助理',
+                                       assistant_id='ops_pilot',
+                                       rasa_model=rasa_model)
+        ops_pilot.channels.add(Channel.objects.get(channel_type=CHANNEL_CHOICES.WEB))
+        ops_pilot.save()

@@ -3,10 +3,6 @@ from django.db import models
 from apps.core.encoders import PrettyJSONEncoder
 
 
-class EmbedModelChoices(models.TextChoices):
-    FASTEMBED = 'fastembed', 'FastEmbed'
-
-
 class LLMModelChoices(models.TextChoices):
     GPT35_16K = 'gpt-3.5-turbo-16k', 'GPT-3.5 Turbo 16K'
 
@@ -15,7 +11,7 @@ class LLMModel(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, unique=True, verbose_name='名称')
     llm_model = models.CharField(max_length=255, choices=LLMModelChoices.choices, verbose_name='LLM模型')
-    llm_config = models.JSONField(verbose_name='LLM配置', blank=True, null=True, encoder=PrettyJSONEncoder)
+    llm_config = models.JSONField(verbose_name='LLM配置', blank=True, null=True, encoder=PrettyJSONEncoder, default=dict)
 
     def __str__(self):
         return self.name
@@ -25,11 +21,16 @@ class LLMModel(models.Model):
         verbose_name_plural = verbose_name
 
 
+class EmbedModelChoices(models.TextChoices):
+    FASTEMBED = 'fastembed', 'FastEmbed'
+
+
 class EmbedProvider(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, unique=True, verbose_name='名称')
     embed_model = models.CharField(max_length=255, choices=EmbedModelChoices.choices, verbose_name='嵌入模型')
-    embed_config = models.JSONField(verbose_name='嵌入配置', blank=True, null=True, encoder=PrettyJSONEncoder)
+    embed_config = models.JSONField(verbose_name='嵌入配置', blank=True, null=True, encoder=PrettyJSONEncoder,
+                                    default=dict)
     enabled = models.BooleanField(default=True, verbose_name='是否启用')
 
     def __str__(self):
