@@ -36,6 +36,12 @@ class RasaModel(models.Model):
                                   blank=True,
                                   storage=MinioBackend(bucket_name='munchkin-private'),
                                   upload_to='rasa_models')
+    train_data_file = models.FileField(verbose_name="训练数据",
+                                       null=True,
+                                       blank=True,
+                                       storage=MinioBackend(bucket_name='munchkin-private'),
+                                       upload_to='rasa_train_data')
+
     pipeline_config = YAMLField(verbose_name='模型配置', default={
         "pipeline": [
             {"name": "KeywordIntentClassifier", "case_sensitive": True},

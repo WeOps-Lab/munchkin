@@ -43,6 +43,9 @@ class KnowledgeBaseFolderAdmin(ModelAdmin):
         ('基本信息', {
             'fields': ('name', 'description', 'embed_model')
         }),
+        ('RAG配置', {
+            'fields': ('enable_text_search', 'enable_vector_search', 'rag_k', 'rag_num_candidates')
+        }),
         ('分块解析', {
             'fields': ('enable_general_parse', ('general_parse_chunk_size', 'general_parse_chunk_overlap'))
         })
