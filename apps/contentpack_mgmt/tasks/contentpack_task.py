@@ -24,8 +24,8 @@ def build_rasa_train_data(rasa_model_id):
     }
     config_dict.update(rasa_model.pipeline_config)
     config_dict.update(rasa_model.policies_config)
-    with open(f'{temp_dir}/config.yml', 'w') as f:
-        yaml.dump(config_dict, f)
+    with open(f'{temp_dir}/config.yml', 'w', encoding='utf-8') as f:
+        yaml.dump(config_dict, f, allow_unicode=True)
     logger.info(f'生成config.yml成功,路径:[{temp_dir}/config.yml]')
 
     # 3.在临时目录下创建data文件夹
@@ -42,8 +42,8 @@ def build_rasa_train_data(rasa_model_id):
         "intents": [],
         "actions": [],
         "entities": [],
-        "slots": [],
-        "forms": []
+        "slots": {},
+        "forms": {}
     }
 
     content_packs = rasa_model.content_packs.all()
@@ -62,31 +62,32 @@ def build_rasa_train_data(rasa_model_id):
 
         slots = RasaSlots.objects.filter(content_pack=obj)
         for slot in slots:
-            domain_dict['slots'].append(slot.slot)
+            domain_dict['slots'].update(slot.slot)
 
         forms = RasaForms.objects.filter(content_pack=obj)
         for form in forms:
-            domain_dict['forms'].append(form.form)
+            domain_dict['forms'].update(form.form)
 
     # dump domain_dict to data/domain.yml
-    with open(f'{data_dir}/domain.yml', 'w') as f:
-        yaml.dump(domain_dict, f)
+    with open(f'{data_dir}/domain.yml', 'w', encoding='utf-8') as f:
+        yaml.dump(domain_dict, f, allow_unicode=True)
     logger.info(f'生成domain.yml成功,路径:[{data_dir}/domain.yml]')
 
     # 生成nlu.yml文件到data/nlu.yml
-    nlu_dict = {
-        "version": "3.1",
-        "nlu": []
-    }
+    nlu_content = 'version: "3.1"\n'
+    nlu_content += "nlu:\n"
     for intent in intents:
         intent_corpus = IntentCorpus.objects.filter(intent=intent).all()
-        for corpus in intent_corpus:
-            nlu_dict['nlu'].append({
-                "intent": corpus.intent.name,
-                "examples": corpus.corpus
-            })
-    with open(f'{data_dir}/nlu.yml', 'w') as f:
-        yaml.dump(nlu_dict, f)
+
+        if len(intent_corpus) > 0:
+            nlu_content += '  - intent: ' + intent.name + '\n'
+            nlu_content += '    examples: |\n'
+
+            for corpus in intent_corpus:
+                nlu_content += '      - ' + corpus.corpus + '\n'
+
+    with open(f'{data_dir}/nlu.yml', 'w', encoding='utf-8') as f:
+        f.write(nlu_content)
     logger.info(f'生成nlu.yml成功,路径:[{data_dir}/nlu.yml]')
 
     # 生成rules.yml文件到data/rules.yml
@@ -96,9 +97,12 @@ def build_rasa_train_data(rasa_model_id):
     }
     rasa_rules = RasaRules.objects.filter(content_pack=obj).all()
     for rule in rasa_rules:
-        rules_dict['rules'].append(rule.rule_steps)
-    with open(f'{data_dir}/rules.yml', 'w') as f:
-        yaml.dump(rules_dict, f)
+        rules_dict['rules'].append({
+            "rule": rule.name,
+            **rule.rule_steps
+        })
+    with open(f'{data_dir}/rules.yml', 'w', encoding='utf-8') as f:
+        yaml.dump(rules_dict, f, allow_unicode=True)
 
     rasa_stories = RasaStories.objects.filter(content_pack=obj).all()
     stories_dict = {
@@ -106,9 +110,13 @@ def build_rasa_train_data(rasa_model_id):
         "stories": []
     }
     for story in rasa_stories:
-        stories_dict['stories'].append(story.story_steps)
-    with open(f'{data_dir}/stories.yml', 'w') as f:
-        yaml.dump(stories_dict, f)
+        stories_dict['stories'].append({
+            "story": story.name,
+            **story.story_steps
+
+        })
+    with open(f'{data_dir}/stories.yml', 'w', encoding='utf-8') as f:
+        yaml.dump(stories_dict, f, allow_unicode=True)
 
     # 把temp_dir打包成zip包
     shutil.make_archive(f'{temp_dir}', 'zip', temp_dir)

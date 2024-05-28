@@ -22,6 +22,7 @@ init-data:
 	python manage.py init_channel
 	python manage.py init_contentpack
 	python manage.py init_bot
+
 run:
 	daphne -b 0.0.0.0 -p 8000 munchkin.asgi:application
 

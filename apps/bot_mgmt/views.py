@@ -7,12 +7,29 @@ from langchain.memory import ConversationBufferWindowMemory
 from langchain_core.prompts import SystemMessagePromptTemplate, HumanMessagePromptTemplate, ChatPromptTemplate, \
     PromptTemplate
 from langchain_openai import ChatOpenAI
+from rest_framework import serializers
 from rest_framework.views import APIView
 from langchain.memory import ChatMessageHistory
+from rest_framework.viewsets import ModelViewSet
+
 from apps.bot_mgmt.models import Bot
+from apps.channel_mgmt.views import ChannelSerializer
 from apps.contentpack_mgmt.models import BotActions
 from apps.knowledge_mgmt.services import RagService
 from apps.model_provider_mgmt.models import LLMModelChoices
+
+
+class BotSerializer(serializers.ModelSerializer):
+    channels = ChannelSerializer(many=True)
+
+    class Meta:
+        model = Bot
+        fields = '__all__'
+
+
+class BotViewSet(ModelViewSet):
+    serializer_class = BotSerializer
+    queryset = Bot.objects.all()
 
 
 class SkillExecuteView(APIView):

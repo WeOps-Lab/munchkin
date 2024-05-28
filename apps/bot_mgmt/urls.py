@@ -1,10 +1,10 @@
 from django.urls import path
 from rest_framework import routers
 
-from apps.bot_mgmt.views import SkillExecuteView
+from apps.bot_mgmt.views import SkillExecuteView, BotViewSet
 
 router = routers.DefaultRouter()
-
+router.register(r'api/bot', BotViewSet)
 urlpatterns = router.urls
 
 urlpatterns += [

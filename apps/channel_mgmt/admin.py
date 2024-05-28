@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django_ace import AceWidget
+from django_yaml_field import YAMLField
 from unfold.admin import ModelAdmin
 
 from apps.channel_mgmt.models import Channel, ChannelUserGroup, ChannelUser
@@ -12,6 +14,10 @@ class ChannelAdmin(ModelAdmin):
     list_display_links = ['name']
     ordering = ['id']
     filter_horizontal = []
+
+    formfield_overrides = {YAMLField: {
+        "widget": AceWidget(mode="yaml", theme='chrome', width='700px')}
+    }
 
 
 @admin.register(ChannelUserGroup)

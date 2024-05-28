@@ -1,4 +1,5 @@
 from django.db import models
+from django_yaml_field import YAMLField
 
 from apps.core.encoders import PrettyJSONEncoder
 
@@ -15,7 +16,7 @@ class Channel(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100, verbose_name='名称')
     channel_type = models.CharField(max_length=100, choices=CHANNEL_CHOICES.choices, verbose_name='类型')
-    channel_config = models.JSONField(verbose_name='通道配置', blank=True, null=True, encoder=PrettyJSONEncoder)
+    channel_config = YAMLField(verbose_name='通道配置', blank=True, null=True)
 
     class Meta:
         verbose_name = '消息通道'

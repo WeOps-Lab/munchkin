@@ -3,8 +3,7 @@ from django_minio_backend import MinioBackend
 from django_yaml_field import YAMLField
 
 from apps.channel_mgmt.models import Channel, ChannelUserGroup, ChannelUser
-from apps.knowledge_mgmt.models import KnowledgeBaseFolder
-from apps.model_provider_mgmt.models import LLMModel, LLMSkill
+from apps.model_provider_mgmt.models import LLMSkill
 
 
 class ContentPack(models.Model):
