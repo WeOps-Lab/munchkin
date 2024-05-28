@@ -16,7 +16,6 @@ class BotAdmin(ModelAdmin):
     filter_horizontal = []
 
 
-
 @admin.register(BotConversationHistory)
 class BotConversationHistoryAdmin(ModelAdmin):
     list_display = ['bot', 'user', 'conversation_role', 'conversation', 'created_at']
@@ -25,5 +24,3 @@ class BotConversationHistoryAdmin(ModelAdmin):
     list_display_links = ['conversation']
     ordering = ['id']
     filter_horizontal = []
-
-
