@@ -23,10 +23,13 @@ class KnowledgeBaseFolder(models.Model):
     general_parse_chunk_overlap = models.IntegerField(default=100, verbose_name='分块重叠')
 
     enable_vector_search = models.BooleanField(default=True, verbose_name='向量检索')
+    vector_search_weight = models.FloatField(default=0.1, verbose_name='向量检索权重')
+
     rag_k = models.IntegerField(default=5, verbose_name='返回结果数量')
     rag_num_candidates = models.IntegerField(default=1000, verbose_name='候选数量')
 
     enable_text_search = models.BooleanField(default=True, verbose_name='文本检索')
+    text_search_weight = models.FloatField(default=0.9, verbose_name='文本检索权重')
 
     def __str__(self):
         return self.name

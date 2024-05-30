@@ -4,6 +4,7 @@ from django.forms import Media
 from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils.html import format_html
 from unfold.admin import ModelAdmin
 from unfold.decorators import action
 from apps.knowledge_mgmt.models import KnowledgeBaseFolder, FileKnowledge
@@ -20,15 +21,15 @@ class KnowledgeAdmin(ModelAdmin):
     readonly_fields = ['title']
 
 
-class KnowledgeStackedInline(admin.StackedInline):
+class KnowledgeStackedInline(admin.TabularInline):
     model = FileKnowledge
     readonly_fields = ['title']
 
 
 @admin.register(KnowledgeBaseFolder)
 class KnowledgeBaseFolderAdmin(ModelAdmin):
-    list_display = ['name', 'description', 'embed_model',
-                    'enable_general_parse',
+    list_display = ['name', 'description', 'embed_model_link',
+                    'enable_text_search', 'enable_vector_search',
                     'train_status']
     search_fields = ['name']
     list_display_links = ['name']
@@ -43,9 +44,14 @@ class KnowledgeBaseFolderAdmin(ModelAdmin):
         ('基本信息', {
             'fields': ('name', 'description', 'embed_model')
         }),
-        ('RAG配置', {
-            'fields': ('enable_text_search', 'enable_vector_search', 'rag_k', 'rag_num_candidates')
+        ('文本检索', {
+            'fields': ('enable_text_search', 'text_search_weight')
         }),
+
+        ('向量检索', {
+            'fields': ('enable_vector_search', 'vector_search_weight', 'rag_k', 'rag_num_candidates')
+        }),
+
         ('分块解析', {
             'fields': ('enable_general_parse', ('general_parse_chunk_size', 'general_parse_chunk_overlap'))
         })
@@ -56,3 +62,9 @@ class KnowledgeBaseFolderAdmin(ModelAdmin):
         general_parse_embed.delay(object_id)
         messages.success(request, '开始训练')
         return redirect(reverse('admin:knowledge_mgmt_knowledgebasefolder_changelist'))
+
+    def embed_model_link(self, obj):
+        link = reverse("admin:model_provider_mgmt_embedprovider_change", args=[obj.embed_model.id])
+        return format_html('<a href="{}">{}</a>', link, obj.embed_model)
+
+    embed_model_link.short_description = '嵌入模型'
