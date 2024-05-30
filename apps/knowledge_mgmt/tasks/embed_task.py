@@ -18,7 +18,7 @@ from munchkin.components.elasticsearch import ELASTICSEARCH_URL, ELASTICSEARCH_P
 load_dotenv()
 
 
-def train_knowledgebase(knowledge, chunk_size, chunk_overlap):
+def train_file_knowledgebase(knowledge, chunk_size, chunk_overlap):
     with tempfile.NamedTemporaryFile(delete=False) as f:
         content = knowledge.file.read()
         f.write(content)
@@ -56,6 +56,7 @@ def general_parse_embed(knowledge_base_folder_id):
 
     try:
         knowledge_base_folder.train_status = 1
+        knowledge_base_folder.train_progress = 0
         knowledge_base_folder.save()
 
         if knowledge_base_folder.embed_model.embed_model == EmbedModelChoices.FASTEMBED:
@@ -65,24 +66,35 @@ def general_parse_embed(knowledge_base_folder_id):
 
         logger.info(f'初始化FastEmbed模型成功')
 
-        knowledges = FileKnowledge.objects.filter(knowledge_base_folder=knowledge_base_folder).all()
+        file_knowledges = FileKnowledge.objects.filter(knowledge_base_folder=knowledge_base_folder).all()
+        knowledges = []
 
-        for index, knowledge in enumerate(tqdm(knowledges)):
+        for obj in file_knowledges:
+            knowledges.append(obj)
+
+        total_knowledges = len(knowledges)
+        for index, knowledge in enumerate(knowledges):
             logger.info(f'训练知识:[{knowledge.title}]')
 
             if knowledge_base_folder.enable_general_parse:
-                knowledge_docs = train_knowledgebase(knowledge, knowledge_base_folder.general_parse_chunk_size,
-                                                     knowledge_base_folder.general_parse_chunk_overlap)
+                if isinstance(knowledge, FileKnowledge):
+                    knowledge_docs = train_file_knowledgebase(knowledge, knowledge_base_folder.general_parse_chunk_size,
+                                                              knowledge_base_folder.general_parse_chunk_overlap)
+
             db = ElasticsearchStore.from_documents(knowledge_docs, embedding, es_connection=es,
                                                    index_name=index_name)
             db.client.indices.refresh(index=index_name)
 
+            progress = (index + 1) / total_knowledges * 100
+            knowledge_base_folder.train_progress = progress
             knowledge_base_folder.save()
 
         knowledge_base_folder.train_status = 2
+        knowledge_base_folder.train_progress = 100
         knowledge_base_folder.save()
 
     except Exception as e:
         logger.error(f'Training failed with error: {e}')
         knowledge_base_folder.train_status = 3
+        knowledge_base_folder.train_progress = 100
         knowledge_base_folder.save()

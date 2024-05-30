@@ -30,7 +30,7 @@ class KnowledgeStackedInline(admin.TabularInline):
 class KnowledgeBaseFolderAdmin(ModelAdmin):
     list_display = ['name', 'description', 'embed_model_link',
                     'enable_text_search', 'enable_vector_search',
-                    'train_status']
+                    'train_status', 'train_progress']
     search_fields = ['name']
     list_display_links = ['name']
     ordering = ['id']

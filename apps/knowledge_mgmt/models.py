@@ -17,6 +17,7 @@ class KnowledgeBaseFolder(models.Model):
     embed_model = models.ForeignKey('model_provider_mgmt.EmbedProvider', on_delete=models.CASCADE,
                                     verbose_name='嵌入模型')
     train_status = models.IntegerField(default=0, choices=TRAIN_STATUS_CHOICES, verbose_name='状态')
+    train_progress = models.FloatField(default=0, verbose_name='训练进度')
 
     enable_general_parse = models.BooleanField(default=True, verbose_name='分块解析')
     general_parse_chunk_size = models.IntegerField(default=1000, verbose_name='分块大小')

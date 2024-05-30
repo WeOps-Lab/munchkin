@@ -44,10 +44,6 @@ UNFOLD = {
                     "link": reverse_lazy("admin:contentpack_mgmt_intent_changelist"),
                 },
                 {
-                    "title": "意图语料",
-                    "link": reverse_lazy("admin:contentpack_mgmt_intentcorpus_changelist"),
-                },
-                {
                     "title": "表单",
                     "link": reverse_lazy("admin:contentpack_mgmt_rasaforms_changelist"),
                 },
@@ -62,10 +58,6 @@ UNFOLD = {
                 {
                     "title": "回复",
                     "link": reverse_lazy("admin:contentpack_mgmt_rasaresponse_changelist"),
-                },
-                {
-                    "title": "回复语料",
-                    "link": reverse_lazy("admin:contentpack_mgmt_rasaresponsecorpus_changelist"),
                 },
             ]
 
