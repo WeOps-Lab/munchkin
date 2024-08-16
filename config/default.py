@@ -1,6 +1,8 @@
 # settings.py
 import os
 
+SECRET_KEY = os.getenv('SECRET_KEY')
+APP_CODE = os.getenv("APP_CODE")
 # 使用时区
 USE_TZ = True
 # 时区设置
@@ -18,12 +20,19 @@ LANGUAGES = (
     ("zh-hans", u"简体中文"),
 )
 
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 2
+SESSION_COOKIE_NAME = f"{APP_CODE}_sessionid"
+# CSRF配置
+CSRF_COOKIE_NAME = f"{APP_CODE}_csrftoken"
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # 指定翻译文件的目录
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
 )
+
+ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = (
     "django.contrib.admin",
@@ -33,7 +42,11 @@ INSTALLED_APPS = (
     "django.contrib.sites",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'rest_framework',
+    # "version_log",
+    'apps.core',
 )
+ASGI_APPLICATION = 'asgi.application'
 
 CELERY_IMPORTS = ()
 
@@ -50,6 +63,40 @@ MIDDLEWARE = (
     "django.middleware.locale.LocaleMiddleware",
 )
 
+ROOT_URLCONF = "urls"
+
+DEBUG = os.getenv("DEBUG", "0") == "1"
+if DEBUG:
+    INSTALLED_APPS += (
+        "corsheaders",
+        "rest_framework_swagger",
+        "drf_yasg",
+    )  # noqa
+    # 该跨域中间件需要放在前面
+    MIDDLEWARE = ("corsheaders.middleware.CorsMiddleware",) + MIDDLEWARE  # noqa
+    CORS_ORIGIN_ALLOW_ALL = True
+    CORS_ALLOW_CREDENTIALS = True
+
+# 缓存配置
+REDIS_CACHE_URL = os.environ.get('REDIS_CACHE_URL', '')
+
+CACHES = {
+    "db": {"BACKEND": "django.core.cache.backends.db.DatabaseCache", "LOCATION": "django_cache"},
+    "login_db": {"BACKEND": "django.core.cache.backends.db.DatabaseCache", "LOCATION": "account_cache"},
+    "dummy": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"},
+    "locmem": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
+    "redis": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": REDIS_CACHE_URL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+        },
+    }
+}
+CACHES["default"] = CACHES["redis"]
+
+# 模板页面配置
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -63,7 +110,35 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "config.context_processors.web_env.custom_settings",
             ],
         },
     }
 ]
+
+# DRF 配置
+
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_PAGINATION_CLASS": "config.drf.pagination.CustomPageNumberPagination",
+    "PAGE_SIZE": 10,
+    "TEST_REQUEST_DEFAULT_FORMAT": "json",
+    "DEFAULT_FILTER_BACKENDS": (
+        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.SearchFilter",
+        "rest_framework.filters.OrderingFilter",
+    ),
+    "DATETIME_FORMAT": "%Y-%m-%d %H:%M:%S",
+    "NON_FIELD_ERRORS_KEY": "params_error",
+    "DEFAULT_RENDERER_CLASSES": ("config.drf.renderers.CustomRenderer",),
+    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
+    ],
+}

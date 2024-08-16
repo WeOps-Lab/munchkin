@@ -13,11 +13,6 @@ specific language governing permissions and limitations under the License.
 
 import sys
 
-"""
-请不要修改该文件
-如果你需要对settings里的内容做修改，config/default.py 文件中 添加即可
-如有任何疑问，请联系 【蓝鲸助手】
-"""
 if not hasattr(sys, "argv"):
     sys.argv = [""]
 
@@ -37,4 +32,3 @@ CELERY_IMPORTS = locals()["CELERY_IMPORTS"]
 MIDDLEWARE = locals()["MIDDLEWARE"]
 
 
-ALLOWED_HOSTS = ["*"]
