@@ -12,14 +12,13 @@ specific language governing permissions and limitations under the License.
 """
 
 from django.conf import settings
-
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('i18n/', include("django.conf.urls.i18n")),
-    path('core/', include("apps.core.urls")),
+    path("admin/", admin.site.urls),
+    path("i18n/", include("django.conf.urls.i18n")),
+    path("core/", include("apps.core.urls")),
 ]
 
 if settings.DEBUG:
@@ -44,6 +43,12 @@ if settings.DEBUG:
         permission_classes=[permissions.AllowAny],
     )
     urlpatterns += [
-        path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
-        path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
+        path(
+            "swagger/",
+            schema_view.with_ui("swagger", cache_timeout=0),
+            name="schema-swagger-ui",
+        ),  # noqa
+        path(
+            "redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"
+        ),  # noqa
     ]

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.utils import timezone
 from rest_framework import serializers
 
@@ -12,10 +11,10 @@ class OperationTimeSerializers(serializers.ModelSerializer):
         # 转换 created_at 到当前时区
         current_time = instance.created_at.astimezone(timezone.get_current_timezone())
         # 格式化为字符串，精确到秒
-        return current_time.strftime('%Y-%m-%d %H:%M:%S')
+        return current_time.strftime("%Y-%m-%d %H:%M:%S")
 
     @staticmethod
     def get_updated_at(instance):
         current_time = instance.updated_at.astimezone(timezone.get_current_timezone())
         # 格式化为字符串，精确到秒
-        return current_time.strftime('%Y-%m-%d %H:%M:%S')
+        return current_time.strftime("%Y-%m-%d %H:%M:%S")

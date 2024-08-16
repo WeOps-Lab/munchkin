@@ -1,7 +1,7 @@
 # settings.py
 import os
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv("SECRET_KEY")
 APP_CODE = os.getenv("APP_CODE")
 # 使用时区
 USE_TZ = True
@@ -16,8 +16,8 @@ USE_L10N = True
 
 # 定义支持的语言
 LANGUAGES = (
-    ("en", u"English"),
-    ("zh-hans", u"简体中文"),
+    ("en", "English"),
+    ("zh-hans", "简体中文"),
 )
 
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 2
@@ -28,9 +28,7 @@ CSRF_COOKIE_NAME = f"{APP_CODE}_csrftoken"
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # 指定翻译文件的目录
-LOCALE_PATHS = (
-    os.path.join(BASE_DIR, 'locale'),
-)
+LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
 
 ALLOWED_HOSTS = ["*"]
 
@@ -42,11 +40,11 @@ INSTALLED_APPS = (
     "django.contrib.sites",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'rest_framework',
+    "rest_framework",
     # "version_log",
     "apps.core",
 )
-ASGI_APPLICATION = 'asgi.application'
+ASGI_APPLICATION = "asgi.application"
 
 CELERY_IMPORTS = ()
 
@@ -78,11 +76,17 @@ if DEBUG:
     CORS_ALLOW_CREDENTIALS = True
 
 # 缓存配置
-REDIS_CACHE_URL = os.environ.get('REDIS_CACHE_URL', '')
+REDIS_CACHE_URL = os.environ.get("REDIS_CACHE_URL", "")
 
 CACHES = {
-    "db": {"BACKEND": "django.core.cache.backends.db.DatabaseCache", "LOCATION": "django_cache"},
-    "login_db": {"BACKEND": "django.core.cache.backends.db.DatabaseCache", "LOCATION": "account_cache"},
+    "db": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "django_cache",
+    },
+    "login_db": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "account_cache",
+    },
     "dummy": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"},
     "locmem": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
     "redis": {
@@ -92,7 +96,7 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
         },
-    }
+    },
 }
 CACHES["default"] = CACHES["redis"]
 
@@ -100,9 +104,7 @@ CACHES["default"] = CACHES["redis"]
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": (
-            os.path.join(BASE_DIR, "templates"),
-        ),
+        "DIRS": (os.path.join(BASE_DIR, "templates"),),
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -132,13 +134,13 @@ REST_FRAMEWORK = {
     "NON_FIELD_ERRORS_KEY": "params_error",
     "DEFAULT_RENDERER_CLASSES": ("config.drf.renderers.CustomRenderer",),
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
     ],
-    'DEFAULT_PARSER_CLASSES': [
-        'rest_framework.parsers.JSONParser',
-        'rest_framework.parsers.FormParser',
-        'rest_framework.parsers.MultiPartParser',
+    "DEFAULT_PARSER_CLASSES": [
+        "rest_framework.parsers.JSONParser",
+        "rest_framework.parsers.FormParser",
+        "rest_framework.parsers.MultiPartParser",
     ],
 }
