@@ -44,7 +44,7 @@ INSTALLED_APPS = (
     "django.contrib.staticfiles",
     'rest_framework',
     # "version_log",
-    'apps.core',
+    "apps.core",
 )
 ASGI_APPLICATION = 'asgi.application'
 
