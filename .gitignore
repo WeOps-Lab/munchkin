@@ -16,3 +16,5 @@ templates/index.prod.html
 output
 swagger.yml
 USERRES
+
+local_settings.py

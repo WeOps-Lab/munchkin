@@ -118,6 +118,18 @@ TEMPLATES = [
     }
 ]
 
+# 数据库配置
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),  # 替换为你的数据库名称
+        "USER": os.getenv("DB_USER"),  # 替换为你的数据库用户
+        "PASSWORD": os.getenv("DB_PASSWORD"),  # 替换为你的数据库密码
+        "HOST": os.getenv("DB_HOST"),  # 通常是 'localhost' 或者是数据库服务器的 IP 地址
+        "PORT": os.getenv("DB_PORT"),  # 通常是 '5432'，如果你使用的是默认端口的话
+    }
+}
+
 # DRF 配置
 
 REST_FRAMEWORK = {
@@ -144,3 +156,17 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.MultiPartParser",
     ],
 }
+
+# keycladk配置
+KEYCLOAK_URL = os.getenv("KEYCLOAK_URL")
+KEYCLOAK_URL_API = os.getenv("KEYCLOAK_URL_API")
+KEYCLOAK_ADMIN_USERNAME = os.getenv("KEYCLOAK_ADMIN_USERNAME")
+KEYCLOAK_ADMIN_PASSWORD = os.getenv("KEYCLOAK_ADMIN_PASSWORD")
+KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM")
+KEYCLOAK_CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID")
+
+# 本地设置
+try:
+    from local_settings import *  # noqa
+except ImportError:
+    pass
