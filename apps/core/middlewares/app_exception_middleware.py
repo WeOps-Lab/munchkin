@@ -27,10 +27,17 @@ class AppExceptionMiddleware(MiddlewareMixin):
                 exception.LOG_LEVEL,
                 u"""捕获主动抛出异常, 具体异常堆栈->[%s] status_code->[%s] & """
                 u"""client_message->[%s] & args->[%s] """
-                % (traceback.format_exc(), exception.ERROR_CODE, exception.message, exception.args),
+                % (
+                    traceback.format_exc(),
+                    exception.ERROR_CODE,
+                    exception.message,
+                    exception.args,
+                ),
             )
 
-            return WebUtils.response_error(error_message=exception.message, status=exception.STATUS_CODE)
+            return WebUtils.response_error(
+                error_message=exception.message, status_code=exception.STATUS_CODE
+            )
 
         # 用户未主动捕获的异常
         logger.error(
@@ -45,11 +52,17 @@ class AppExceptionMiddleware(MiddlewareMixin):
             )
         )
 
-        return WebUtils.response_error(error_message='系统异常,请联系管理员处理', status=exception.STATUS_CODE)
+        return WebUtils.response_error(
+            error_message="系统异常,请联系管理员处理", status_code=exception.STATUS_CODE
+        )
 
     def get_check_functions(self):
         """获取需要判断的函数列表"""
-        return [getattr(self, func) for func in dir(self) if func.startswith("check") and callable(getattr(self, func))]
+        return [
+            getattr(self, func)
+            for func in dir(self)
+            if func.startswith("check") and callable(getattr(self, func))
+        ]
 
     def check_is_debug(self):
         """判断是否是开发模式"""

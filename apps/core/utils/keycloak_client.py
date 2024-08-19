@@ -99,10 +99,7 @@ class KeyCloakClient:
         try:
             openid_client = self.get_openid_client()
             token_info = openid_client.introspect(token)
-            if "admin" in token_info["realm_access"]["roles"]:
-                return True
-            else:
-                return False
+            return "admin" in token_info["realm_access"]["roles"]
         except:  # noqa
             return False
 

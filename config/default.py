@@ -59,6 +59,9 @@ MIDDLEWARE = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # django国际化中间件
     "django.middleware.locale.LocaleMiddleware",
+    "apps.core.middlewares.app_exception_middleware.AppExceptionMiddleware",
+    "apps.core.middlewares.drf_middleware.DisableCSRFMiddleware",
+    # 'apps.core.middlewares.keycloak_auth_middleware.KeyCloakAuthMiddleware',
 )
 
 ROOT_URLCONF = "urls"
