@@ -1,9 +1,9 @@
 import logging
 
+from django.conf import settings
 from django.utils.deprecation import MiddlewareMixin
 from rest_framework import status
 
-from apps.core.constants import AUTH_TOKEN_HEADER_NAME
 from apps.core.utils.keycloak_client import KeyCloakClient
 from apps.core.utils.web_utils import WebUtils
 
@@ -33,7 +33,7 @@ class KeyCloakAuthMiddleware(MiddlewareMixin):
         ):
             return None
 
-        token = request.META.get(AUTH_TOKEN_HEADER_NAME)
+        token = request.META.get(settings.AUTH_TOKEN_HEADER_NAME)
         if token is None:
             return WebUtils.response_error(
                 error_message="请提供Token", status_code=status.HTTP_401_UNAUTHORIZED

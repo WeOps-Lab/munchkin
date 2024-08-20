@@ -2,7 +2,6 @@ import logging
 
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import action
-from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from apps.core.serializers.user_auth_serializer import UserAuthSerializer
@@ -12,6 +11,7 @@ from apps.core.utils.web_utils import WebUtils
 
 class UserView(ViewSet):
     def __init__(self, *args, **kwargs):
+        super().__init__(**kwargs)
         self.logger = logging.getLogger(__name__)
 
     @swagger_auto_schema(

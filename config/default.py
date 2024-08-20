@@ -8,7 +8,7 @@ USE_TZ = True
 # 时区设置
 TIME_ZONE = "Asia/Shanghai"
 # 语言设置
-LANGUAGE_CODE = "zh-hans"
+LANGUAGE_CODE = "zh-Hans"
 # 国际化设置
 USE_I18N = True
 # 本地化设置
@@ -17,9 +17,9 @@ USE_L10N = True
 # 定义支持的语言
 LANGUAGES = (
     ("en", "English"),
-    ("zh-hans", "简体中文"),
+    ("zh-Hans", "简体中文"),
 )
-
+HTTP_LANGUAGE = "HTTP_ACCEPT_LANGUAGE"
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 2
 SESSION_COOKIE_NAME = f"{APP_CODE}_sessionid"
 # CSRF配置
@@ -52,7 +52,7 @@ MIDDLEWARE = (
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     # 跨域检测中间件， 默认关闭
@@ -159,6 +159,8 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.MultiPartParser",
     ],
 }
+
+AUTH_TOKEN_HEADER_NAME = "HTTP_AUTHORIZATION"
 
 # keycladk配置
 KEYCLOAK_URL = os.getenv("KEYCLOAK_URL")

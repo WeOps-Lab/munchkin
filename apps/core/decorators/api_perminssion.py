@@ -1,12 +1,12 @@
 import logging
 from functools import wraps
 
+from django.conf import settings
 from django.utils import translation
 from django.utils.translation import gettext as _
 from django.views.generic.base import View
 from rest_framework import status
 
-from apps.core.constants import AUTH_TOKEN_HEADER_NAME
 from apps.core.utils.keycloak_client import KeyCloakClient
 from apps.core.utils.web_utils import WebUtils
 
@@ -20,7 +20,7 @@ class HasRole(object):
 
     def __init__(self, roles=None):
         if roles is None:
-            roles = ["admin"]
+            roles = []
         self.roles = roles
 
     def __call__(self, task_definition):
@@ -29,8 +29,10 @@ class HasRole(object):
             request = args[0]
             if isinstance(request, View):
                 request = args[1]
-            token = request.META.get(AUTH_TOKEN_HEADER_NAME)
-            translation.activate(request.COOKIES.get("lang", "zh-hans"))
+            token = request.META.get(settings.AUTH_TOKEN_HEADER_NAME).split("Bearer ")[
+                -1
+            ]
+
             if token is None:
                 return WebUtils.response_error(
                     error_message=_("please provide Token"),
@@ -43,7 +45,11 @@ class HasRole(object):
                     error_message=_("token validation failed"),
                     status_code=status.HTTP_401_UNAUTHORIZED,
                 )
+            if not self.roles:
+                return wrapper
             roles = user_info["realm_access"]["roles"]
+            if user_info.get("locale"):
+                translation.activate(user_info["locale"])
             for i in roles:
                 if i in self.roles:
                     return task_definition(*args, **kwargs)
