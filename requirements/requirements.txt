@@ -3,7 +3,6 @@ django-split-settings==1.2.0
 python-dotenv==1.0.0
 daphne==4.0.0
 better_exceptions==0.3.3
-tqdm==4.66.1
 
 django-comment-migrate==0.1.7
 joblib==1.3.2

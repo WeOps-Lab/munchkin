@@ -101,7 +101,10 @@ CACHES = {
         },
     },
 }
-CACHES["default"] = CACHES["redis"]
+if REDIS_CACHE_URL:
+    CACHES["default"] = CACHES["redis"]
+else:
+    CACHES["default"] = CACHES["locmem"]
 
 # 模板页面配置
 TEMPLATES = [

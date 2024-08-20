@@ -1,53 +1,12 @@
-# WeOps-Lite
+# WeOps-next
 
-WeOps-Lite是WeOps的轻量化运维平台，通过完善的资产管理、强大的凭据管理和高效的全文检索功能，助力企业提升 IT 运维管理效率。
+WeOps-next是WeOps的轻量化开发框架
 
 ![](https://wedoc.canway.net/imgs/img/weopsVlite/产品介绍/小嘉.png)
 
 
-# 功能介绍
-
-本运维平台项目提供以下主要功能：
-
-## 1. 资产管理
-
-资产管理是本平台的核心功能之一，运维人员可以对企业的各类 IT 资产进行全面的管理。包括但不限于：
-
-* 资产创建与管理：支持增删改查操作，实现对物理服务器、虚拟化资源、存储设备等的全面管理。
-
-* 模型创建：支持根据不同资产类型自定义模型，灵活适应多种企业资产管理需求。
 
 
-## 2. 凭据管理
-
-凭据管理功能旨在帮助运维人员安全地管理各类凭证和认证信息。其主要特性包括：
-
-* 凭据存储：支持各类凭据的加密存储，确保凭证安全。
-
-* 凭据共享：支持将凭据在团队内部安全共享，提升团队协同工作效率。
-
-
-
-## 3. 全文检索
-
-平台集成了强大的全文检索功能，允许用户快速查找所需信息。特性如下：
-
-* 快速检索：支持关键字检索，运维人员可以快速找到相关的资产信息。
-
-* 高效索引：采用高效的索引机制，保证大数据量下的检索速度。
-
-
-## 4. 系统管理
-
-系统管理模块为平台的稳定运行提供了保障，主要包括：
-
-* 系统配置：支持对平台各项配置参数进行灵活设置。
-
-* 日志管理：详细记录系统运行日志，方便排查故障。
-
-* 权限分配：为不同角色分配不同权限，确保用户只能访问其所需的功能模块。
-
-* 用户创建与管理：支持用户增删改查操作。
 
 # 本地开发
 
@@ -69,12 +28,6 @@ cp ./.env.example .env
 -- static: 静态资源目录
 -- support-files: 应用的开发支撑文件
 -- templates: Django 默认模板文件
--- weops_lite:
-   -- components: Django Setting模块
-   -- celery.py: Celery配置入口
-   -- settings.py: 应用Settings主入口
-   -- urls.py: 应用urls主入口
-   -- wsgi.py: WSGI主入口
 ```
 
 ## 应用
@@ -117,7 +70,6 @@ cp ./.env.example .env
 | python-dotenv                 | https://github.com/theskumar/python-dotenv                                                            | 环境变量管理库                |
 | daphne                        | https://github.com/django/daphne                                                                      | ASGI Server            |
 | better_exceptions             | https://github.com/Qix-/better-exceptions                                                             | 异常信息打印库                |
-| tqdm                          | https://github.com/tqdm/tqdm                                                                          | 进度条打印库                 |
 | django-comment-migrate        | https://github.com/starryrbs/django-comment-migrate                                                   | Django Model注释迁移库      |
 | joblib                        | https://github.com/joblib/joblib                                                                      | 轻量级Pipeline库           |
 | pandas                        | https://github.com/pandas-dev/pandas                                                                  | 数据分析库                  |
@@ -147,7 +99,7 @@ cp ./.env.example .env
 | 变量                           | 默认值   | 示例                                              | 备注                 |
 |------------------------------|-------|-------------------------------------------------|--------------------|
 | SECRET_KEY                   |       | weops-lite                                      | 密钥，用于加密和保护敏感信息     |
-| DEBUG                        | False | True                                            | 是否开启调试模式           |
+| DEBUG                        | 0     | 1                                               | 是否开启调试模式           |
 | DB_NAME                      |       | mydatabase                                      | 数据库名称              |
 | DB_USER                      |       | myuser                                          | 数据库用户名             |
 | DB_PASSWORD                  |       | mypassword                                      | 数据库密码              |
@@ -163,17 +115,4 @@ cp ./.env.example .env
 | KEYCLOAK_REALM               |       |                                                 | KeyCloak Realm     |
 | KEYCLOAK_CLIENT_ID           |       |                                                 | KeyCloak客户端ID      |
 | KEYCLOAK_CLIENT_SECRET_KEY   |       |                                                 | KeyCloak Client 秘钥 |
-| SALT_API_URL                 |       |                                                 | Salt API URL       |
-| SALT_API_USERNAME            |       |                                                 | SaltAPI 用户名        |
-| SALT_API_PASSWORD            |       |                                                 | SaltAPI 密码         |
-| TEST_BASE_URL                |       |                                                 | BDD测试使用的BaseURL    |
-| KEYCLOAK_TEST_ADMIN          |       |                                                 | 测试用的KeyCloak管理员账号  |
-| KEYCLOAK_TEST_ADMIN_PASSWORD |       |                                                 | 测试用的KeyCloak管理员密码  |
 | REDIS_CACHE_URL              |       |                                                 | Django Redis缓存URL  |
-
-# 使用命令行创建用户
-
-```
-python ./manage.py create_keycloak_user --role_type admin --username admin --password xxxx --email admin@qq.com --lastname 管理员
-python ./manage.py create_keycloak_user --username admin --password xxxx --email admin@qq.com --lastname 管理员
-```
