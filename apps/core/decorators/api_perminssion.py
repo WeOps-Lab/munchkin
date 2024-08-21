@@ -10,7 +10,7 @@ from rest_framework import status
 from apps.core.utils.keycloak_client import KeyCloakClient
 from apps.core.utils.web_utils import WebUtils
 
-logger = logging.getLogger("apps")
+logger = logging.getLogger("app")
 
 
 class HasRole(object):

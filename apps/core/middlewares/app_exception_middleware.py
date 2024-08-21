@@ -9,7 +9,7 @@ from django.utils.deprecation import MiddlewareMixin
 from apps.core.exceptions.base_app_exception import BaseAppException
 from apps.core.utils.web_utils import WebUtils
 
-logger = logging.getLogger("apps")
+logger = logging.getLogger("app")
 
 
 class AppExceptionMiddleware(MiddlewareMixin):
@@ -25,8 +25,8 @@ class AppExceptionMiddleware(MiddlewareMixin):
         if isinstance(exception, BaseAppException):
             logger.log(
                 exception.LOG_LEVEL,
-                u"""捕获主动抛出异常, 具体异常堆栈->[%s] status_code->[%s] & """
-                u"""client_message->[%s] & args->[%s] """
+                """捕获主动抛出异常, 具体异常堆栈->[%s] status_code->[%s] & """
+                """client_message->[%s] & args->[%s] """
                 % (
                     traceback.format_exc(),
                     exception.ERROR_CODE,
@@ -41,8 +41,8 @@ class AppExceptionMiddleware(MiddlewareMixin):
 
         # 用户未主动捕获的异常
         logger.error(
-            u"""捕获未处理异常,异常具体堆栈->[%s], 请求URL->[%s], """
-            u"""请求用户->[%s] 请求方法->[%s] 请求参数->[%s]"""
+            """捕获未处理异常,异常具体堆栈->[%s], 请求URL->[%s], """
+            """请求用户->[%s] 请求方法->[%s] 请求参数->[%s]"""
             % (
                 traceback.format_exc(),
                 request.path,

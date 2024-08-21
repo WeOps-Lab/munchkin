@@ -1,8 +1,8 @@
 # settings.py
 import os
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-APP_CODE = os.getenv("APP_CODE")
+SECRET_KEY = os.getenv("SECRET_KEY", "")
+APP_CODE = os.getenv("APP_CODE", "weops_next")
 # 使用时区
 USE_TZ = True
 # 时区设置
@@ -26,7 +26,7 @@ SESSION_COOKIE_NAME = f"{APP_CODE}_sessionid"
 CSRF_COOKIE_NAME = f"{APP_CODE}_csrftoken"
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+STATIC_URL = os.path.join("/", APP_CODE, "static/")
 # 指定翻译文件的目录
 LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
 
@@ -174,10 +174,10 @@ KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM")
 KEYCLOAK_CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID")
 
 # 日志配置
-BK_LOG_DIR = os.getenv("LOG_DIR", "/data/apps/logs/")
 if DEBUG:
     log_dir = os.path.join(os.path.dirname(BASE_DIR), "logs", APP_CODE)
 else:
+    BK_LOG_DIR = os.getenv("LOG_DIR", "/data/apps/logs/")
     log_dir = os.path.join(os.path.join(BK_LOG_DIR, APP_CODE))
 
 if not os.path.exists(log_dir):
@@ -201,6 +201,7 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
+        "null": {"level": "DEBUG", "class": "logging.NullHandler"},
         "root": {
             "class": "logging.handlers.RotatingFileHandler",
             "formatter": "verbose",
