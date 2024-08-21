@@ -175,17 +175,24 @@ KEYCLOAK_CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID")
 
 # 日志配置
 BK_LOG_DIR = os.getenv("LOG_DIR", "/data/apps/logs/")
+if DEBUG:
+    log_dir = os.path.join(os.path.dirname(BASE_DIR), "logs", APP_CODE)
+else:
+    log_dir = os.path.join(os.path.join(BK_LOG_DIR, APP_CODE))
+
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
+        "simple": {"format": "%(levelname)s %(message)s \n"},
         "verbose": {
-            "format": "{levelname} {asctime} {module} {message}",
-            "style": "{",
-        },
-        "simple": {
-            "format": "{levelname} {message}",
-            "style": "{",
+            "format": "%(levelname)s [%(asctime)s] %(pathname)s "
+            "%(lineno)d %(funcName)s %(process)d %(thread)d "
+            "\n \t %(message)s \n",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
         },
     },
     "handlers": {
@@ -194,29 +201,28 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
-        "file": {
-            "level": "DEBUG",
-            "class": "logging.FileHandler",
-            "filename": os.path.join(BASE_DIR, "debug.log"),
+        "root": {
+            "class": "logging.handlers.RotatingFileHandler",
             "formatter": "verbose",
+            "filename": os.path.join(log_dir, "%s.log" % APP_CODE),
+        },
+        "db": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "formatter": "verbose",
+            "filename": os.path.join(log_dir, "db.log"),
         },
     },
     "loggers": {
-        "django": {
-            "handlers": ["console", "file"],
-            "level": "DEBUG",
+        "django": {"handlers": ["null"], "level": "INFO", "propagate": True},
+        "django.server": {"handlers": ["console"], "level": "INFO", "propagate": True},
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
             "propagate": True,
         },
-        "django.request": {
-            "handlers": ["file"],
-            "level": "ERROR",
-            "propagate": False,
-        },
-        "myapp": {
-            "handlers": ["console", "file"],
-            "level": "DEBUG",
-            "propagate": False,
-        },
+        "django.db.backends": {"handlers": ["db"], "level": "INFO", "propagate": True},
+        "app": {"handlers": ["root"], "level": "DEBUG", "propagate": True},
+        "celery": {"handlers": ["root"], "level": "INFO", "propagate": True},
     },
 }
 # 本地设置
