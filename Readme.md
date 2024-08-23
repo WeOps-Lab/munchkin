@@ -1,6 +1,6 @@
-# WeOps-next
+# munchkin
 
-WeOps-next是WeOps的轻量化开发框架
+munchkin是WeOps的轻量化开发框架
 
 ![](https://wedoc.canway.net/imgs/img/weopsVlite/产品介绍/小嘉.png)
 

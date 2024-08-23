@@ -2,7 +2,7 @@
 import os
 
 SECRET_KEY = os.getenv("SECRET_KEY", "")
-APP_CODE = os.getenv("APP_CODE", "weops_next")
+APP_CODE = os.getenv("APP_CODE", "munchkin")
 # 使用时区
 USE_TZ = True
 # 时区设置
@@ -26,7 +26,6 @@ SESSION_COOKIE_NAME = f"{APP_CODE}_sessionid"
 CSRF_COOKIE_NAME = f"{APP_CODE}_csrftoken"
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATIC_URL = os.path.join("/", APP_CODE, "static/")
 # 指定翻译文件的目录
 LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)
 
@@ -67,10 +66,14 @@ MIDDLEWARE = (
 ROOT_URLCONF = "urls"
 
 DEBUG = os.getenv("DEBUG", "0") == "1"
+
+STATIC_URL = os.path.join(BASE_DIR, "static/")
+
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles/")
+
 if DEBUG:
     INSTALLED_APPS += (
         "corsheaders",
-        "rest_framework_swagger",
         "drf_yasg",
     )  # noqa
     # 该跨域中间件需要放在前面
