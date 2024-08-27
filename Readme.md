@@ -112,4 +112,6 @@ cp ./.env.example .env
 | KEYCLOAK_URL_API             |       |                                                 | KeyCloak API地址     |
 | KEYCLOAK_REALM               |       |                                                 | KeyCloak Realm     |
 | KEYCLOAK_CLIENT_ID           |       |                                                 | KeyCloak客户端ID      |
+| KEYCLOAK_ADMIN_USERNAME      |       |                                                 | KeyCloak管理员用户名     |
+| KEYCLOAK_ADMIN_PASSWORD      |       |                                                 | KeyCloak管理员密码      |
 | REDIS_CACHE_URL              |       |                                                 | Django Redis缓存URL  |
