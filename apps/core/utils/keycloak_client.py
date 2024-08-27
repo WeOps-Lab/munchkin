@@ -1,15 +1,34 @@
 import logging
 
-from keycloak import KeycloakOpenID
+from keycloak import KeycloakAdmin, KeycloakOpenID
 from singleton_decorator import singleton
 
 from apps.core.entities.user_token_entit import UserTokenEntity
-from config.default import KEYCLOAK_CLIENT_ID, KEYCLOAK_REALM, KEYCLOAK_URL_API
+from config.default import (
+    KEYCLOAK_ADMIN_PASSWORD,
+    KEYCLOAK_ADMIN_USERNAME,
+    KEYCLOAK_CLIENT_ID,
+    KEYCLOAK_REALM,
+    KEYCLOAK_URL_API,
+)
 
 
 @singleton
 class KeyCloakClient:
     def __init__(self):
+        self.admin_client = KeycloakAdmin(
+            server_url=KEYCLOAK_URL_API,
+            username=KEYCLOAK_ADMIN_USERNAME,
+            password=KEYCLOAK_ADMIN_PASSWORD,
+        )
+        self.realm_client = KeycloakAdmin(
+            server_url=KEYCLOAK_URL_API,
+            username=KEYCLOAK_ADMIN_USERNAME,
+            password=KEYCLOAK_ADMIN_PASSWORD,
+            realm_name=KEYCLOAK_REALM,
+            client_id="admin-cli",
+            user_realm_name="master",
+        )
         self.client_secret_key, self.client_id = None, None
         self.openid_client = None
         self.logger = logging.getLogger(__name__)
