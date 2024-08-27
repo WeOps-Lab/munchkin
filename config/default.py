@@ -1,7 +1,7 @@
 # settings.py
 import os
 
-SECRET_KEY = os.getenv("SECRET_KEY", "")
+SECRET_KEY = os.getenv("SECRET_KEY", "munchkin")
 APP_CODE = os.getenv("APP_CODE", "munchkin")
 # 使用时区
 USE_TZ = True
@@ -19,7 +19,6 @@ LANGUAGES = (
     ("en", "English"),
     ("zh-Hans", "简体中文"),
 )
-HTTP_LANGUAGE = "HTTP_ACCEPT_LANGUAGE"
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 2
 SESSION_COOKIE_NAME = f"{APP_CODE}_sessionid"
 # CSRF配置
@@ -42,6 +41,7 @@ INSTALLED_APPS = (
     "rest_framework",
     # "version_log",
     "apps.core",
+    "apps.knowledge_base",
 )
 ASGI_APPLICATION = "asgi.application"
 
@@ -168,11 +168,8 @@ REST_FRAMEWORK = {
 
 AUTH_TOKEN_HEADER_NAME = "HTTP_AUTHORIZATION"
 
-# keycladk配置
-KEYCLOAK_URL = os.getenv("KEYCLOAK_URL")
+# keycloak配置
 KEYCLOAK_URL_API = os.getenv("KEYCLOAK_URL_API")
-KEYCLOAK_ADMIN_USERNAME = os.getenv("KEYCLOAK_ADMIN_USERNAME")
-KEYCLOAK_ADMIN_PASSWORD = os.getenv("KEYCLOAK_ADMIN_PASSWORD")
 KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM")
 KEYCLOAK_CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID")
 

@@ -19,6 +19,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("i18n/", include("django.conf.urls.i18n")),
     path("core/", include("apps.core.urls")),
+    path("knowledge/", include("apps.knowledge.urls")),
 ]
 
 if settings.DEBUG:

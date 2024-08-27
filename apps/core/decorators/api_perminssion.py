@@ -21,6 +21,8 @@ class HasRole(object):
     def __init__(self, roles=None):
         if roles is None:
             roles = []
+        if isinstance(roles, str):
+            roles = [roles]
         self.roles = roles
 
     def __call__(self, task_definition):
