@@ -31,19 +31,19 @@ class HasRole(object):
             request = args[0]
             if isinstance(request, View):
                 request = args[1]
+            if getattr(request, "api_pass", False):
+                return task_definition(*args, **kwargs)
             token = request.META.get(settings.AUTH_TOKEN_HEADER_NAME).split("Bearer ")[-1]
 
             if token is None:
                 return WebUtils.response_error(
-                    error_message=_("please provide Token"),
-                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    error_message=_("please provide Token"), status_code=status.HTTP_401_UNAUTHORIZED
                 )
             client = KeyCloakClient()
             is_active, user_info = client.token_is_valid(token)
             if not is_active:
                 return WebUtils.response_error(
-                    error_message=_("token validation failed"),
-                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    error_message=_("token validation failed"), status_code=status.HTTP_401_UNAUTHORIZED
                 )
             if not self.roles:
                 return wrapper
@@ -54,8 +54,7 @@ class HasRole(object):
                 if i in self.roles:
                     return task_definition(*args, **kwargs)
             return WebUtils.response_error(
-                error_message=_("insufficient permissions"),
-                status_code=status.HTTP_403_FORBIDDEN,
+                error_message=_("insufficient permissions"), status_code=status.HTTP_403_FORBIDDEN
             )
 
         return wrapper

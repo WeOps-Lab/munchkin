@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     # "version_log",
     "apps.core",
     "apps.knowledge_base",
+    "apps.base",
 )
 ASGI_APPLICATION = "asgi.application"
 
@@ -167,7 +168,7 @@ REST_FRAMEWORK = {
 }
 
 AUTH_TOKEN_HEADER_NAME = "HTTP_AUTHORIZATION"
-
+API_TOKEN_HEADER_NAME = "HTTP_API_AUTHORIZATION"
 # keycloak配置
 KEYCLOAK_URL_API = os.getenv("KEYCLOAK_URL_API")
 KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM")
