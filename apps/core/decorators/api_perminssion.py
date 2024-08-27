@@ -31,9 +31,7 @@ class HasRole(object):
             request = args[0]
             if isinstance(request, View):
                 request = args[1]
-            token = request.META.get(settings.AUTH_TOKEN_HEADER_NAME).split("Bearer ")[
-                -1
-            ]
+            token = request.META.get(settings.AUTH_TOKEN_HEADER_NAME).split("Bearer ")[-1]
 
             if token is None:
                 return WebUtils.response_error(

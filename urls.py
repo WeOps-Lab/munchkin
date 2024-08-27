@@ -19,7 +19,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("i18n/", include("django.conf.urls.i18n")),
     path("core/", include("apps.core.urls")),
-    path("knowledge/", include("apps.knowledge.urls")),
+    path("knowledge/", include("apps.knowledge_base.urls")),
+    path("base/", include("apps.base.urls")),
 ]
 
 if settings.DEBUG:
@@ -49,7 +50,5 @@ if settings.DEBUG:
             schema_view.with_ui("swagger", cache_timeout=0),
             name="schema-swagger-ui",
         ),  # noqa
-        path(
-            "redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"
-        ),  # noqa
+        path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),  # noqa
     ]

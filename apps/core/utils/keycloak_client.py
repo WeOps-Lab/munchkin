@@ -94,9 +94,7 @@ class KeyCloakClient:
         try:
             openid_client = self.get_openid_client()
             token = openid_client.token(username, password)
-            return UserTokenEntity(
-                token=token["access_token"], error_message="", success=True
-            )
+            return UserTokenEntity(token=token["access_token"], error_message="", success=True)
         except Exception as e:
             self.logger.error(e)
             return UserTokenEntity(token=None, error_message="用户名密码不匹配", success=False)
