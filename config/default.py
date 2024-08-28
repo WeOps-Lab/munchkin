@@ -22,6 +22,7 @@ LANGUAGES = (
 HTTP_LANGUAGE = "HTTP_ACCEPT_LANGUAGE"
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 2
 SESSION_COOKIE_NAME = f"{APP_CODE}_sessionid"
+LOGIN_CACHE_EXPIRED = 60 * 60
 # CSRF配置
 CSRF_COOKIE_NAME = f"{APP_CODE}_csrftoken"
 
@@ -61,7 +62,7 @@ MIDDLEWARE = (
     "django.middleware.locale.LocaleMiddleware",
     "apps.core.middlewares.app_exception_middleware.AppExceptionMiddleware",
     "apps.core.middlewares.drf_middleware.DisableCSRFMiddleware",
-    # 'apps.core.middlewares.keycloak_auth_middleware.KeyCloakAuthMiddleware',
+    "apps.core.middlewares.keycloak_auth_middleware.KeyCloakAuthMiddleware",
 )
 
 ROOT_URLCONF = "urls"
