@@ -37,7 +37,7 @@ class HasRole(object):
             if not is_active:
                 return WebUtils.response_401(_("token validation failed"))
             if not self.roles:
-                return wrapper
+                return task_definition(*args, **kwargs)
             roles = user_info["realm_access"]["roles"]
             if user_info.get("locale"):
                 translation.activate(user_info["locale"])
