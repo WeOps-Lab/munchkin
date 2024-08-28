@@ -1,12 +1,9 @@
 import logging
 from functools import wraps
 
-from django.conf import settings
-from django.utils import translation
 from django.utils.translation import gettext as _
 from django.views.generic.base import View
 
-from apps.core.utils.keycloak_client import KeyCloakClient
 from apps.core.utils.web_utils import WebUtils
 
 logger = logging.getLogger("app")
@@ -32,19 +29,10 @@ class HasRole(object):
                 request = args[1]
             if getattr(request, "api_pass", False):
                 return task_definition(*args, **kwargs)
-            token = request.META.get(settings.AUTH_TOKEN_HEADER_NAME).split("Bearer ")[-1]
-
-            if token is None:
-                return WebUtils.response_401(_("please provide Token"))
-            client = KeyCloakClient()
-            is_active, user_info = client.token_is_valid(token)
-            if not is_active:
-                return WebUtils.response_401(_("token validation failed"))
+            user_info = request.userinfo
             if not self.roles:
-                return wrapper
-            roles = user_info["realm_access"]["roles"]
-            if user_info.get("locale"):
-                translation.activate(user_info["locale"])
+                return task_definition(*args, **kwargs)
+            roles = user_info["roles"]
             for i in roles:
                 if i in self.roles:
                     return task_definition(*args, **kwargs)
