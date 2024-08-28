@@ -26,6 +26,7 @@ class KeyCloakAuthMiddleware(MiddlewareMixin):
             "email": token_info.get("email", ""),
             "roles": roles,
             "groups": groups,
+            "is_superuser": "admin" in roles,
         }
 
     def process_request(self, request):
