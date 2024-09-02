@@ -30,6 +30,12 @@ msgstr "Token验证失败"
 msgid "insufficient permissions"
 msgstr "权限不足"
 
+
+msgid "{} is required"
+msgstr "{}是必填项"
+
+msgid "This knowledge base contains documents and cannot be deleted."
+msgstr "该知识库下存在文档，无法删除"
 #~ msgid "Request method is not supported"
 #~ msgstr "请求方法不支持"
 

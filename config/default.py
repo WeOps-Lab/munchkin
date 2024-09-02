@@ -1,5 +1,6 @@
 # settings.py
 import os
+from datetime import timedelta
 
 SECRET_KEY = os.getenv("SECRET_KEY", "munchkin")
 APP_CODE = os.getenv("APP_CODE", "munchkin")
@@ -46,7 +47,7 @@ INSTALLED_APPS = (
     "apps.base",
 )
 ASGI_APPLICATION = "asgi.application"
-
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CELERY_IMPORTS = ()
 
 MIDDLEWARE = (
@@ -231,6 +232,17 @@ LOGGING = {
         "celery": {"handlers": ["root"], "level": "INFO", "propagate": True},
     },
 }
+# MINIO 配置
+MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
+MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
+MINIO_EXTERNAL_ENDPOINT = os.getenv("MINIO_EXTERNAL_ENDPOINT")
+MINIO_EXTERNAL_ENDPOINT_USE_HTTPS = os.getenv("MINIO_EXTERNAL_ENDPOINT_USE_HTTPS", "0") == "1"
+MINIO_USE_HTTPS = os.getenv("MINIO_USE_HTTPS", "0") == "1"
+MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT")
+MINIO_URL_EXPIRY_HOURS = timedelta(days=1)
+MINIO_CONSISTENCY_CHECK_ON_START = True
+MINIO_BUCKET_CHECK_ON_SAVE = True
+
 # 本地设置
 try:
     from local_settings import *  # noqa
