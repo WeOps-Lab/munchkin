@@ -29,10 +29,10 @@ class HasRole(object):
                 request = args[1]
             if getattr(request, "api_pass", False):
                 return task_definition(*args, **kwargs)
-            user_info = request.user
+            user_info = request.userinfo
             if not self.roles:
                 return task_definition(*args, **kwargs)
-            roles = user_info.roles
+            roles = user_info["roles"]
             for i in roles:
                 if i in self.roles:
                     return task_definition(*args, **kwargs)

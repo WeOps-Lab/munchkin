@@ -22,7 +22,7 @@ class UserAPISecretViewSet(viewsets.ModelViewSet):
 
     @HasRole()
     def create(self, request, *args, **kwargs):
-        username = request.user.username
+        username = request.userinfo["username"]
         if UserAPISecret.objects.filter(username=username).exists():
             return JsonResponse({"result": False, "message": _("This user already has an API Secret")})
         kwargs = {"username": username, "api_secret": UserAPISecret.generate_api_secret()}

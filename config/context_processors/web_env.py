@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import os
-
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -13,6 +11,5 @@ def custom_settings(request):
     :return:
     """
     # TODO 前端需要的环境变量
-    context = {
-    }
+    context = {}
     return context

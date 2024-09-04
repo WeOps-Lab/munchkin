@@ -25,7 +25,7 @@ class KeyCloakAuthMiddleware(MiddlewareMixin):
             "name": token_info.get("name", ""),
             "email": token_info.get("email", ""),
             "roles": roles,
-            "groups": groups,
+            "group_list": groups,
             "is_superuser": "admin" in roles,
         }
 

@@ -2,7 +2,7 @@
 import os
 from datetime import timedelta
 
-SECRET_KEY = os.getenv("SECRET_KEY", "munchkin")
+SECRET_KEY = os.getenv("SECRET_KEY", "")
 APP_CODE = os.getenv("APP_CODE", "munchkin")
 # 使用时区
 USE_TZ = True
@@ -41,14 +41,22 @@ INSTALLED_APPS = (
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework.authtoken",
     # "version_log",
     "unfold",
     "guardian",
-    "apps.core",
-    "apps.knowledge_mgmt",
-    "apps.base",
-    "apps.model_provider_mgmt",
 )
+
+# 获取 apps 目录下的所有子目录名称
+APPS_DIR = os.path.join(BASE_DIR, "apps")
+if os.path.exists(APPS_DIR):
+    app_folders = [
+        name for name in os.listdir(APPS_DIR) if os.path.isdir(os.path.join(APPS_DIR, name)) and name != "__pycache__"
+    ]
+else:
+    app_folders = []
+INSTALLED_APPS += tuple(f"apps.{app}" for app in app_folders)
+
 ASGI_APPLICATION = "asgi.application"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CELERY_IMPORTS = ()
@@ -248,7 +256,6 @@ MINIO_BUCKET_CHECK_ON_SAVE = True
 
 MINIO_PRIVATE_BUCKETS = ["munchkin-private"]
 MINIO_PUBLIC_BUCKETS = ["munchkin-public"]
-
 
 # ES 配置
 ELASTICSEARCH_URL = os.getenv("ELASTICSEARCH_URL")

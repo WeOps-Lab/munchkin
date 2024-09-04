@@ -25,8 +25,6 @@ load_dotenv()
 
 @shared_task
 def general_embed_by_document_list(knowledge_base_id, knowledge_document_id_list, source_type):
-    from apps.model_provider_mgmt.models import EmbedProvider, OCRProvider
-
     remote_url_map = {
         "file": FILE_CHUNK_SERIVCE_URL,
         "manual": MANUAL_CHUNK_SERVICE_URL,
@@ -39,10 +37,7 @@ def general_embed_by_document_list(knowledge_base_id, knowledge_document_id_list
     remote_indexer = RemoteRunnable(REMOTE_INDEX_URL)
     knowledge_base = KnowledgeBase.objects.get(id=knowledge_base_id)
     document_list = KnowledgeDocument.objects.filter(id__in=knowledge_document_id_list)
-    embed_provider_map = dict(EmbedProvider.objects.filter(enabled=True).values_list("id", "embed_config"))
-    ocr_provider_map = dict(OCRProvider.objects.filter(enabled=True).values_list("id", "ocr_config"))
-
-    knowledge_docs = invoke_remote(source_remote, source_type, document_list, embed_provider_map, ocr_provider_map)
+    knowledge_docs = invoke_remote(source_remote, source_type, document_list)
     remote_indexer.invoke(
         {
             "elasticsearch_url": settings.ELASTICSEARCH_URL,
@@ -55,7 +50,7 @@ def general_embed_by_document_list(knowledge_base_id, knowledge_document_id_list
     )
 
 
-def invoke_remote(source_remote, source_type, document_list, embed_provider_map, ocr_provider_map):
+def invoke_remote(source_remote, source_type, document_list):
     knowledge_docs = []
     source_invoke_format_map = {
         "file": format_file_invoke_kwargs,
@@ -67,7 +62,7 @@ def invoke_remote(source_remote, source_type, document_list, embed_provider_map,
         document.train_progress = 0
         document.save()
         logger.debug(_("Start handle {} knowledge: {}").format(source_type, document.name))
-        kwargs = format_invoke_kwargs(document, embed_provider_map, ocr_provider_map)
+        kwargs = format_invoke_kwargs(document)
         kwargs.update(source_invoke_format_map[source_type](document))
         try:
             remote_docs = source_remote.invoke(kwargs)
@@ -104,19 +99,13 @@ def format_web_page_invoke_kwargs(document):
     }
 
 
-def format_invoke_kwargs(knowledge_document: KnowledgeDocument, embed_provider_map, ocr_provider_map):
-    semantic_embedding_address = []
-    for i in knowledge_document.semantic_chunk_parse_embedding_model:
-        if embed_provider_map.get(int(i)):
-            semantic_embedding_address.append(embed_provider_map[int(i)]["base_url"])
-    if not semantic_embedding_address:
-        semantic_embedding_address = ""
-    ocr_provider_address = []
-    for i in knowledge_document.ocr_model:
-        if ocr_provider_map.get(int(i)):
-            ocr_provider_address.append(ocr_provider_map[int(i)]["base_url"])
-    if not ocr_provider_address:
-        ocr_provider_address = ""
+def format_invoke_kwargs(knowledge_document: KnowledgeDocument):
+    semantic_embedding_address = ""
+    if not knowledge_document.semantic_chunk_parse_embedding_model:
+        semantic_embedding_address = knowledge_document.semantic_chunk_parse_embedding_model.embed_config["base_url"]
+    ocr_provider_address = ""
+    if not knowledge_document.ocr_model:
+        ocr_provider_address = knowledge_document.ocr_model.ocr_config["base_url"]
     return {
         "enable_recursive_chunk_parse": knowledge_document.enable_general_parse,
         "recursive_chunk_size": knowledge_document.general_parse_chunk_size,

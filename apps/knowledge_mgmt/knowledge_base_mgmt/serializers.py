@@ -21,7 +21,7 @@ class KnowledgeBaseSerializer(serializers.ModelSerializer):
             _, user_info = client.token_is_valid(token)
             groups = client.get_user_groups(user_info["sub"], "admin" in user_info["realm_access"]["roles"])
         else:
-            groups = request.user.group_list
+            groups = request.userinfo["group_list"]
         self.group_map = {i["id"]: i["name"] for i in groups}
 
     def get_team_name(self, instance: KnowledgeBase):

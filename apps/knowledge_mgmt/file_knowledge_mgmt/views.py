@@ -20,7 +20,7 @@ class FileKnowledgeViewSet(AuthViewSet):
     def create_file_knowledge(self, request):
         kwargs = request.data
         files = request.FILES.getlist("files")
-        result = self.import_file_knowledge(files, kwargs, request.user.username)
+        result = self.import_file_knowledge(files, kwargs, request.userinfo["username"])
         return JsonResponse(result)
 
     @staticmethod
