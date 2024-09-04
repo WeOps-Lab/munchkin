@@ -19,7 +19,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("i18n/", include("django.conf.urls.i18n")),
     path("core/", include("apps.core.urls")),
-    path("knowledge/", include("apps.knowledge_base.urls")),
+    path("knowledge/", include("apps.knowledge_mgmt.urls")),
     path("base/", include("apps.base.urls")),
 ]
 

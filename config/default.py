@@ -42,9 +42,12 @@ INSTALLED_APPS = (
     "django.contrib.staticfiles",
     "rest_framework",
     # "version_log",
+    "unfold",
+    "guardian",
     "apps.core",
-    "apps.knowledge_base",
+    "apps.knowledge_mgmt",
     "apps.base",
+    "apps.model_provider_mgmt",
 )
 ASGI_APPLICATION = "asgi.application"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -66,13 +69,15 @@ MIDDLEWARE = (
     "apps.core.middlewares.api_middleware.APISecretFMiddleware",
     "apps.core.middlewares.keycloak_auth_middleware.KeyCloakAuthMiddleware",
 )
-
-
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",  # this is default
+    "guardian.backends.ObjectPermissionBackend",
+)
 ROOT_URLCONF = "urls"
 
 DEBUG = os.getenv("DEBUG", "0") == "1"
 
-STATIC_URL = os.path.join(BASE_DIR, "static/")
+STATIC_URL = "static/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles/")
 
@@ -147,7 +152,9 @@ DATABASES = {
 # DRF 配置
 
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_PERMISSION_CLASSES": (
+        # "rest_framework.permissions.IsAuthenticated",
+    ),
     "DEFAULT_PAGINATION_CLASS": "config.drf.pagination.CustomPageNumberPagination",
     "PAGE_SIZE": 10,
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
@@ -162,7 +169,7 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.BasicAuthentication",
+        # "rest_framework.authentication.BasicAuthentication",
     ],
     "DEFAULT_PARSER_CLASSES": [
         "rest_framework.parsers.JSONParser",
@@ -239,10 +246,17 @@ MINIO_EXTERNAL_ENDPOINT = os.getenv("MINIO_EXTERNAL_ENDPOINT")
 MINIO_EXTERNAL_ENDPOINT_USE_HTTPS = os.getenv("MINIO_EXTERNAL_ENDPOINT_USE_HTTPS", "0") == "1"
 MINIO_USE_HTTPS = os.getenv("MINIO_USE_HTTPS", "0") == "1"
 MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT")
-MINIO_URL_EXPIRY_HOURS = timedelta(days=1)
+MINIO_URL_EXPIRY_HOURS = timedelta(days=7)
 MINIO_CONSISTENCY_CHECK_ON_START = True
 MINIO_BUCKET_CHECK_ON_SAVE = True
 
+MINIO_PRIVATE_BUCKETS = ["munchkin-private"]
+MINIO_PUBLIC_BUCKETS = ["munchkin-public"]
+
+
+# ES 配置
+ELASTICSEARCH_URL = os.getenv("ELASTICSEARCH_URL")
+ELASTICSEARCH_PASSWORD = os.getenv("ELASTICSEARCH_PASSWORD")
 # 本地设置
 try:
     from local_settings import *  # noqa

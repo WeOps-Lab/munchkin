@@ -1,6 +1,6 @@
 from rest_framework import routers
 
-from apps.base.views import UserAPISecretViewSet
+from apps.base.user_api_secret_mgmt.views import UserAPISecretViewSet
 
 router = routers.DefaultRouter()
 urlpatterns = []

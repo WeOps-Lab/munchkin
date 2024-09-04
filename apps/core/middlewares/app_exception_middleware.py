@@ -35,9 +35,7 @@ class AppExceptionMiddleware(MiddlewareMixin):
                 ),
             )
 
-            return WebUtils.response_error(
-                error_message=exception.message, status_code=exception.STATUS_CODE
-            )
+            return WebUtils.response_error(error_message=exception.message, status_code=exception.STATUS_CODE)
 
         # 用户未主动捕获的异常
         logger.error(
@@ -46,23 +44,17 @@ class AppExceptionMiddleware(MiddlewareMixin):
             % (
                 traceback.format_exc(),
                 request.path,
-                request.user,
+                request.user.username,
                 request.method,
                 json.dumps(getattr(request, request.method, None)),
             )
         )
 
-        return WebUtils.response_error(
-            error_message="系统异常,请联系管理员处理", status_code=exception.STATUS_CODE
-        )
+        return WebUtils.response_error(error_message="系统异常,请联系管理员处理", status_code=exception.STATUS_CODE)
 
     def get_check_functions(self):
         """获取需要判断的函数列表"""
-        return [
-            getattr(self, func)
-            for func in dir(self)
-            if func.startswith("check") and callable(getattr(self, func))
-        ]
+        return [getattr(self, func) for func in dir(self) if func.startswith("check") and callable(getattr(self, func))]
 
     def check_is_debug(self):
         """判断是否是开发模式"""

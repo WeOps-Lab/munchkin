@@ -8,7 +8,7 @@ class TimeInfo(models.Model):
     """
 
     class Meta:
-        verbose_name = _("时间相关字段")
+        verbose_name = _("Time Fields")
         abstract = True
 
     created_at = models.DateTimeField(_("创建时间"), auto_now_add=True, db_index=True)

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-20 15:12+0800\n"
+"POT-Creation-Date: 2024-09-02 16:57+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12,17 +12,72 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: .\apps\core\decorators\api_perminssion.py:37
-msgid "please provide Token"
-msgstr "please provide Token"
+#: .\apps\base\user_api_secret_mgmt\views.py:27
+msgid "This user already has an API Secret"
+msgstr "This user already has an API Secret"
 
-#: .\apps\core\decorators\api_perminssion.py:44
+#: .\apps\core\decorators\api_perminssion.py:39
+#: .\apps\knowledge_base\knowledge_document_mgmt\views.py:52
+msgid "insufficient permissions"
+msgstr "insufficient permissions"
+
+#: .\apps\core\middlewares\api_middleware.py:22
+#: .\apps\core\middlewares\keycloak_auth_middleware.py:54
+#: .\apps\core\views\index_view.py:28
 msgid "token validation failed"
 msgstr "token validation failed"
 
-#: .\apps\core\decorators\api_perminssion.py:56
-msgid "insufficient permissions"
-msgstr "insufficient permissions"
+#: .\apps\core\middlewares\keycloak_auth_middleware.py:44
+#: .\apps\core\views\index_view.py:21
+msgid "please provide Token"
+msgstr "please provide Token"
+
+#: .\apps\core\models\time_info.py:11
+msgid "时间相关字段"
+msgstr ""
+
+#: .\apps\core\models\time_info.py:14
+msgid "创建时间"
+msgstr ""
+
+#: .\apps\core\models\time_info.py:15
+msgid "修改时间"
+msgstr ""
+
+#: .\apps\knowledge_base\enums.py:10
+msgid "Training"
+msgstr ""
+
+#: .\apps\knowledge_base\enums.py:11
+msgid "Ready"
+msgstr ""
+
+#: .\apps\knowledge_base\enums.py:12
+msgid "Error"
+msgstr ""
+
+#: .\apps\knowledge_base\enums.py:22
+msgid "Local File"
+msgstr ""
+
+#: .\apps\knowledge_base\enums.py:23
+msgid "Web Link"
+msgstr ""
+
+#: .\apps\knowledge_base\enums.py:24
+msgid "Custom Text"
+msgstr ""
+
+#: .\apps\knowledge_base\knowledge_base_mgmt\views.py:39
+msgid "This knowledge base contains documents and cannot be deleted."
+msgstr ""
+
+#: .\apps\knowledge_base\knowledge_document_mgmt\views.py:22
+#: .\apps\knowledge_base\knowledge_document_mgmt\views.py:42
+#: .\apps\knowledge_base\knowledge_document_mgmt\views.py:47
+#: .\apps\knowledge_base\knowledge_document_mgmt\views.py:59
+msgid "{} is required"
+msgstr ""
 
 #~ msgid "Request method is not supported"
 #~ msgstr "Request method is not supported"
