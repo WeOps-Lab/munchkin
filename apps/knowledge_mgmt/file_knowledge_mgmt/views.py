@@ -33,6 +33,7 @@ class FileKnowledgeViewSet(AuthViewSet):
                     logger.warning(f"File with empty title found: {title}")
                     continue
                 kwargs["name"] = title
+                kwargs["knowledge_source_type"] = "file"
                 new_doc = KnowledgeDocumentUtils.get_new_document(kwargs, username)
                 content_file = ContentFile(file_obj, name=title)
                 file_knowledge_list.append(FileKnowledge(file=content_file, knowledge_document_id=new_doc.id))

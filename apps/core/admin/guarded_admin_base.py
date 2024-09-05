@@ -33,27 +33,6 @@ class GuardedAdminBase(ModelAdmin, GuardedModelAdmin):
             any_perm=True,
         )
 
-    # 在显示数据列表的时候，哪些数据显示，哪些不显示，由该函数控制
-    def get_queryset(self, request):
-        if request.user.is_superuser and request.user.is_active:
-            return super().get_queryset(request)
-        data = self.get_model_objs(request)
-
-        # 用户只允许看到自己的数据
-        if request.user.is_authenticated:
-            data = data.filter(owner=request.user)
-        return data
-
-    def save_related(self, request, form, formsets, change):
-        super().save_related(request, form, formsets, change)
-        if not change:
-            for related_object in form.instance._meta.related_objects:
-                related_set = getattr(form.instance, related_object.get_accessor_name())
-                for obj in related_set.all():
-                    if not obj.owner_id:
-                        obj.owner_id = request.user.id
-                        obj.save()
-
     # 用来判断某个用户是否有某个数据行的权限
     def has_perm(self, request, obj, action):
         if request.user.is_superuser:
@@ -79,18 +58,14 @@ class GuardedAdminBase(ModelAdmin, GuardedModelAdmin):
 
     # 用户应该拥有他新增的数据行的所有权限
     def save_model(self, request, obj, form, change):
-        if not getattr(obj, "owner", None):
-            obj.owner = request.user
+        if not getattr(obj, "created_by", None):
+            obj.created_by = request.user.username
         result = super().save_model(request, obj, form, change)
         if not request.user.is_superuser and not change:
             opts = self.opts
             actions = ["view", "add", "change", "delete"]
-            [assign_perm(f"{opts.app_label}.{action}_{opts.model_name}", request.user, obj) for action in actions]
+            [
+                assign_perm(f"{opts.app_label}.{action}_{opts.model_name}", request.user.username, obj)
+                for action in actions
+            ]
         return result
-
-    def owner_name(self, obj):
-        if obj.owner:
-            return obj.owner.username
-        return "-"
-
-    owner_name.short_description = "所属用户"

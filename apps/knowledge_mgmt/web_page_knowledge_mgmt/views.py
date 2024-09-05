@@ -19,6 +19,7 @@ class WebPageKnowledgeViewSet(AuthViewSet):
         kwargs = request.data
         if not kwargs.get("url"):
             return JsonResponse({"result": False, "data": _("url is required")})
+        kwargs["knowledge_source_type"] = "web_page"
         new_doc = KnowledgeDocumentUtils.get_new_document(kwargs, request.user.username)
         knowledge_obj = WebPageKnowledge.objects.create(
             knowledge_document_id=new_doc.id,

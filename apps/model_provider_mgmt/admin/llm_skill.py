@@ -3,14 +3,14 @@ from django.db.models import JSONField
 from django.urls import reverse
 from django.utils.html import format_html
 from django_ace import AceWidget
+from unfold.admin import ModelAdmin
 
-from apps.core.admin.guarded_admin_base import GuardedAdminBase
 from apps.knowledge_mgmt.models import KnowledgeBase
 from apps.model_provider_mgmt.models import LLMSkill
 
 
 @admin.register(LLMSkill)
-class LLMSkillAdmin(GuardedAdminBase):
+class LLMSkillAdmin(ModelAdmin):
     search_fields = ["name"]
     list_filter = ["llm_model", "enable_conversation_history", "enable_rag"]
     list_display_links = ["name"]

@@ -1,5 +1,5 @@
 from django.core.exceptions import PermissionDenied
-from guardian.shortcuts import assign_perm, get_objects_for_user
+from guardian.shortcuts import assign_perm
 from rest_framework import viewsets
 
 
@@ -22,28 +22,10 @@ class GuardianModelViewSet(viewsets.ModelViewSet):
 
         if is_auth_and_superuser:
             return True
-        elif hasattr(obj, "owner") and obj.owner == user:
+        elif hasattr(obj, "created_by") and obj.created_by == user:
             return True
         else:
             return user.has_perm(permission, obj)
-
-    def get_queryset(self):
-        """
-        Override get_queryset to only include objects that the current user has
-        view permission for or the current user is the owner of the object.
-        """
-        queryset = super().get_queryset()
-        is_auth_and_superuser = self.request.user.is_authenticated and self.request.user.is_superuser
-        if self.superuser_only and not is_auth_and_superuser:
-            raise PermissionDenied()
-
-        if is_auth_and_superuser:
-            return queryset
-        elif hasattr(queryset.model, "owner"):
-            queryset = queryset.filter(owner=self.request.user)
-        else:
-            queryset = get_objects_for_user(self.request.user, "view", queryset)
-        return queryset
 
     def perform_create(self, serializer):
         """

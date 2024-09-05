@@ -1,4 +1,4 @@
-from .file_knowledge import FileKnowledge  # noqa
+from .file_knowledge import FileKnowledge  # noqaffrom .knowledge_base import KnowledgeBase  # noqa
 from .knowledge_base import KnowledgeBase  # noqa
 from .knowledge_document import KnowledgeDocument  # noqa
 from .manual_knowledge import ManualKnowledge  # noqa

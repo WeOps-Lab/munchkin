@@ -22,37 +22,48 @@ class DocumentStatus(object):
 
 class KnowledgeDocument(MaintainerInfo, TimeInfo):
     knowledge_base = models.ForeignKey("KnowledgeBase", on_delete=models.CASCADE)
-    name = models.CharField(max_length=255, unique=True, verbose_name="名称")
-    chunk_size = models.IntegerField(default=0, verbose_name=_("分片数"))
-    train_status = models.IntegerField(default=0, choices=DocumentStatus.CHOICE, verbose_name="状态")
-    train_progress = models.FloatField(default=0, verbose_name="训练进度")
-    enable_general_parse = models.BooleanField(default=True, verbose_name="分块解析")
-    general_parse_chunk_size = models.IntegerField(default=256, verbose_name="分块大小")
-    general_parse_chunk_overlap = models.IntegerField(default=32, verbose_name="分块重叠")
-    enable_semantic_chunk_parse = models.BooleanField(default=False, verbose_name="语义分块解析")
+    name = models.CharField(max_length=255, unique=True, verbose_name=_("name"))
+    chunk_size = models.IntegerField(default=0, verbose_name=_("chunk size"))
+    train_status = models.IntegerField(default=0, choices=DocumentStatus.CHOICE, verbose_name=_("train status"))
+    train_progress = models.FloatField(default=0, verbose_name=_("train progress"))
+    enable_general_parse = models.BooleanField(default=True, verbose_name=_("enable general parse"))
+    general_parse_chunk_size = models.IntegerField(default=256, verbose_name=_("general parse chunk size"))
+    general_parse_chunk_overlap = models.IntegerField(default=32, verbose_name=_("general parse chunk overlap"))
+    enable_semantic_chunk_parse = models.BooleanField(default=False, verbose_name=_("enable semantic chunk parse"))
     semantic_chunk_parse_embedding_model = models.ForeignKey(
-        "model_provider_mgmt.EmbedProvider", blank=True, null=True, on_delete=models.CASCADE, verbose_name="嵌入模型"
+        "model_provider_mgmt.EmbedProvider",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+        verbose_name=_("embedding model"),
     )
-    enable_ocr_parse = models.BooleanField(default=False, verbose_name="启用OCR解析")
+    enable_ocr_parse = models.BooleanField(default=False, verbose_name=_("enable OCR parse"))
     ocr_model = models.ForeignKey(
-        "model_provider_mgmt.OCRProvider", blank=True, null=True, on_delete=models.CASCADE, verbose_name="OCR模型"
+        "model_provider_mgmt.OCRProvider", blank=True, null=True, on_delete=models.CASCADE, verbose_name=_("OCR model")
     )
-    enable_excel_parse = models.BooleanField(default=True, verbose_name="启用Excel解析")
-    excel_header_row_parse = models.BooleanField(default=False, verbose_name="Excel表头+行组合解析")
-    excel_full_content_parse = models.BooleanField(default=True, verbose_name="Excel全内容解析")
+    enable_excel_parse = models.BooleanField(default=True, verbose_name=_("enable Excel parse"))
+    excel_header_row_parse = models.BooleanField(default=False, verbose_name=_("Excel header row parse"))
+    excel_full_content_parse = models.BooleanField(default=True, verbose_name=_("Excel full content parse"))
+    knowledge_source_type = models.CharField(max_length=20, verbose_name=_("source type"), default="file")
 
     def __str__(self):
         return self.name
 
-    def delete(self, *args, **kwargs):
-        index_name = self.knowledge_base.knowledge_index_name()
-        es_client = get_es_client()
+    def knowledge_index_name(self):
+        return f"knowledge_document_{self.id}"
+
+    def delete_es_content(self, es_client):
+        index_name = self.knowledge_index_name()
         try:
             es_client.indices.delete(index=index_name)
-            logger.info(f"Index {index_name} successfully deleted.")
+            logger.info(_("Index {} successfully deleted.").format(index_name))
         except NotFoundError:
-            logger.info(f"Index {index_name} not found, skipping deletion.")
+            logger.info(_("Index {} not found, skipping deletion.").format(index_name))
 
+    def delete(self, *args, **kwargs):
+        es_client = get_es_client()
+        self.delete_es_content(es_client)
+        es_client.transport.close()
         return super().delete(*args, **kwargs)  # 调用父类的delete方法来执行实际的删除操作
 
     class Meta:

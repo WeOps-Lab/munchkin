@@ -1,7 +1,6 @@
 from typing import List
 
 from django.conf import settings
-from langchain_core.documents import Document
 from langserve import RemoteRunnable
 
 from apps.knowledge_mgmt.remote_service import RAG_SERVER_URL
@@ -9,7 +8,7 @@ from apps.knowledge_mgmt.remote_service import RAG_SERVER_URL
 
 class KnowledgeSearchService:
     @staticmethod
-    def search(knowledge_base_folders, query, metadata={}, score_threshold=0) -> List[Document]:
+    def search(knowledge_base_folders, query, metadata={}, score_threshold=0) -> List[dict]:
         docs = []
         remote_indexer = RemoteRunnable(RAG_SERVER_URL)
 
@@ -47,6 +46,7 @@ class KnowledgeSearchService:
                         "knowledge_title": doc.metadata["_source"]["metadata"]["knowledge_title"],
                         "knowledge_id": doc.metadata["_source"]["metadata"]["knowledge_id"],
                         "knowledge_folder_id": doc.metadata["_source"]["metadata"]["knowledge_folder_id"],
+                        "knowledge_source_type": doc.metadata["_source"]["metadata"]["knowledge_source_type"],
                     }
                     if knowledge_base_folder.enable_rerank:
                         doc_info["rerank_score"] = doc.metadata["relevance_score"]

@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class WebPageKnowledge(models.Model):
-    url = models.URLField(verbose_name="URL")
+    url = models.URLField(verbose_name=_("URL"))
     knowledge_document = models.ForeignKey(
         "KnowledgeDocument",
         verbose_name=_("Knowledge Document"),
@@ -11,7 +11,7 @@ class WebPageKnowledge(models.Model):
         null=True,
         on_delete=models.CASCADE,
     )
-    max_depth = models.IntegerField(verbose_name="最大深度", default=1)
+    max_depth = models.IntegerField(verbose_name=_("max depth"), default=1)
 
     class Meta:
         verbose_name = _("Web Page Knowledge")

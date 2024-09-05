@@ -7,3 +7,6 @@ class KnowledgeDocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = KnowledgeDocument
         fields = "__all__"
+
+    def __init__(self, instance, **kwargs):
+        super(KnowledgeDocumentSerializer, self).__init__(instance, **kwargs)

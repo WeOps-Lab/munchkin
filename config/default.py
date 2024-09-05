@@ -1,6 +1,7 @@
 # settings.py
 import os
 from datetime import timedelta
+from typing import List, Tuple
 
 SECRET_KEY = os.getenv("SECRET_KEY", "")
 APP_CODE = os.getenv("APP_CODE", "munchkin")
@@ -168,7 +169,8 @@ REST_FRAMEWORK = {
         "rest_framework.filters.SearchFilter",
         "rest_framework.filters.OrderingFilter",
     ),
-    "DATETIME_FORMAT": "%Y-%m-%d %H:%M:%S",
+    # "DATETIME_FORMAT": "%Y-%m-%d %H:%M:%S",
+    "DATETIME_FORMAT": "%Y-%m-%dT%H:%M:%S%z",
     "NON_FIELD_ERRORS_KEY": "params_error",
     "DEFAULT_RENDERER_CLASSES": ("config.drf.renderers.CustomRenderer",),
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
@@ -245,18 +247,19 @@ LOGGING = {
     },
 }
 # MINIO 配置
+# MINIO_EXTERNAL_ENDPOINT = os.getenv("MINIO_EXTERNAL_ENDPOINT")
+# MINIO_EXTERNAL_ENDPOINT_USE_HTTPS = os.getenv("MINIO_EXTERNAL_ENDPOINT_USE_HTTPS", "0") == "1"
+MINIO_BUCKET_CHECK_ON_SAVE = True
+MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT")
+MINIO_USE_HTTPS = os.getenv("MINIO_USE_HTTPS", "0") == "1"
 MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
 MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
-MINIO_EXTERNAL_ENDPOINT = os.getenv("MINIO_EXTERNAL_ENDPOINT")
-MINIO_EXTERNAL_ENDPOINT_USE_HTTPS = os.getenv("MINIO_EXTERNAL_ENDPOINT_USE_HTTPS", "0") == "1"
-MINIO_USE_HTTPS = os.getenv("MINIO_USE_HTTPS", "0") == "1"
-MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT")
 MINIO_URL_EXPIRY_HOURS = timedelta(days=7)
 MINIO_CONSISTENCY_CHECK_ON_START = True
-MINIO_BUCKET_CHECK_ON_SAVE = True
 
 MINIO_PRIVATE_BUCKETS = ["munchkin-private"]
 MINIO_PUBLIC_BUCKETS = ["munchkin-public"]
+MINIO_POLICY_HOOKS: List[Tuple[str, dict]] = []
 
 # ES 配置
 ELASTICSEARCH_URL = os.getenv("ELASTICSEARCH_URL")

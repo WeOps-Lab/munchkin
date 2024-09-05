@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class ManualKnowledge(models.Model):
-    content = models.TextField(verbose_name="内容")
+    content = models.TextField(verbose_name=_("content"))
     knowledge_document = models.ForeignKey(
         "KnowledgeDocument",
         verbose_name=_("Knowledge Document"),

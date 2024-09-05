@@ -15,15 +15,17 @@ class UserAPISecretViewSet(viewsets.ModelViewSet):
     ordering = ("-id",)
 
     def list(self, request, *args, **kwargs):
-        return_data = list(UserAPISecret.objects.filter(username=request.user.username).values())
-        return JsonResponse({"result": True, "data": return_data})
+        query = self.get_queryset().filter(username=request.user.username)
+        queryset = self.filter_queryset(query)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     @action(detail=False, methods=["POST"])
     def generate_api_secret(self, request):
         api_secret = UserAPISecret.generate_api_secret()
         return JsonResponse({"result": True, "data": {"api_secret": api_secret}})
 
-    @HasRole()
+    @HasRole(["admin"])
     def create(self, request, *args, **kwargs):
         username = request.user.username
         if UserAPISecret.objects.filter(username=username).exists():

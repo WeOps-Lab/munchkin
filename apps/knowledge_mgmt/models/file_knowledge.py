@@ -10,7 +10,7 @@ KNOWLEDGE_TYPES = ["md", "docx", "xlsx", "csv", "pptx", "pdf", "txt", "png", "jp
 
 class FileKnowledge(models.Model):
     file = models.FileField(
-        verbose_name="文件",
+        verbose_name=_("File"),
         storage=MinioBackend(bucket_name="munchkin-private"),
         upload_to=iso_date_prefix,
         validators=[FileExtensionValidator(allowed_extensions=KNOWLEDGE_TYPES)],
