@@ -14,7 +14,6 @@ class EmbedProviderViewSet(GuardianModelViewSet):
     serializer_class = EmbedProviderSerializer
     queryset = EmbedProvider.objects.all()
     search_fields = ["name", "embed_model"]
-    superuser_only = True
 
 
 class EmbedViewSet(viewsets.ViewSet):

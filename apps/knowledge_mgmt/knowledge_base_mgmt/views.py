@@ -20,8 +20,8 @@ class KnowledgeBaseViewSet(AuthViewSet):
     def list(self, request, *args, **kwargs):
         name = request.query_params.get("name", "")
         queryset = KnowledgeBase.objects.filter(name__icontains=name)
-        if not request.userinfo["is_superuser"]:
-            teams = [i["id"] for i in request.userinfo["group_list"]]
+        if not request.user.is_superuser:
+            teams = [i["id"] for i in request.user.group_list]
             queryset = queryset.filter(team__in=teams)
         return self._list(queryset)
 
@@ -33,10 +33,7 @@ class KnowledgeBaseViewSet(AuthViewSet):
         if KnowledgeBase.objects.filter(name=params["name"]).exists():
             return JsonResponse({"result": False, "message": _("The knowledge base name already exists.")})
         KnowledgeBase.objects.create(
-            **params,
-            rerank_model_id=rerank_model.id,
-            embed_model_id=embed_model.id,
-            created_by=request.userinfo["username"]
+            **params, rerank_model_id=rerank_model.id, embed_model_id=embed_model.id, created_by=request.user.username
         )
         return JsonResponse({"result": True})
 
@@ -77,5 +74,5 @@ class KnowledgeBaseViewSet(AuthViewSet):
             _, user_info = client.token_is_valid(token)
             groups = client.get_user_groups(user_info["sub"], "admin" in user_info["realm_access"]["roles"])
         else:
-            groups = request.userinfo["group_list"]
+            groups = request.user.group_list
         return JsonResponse({"result": True, "data": groups})

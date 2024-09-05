@@ -37,6 +37,7 @@ class KnowledgeDocument(MaintainerInfo, TimeInfo):
     ocr_model = models.ForeignKey(
         "model_provider_mgmt.OCRProvider", blank=True, null=True, on_delete=models.CASCADE, verbose_name="OCR模型"
     )
+    enable_excel_parse = models.BooleanField(default=True, verbose_name="启用Excel解析")
     excel_header_row_parse = models.BooleanField(default=False, verbose_name="Excel表头+行组合解析")
     excel_full_content_parse = models.BooleanField(default=True, verbose_name="Excel全内容解析")
 

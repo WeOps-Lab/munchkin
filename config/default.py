@@ -7,7 +7,8 @@ APP_CODE = os.getenv("APP_CODE", "munchkin")
 # 使用时区
 USE_TZ = True
 # 时区设置
-TIME_ZONE = "Asia/Shanghai"
+# TIME_ZONE = "Asia/Shanghai"
+TIME_ZONE = "UTC"
 # 语言设置
 LANGUAGE_CODE = "zh-Hans"
 # 国际化设置
@@ -78,7 +79,7 @@ MIDDLEWARE = (
     "apps.core.middlewares.keycloak_auth_middleware.KeyCloakAuthMiddleware",
 )
 AUTHENTICATION_BACKENDS = (
-    "django.contrib.auth.backends.ModelBackend",  # this is default
+    "apps.core.backends.KeycloakAuthBackend",  # this is default
     "guardian.backends.ObjectPermissionBackend",
 )
 ROOT_URLCONF = "urls"

@@ -90,6 +90,7 @@ class Migration(migrations.Migration):
                 ("general_parse_chunk_overlap", models.IntegerField(default=32, verbose_name="分块重叠")),
                 ("enable_semantic_chunk_parse", models.BooleanField(default=False, verbose_name="语义分块解析")),
                 ("enable_ocr_parse", models.BooleanField(default=False, verbose_name="启用OCR解析")),
+                ("enable_excel_parse", models.BooleanField(default=True, verbose_name="启用Excel解析")),
                 ("excel_header_row_parse", models.BooleanField(default=False, verbose_name="Excel表头+行组合解析")),
                 ("excel_full_content_parse", models.BooleanField(default=True, verbose_name="Excel全内容解析")),
                 (

@@ -13,7 +13,10 @@ class UserAPISecretViewSet(viewsets.ModelViewSet):
     queryset = UserAPISecret.objects.all()
     serializer_class = UserAPISecretSerializer
     ordering = ("-id",)
-    search_fields = ("username",)
+
+    def list(self, request, *args, **kwargs):
+        return_data = list(UserAPISecret.objects.filter(username=request.user.username).values())
+        return JsonResponse({"result": True, "data": return_data})
 
     @action(detail=False, methods=["POST"])
     def generate_api_secret(self, request):
@@ -22,7 +25,7 @@ class UserAPISecretViewSet(viewsets.ModelViewSet):
 
     @HasRole()
     def create(self, request, *args, **kwargs):
-        username = request.userinfo["username"]
+        username = request.user.username
         if UserAPISecret.objects.filter(username=username).exists():
             return JsonResponse({"result": False, "message": _("This user already has an API Secret")})
         kwargs = {"username": username, "api_secret": UserAPISecret.generate_api_secret()}

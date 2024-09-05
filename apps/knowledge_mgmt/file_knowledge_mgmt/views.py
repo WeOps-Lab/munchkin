@@ -20,7 +20,7 @@ class FileKnowledgeViewSet(AuthViewSet):
     def create_file_knowledge(self, request):
         kwargs = request.data
         files = request.FILES.getlist("files")
-        result = self.import_file_knowledge(files, kwargs, request.userinfo["username"])
+        result = self.import_file_knowledge(files, kwargs, request.user.username)
         return JsonResponse(result)
 
     @staticmethod
@@ -36,8 +36,8 @@ class FileKnowledgeViewSet(AuthViewSet):
                 new_doc = KnowledgeDocumentUtils.get_new_document(kwargs, username)
                 content_file = ContentFile(file_obj, name=title)
                 file_knowledge_list.append(FileKnowledge(file=content_file, knowledge_document_id=new_doc.id))
-            FileKnowledge.objects.bulk_create(file_knowledge_list, batch_size=10)
-            return {"result": True}
+            objs = FileKnowledge.objects.bulk_create(file_knowledge_list, batch_size=10)
+            return {"result": True, "data": [i.id for i in objs]}
         except Exception as e:
             logger.error(f"Failed to import file: {e}")
             return {"result": False, "message": _("Failed to import file.")}

@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 
 from apps.knowledge_mgmt.knowledge_document_mgmt.serializers import KnowledgeDocumentSerializer
 from apps.knowledge_mgmt.models import KnowledgeDocument
+from apps.knowledge_mgmt.tasks import general_embed_by_document_list
 from apps.knowledge_mgmt.viewset_utils import AuthViewSet
 
 
@@ -18,7 +19,10 @@ class KnowledgeDocumentViewSet(AuthViewSet):
         knowledge_document_ids = kwargs.pop("knowledge_document_ids", [])
         if type(knowledge_document_ids) is not list:
             knowledge_document_ids = [knowledge_document_ids]
+        knowledge_base_id = kwargs.pop("knowledge_base_id")
+        source_type = kwargs.pop("source_type")
         KnowledgeDocument.objects.filter(id__in=knowledge_document_ids).update(**kwargs)
+        general_embed_by_document_list.delay(knowledge_document_ids, knowledge_base_id, source_type)
         return JsonResponse({"result": True})
 
     @action(methods=["POST"], detail=False)
