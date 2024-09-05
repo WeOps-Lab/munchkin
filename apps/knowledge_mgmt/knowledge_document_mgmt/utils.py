@@ -24,7 +24,7 @@ class KnowledgeDocumentUtils(object):
         )
 
     @classmethod
-    def general_embed_by_document_list(cls, knowledge_base_id, knowledge_document_id_list, source_type):
+    def general_embed_by_document_list(cls, knowledge_document_id_list, source_type):
         remote_url_map = {
             "file": FILE_CHUNK_SERIVCE_URL,
             "manual": MANUAL_CHUNK_SERVICE_URL,
@@ -51,17 +51,15 @@ class KnowledgeDocumentUtils(object):
         es_client = get_es_client()
         for document in document_list:
             document.delete_es_content(es_client)
-            document.train_progress = 0
-            document.save()
             logger.debug(_("Start handle {} knowledge: {}").format(source_type, document.name))
             kwargs = cls.format_invoke_kwargs(document, source_type)
             kwargs.update(source_invoke_format_map[source_type](document))
             try:
                 remote_docs = source_remote.invoke(kwargs)
                 if not docs:
-                    docs = remote_docs
+                    docs = [i.page_content for i in remote_docs]
                 elif len(docs) > len(remote_docs):
-                    docs = remote_docs
+                    docs = [i.page_content for i in remote_docs]
                 document.chunk_size = len(remote_docs)
                 knowledge_docs.extend(remote_docs)
                 document.train_status = 1
@@ -76,7 +74,7 @@ class KnowledgeDocumentUtils(object):
                     "elasticsearch_password": settings.ELASTICSEARCH_PASSWORD,
                     "embed_model_address": document.knowledge_base.embed_model.embed_config["base_url"],
                     "index_name": document.knowledge_index_name(),
-                    "index_mode": "overwrite",
+                    "index_mode": "",
                     "docs": knowledge_docs,
                 }
             )
@@ -127,10 +125,9 @@ class KnowledgeDocumentUtils(object):
             "excel_full_content_parse": knowledge_document.excel_full_content_parse,
             "ocr_provider_address": ocr_provider_address,
             "custom_metadata": {
-                "knowledge_type": "file",
+                "knowledge_type": knowledge_source_type,
                 "knowledge_id": knowledge_document.id,
                 "knowledge_title": knowledge_document.name,
                 "knowledge_base_id": knowledge_document.knowledge_base.id,
-                "knowledge_source_type": knowledge_source_type,
             },
         }

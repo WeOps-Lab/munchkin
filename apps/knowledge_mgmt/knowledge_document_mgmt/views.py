@@ -21,12 +21,9 @@ class KnowledgeDocumentViewSet(AuthViewSet):
         knowledge_document_ids = kwargs.pop("knowledge_document_ids", [])
         if type(knowledge_document_ids) is not list:
             knowledge_document_ids = [knowledge_document_ids]
-        knowledge_base_id = kwargs.pop("knowledge_base_id")
         source_type = kwargs.pop("knowledge_source_type")
         KnowledgeDocument.objects.filter(id__in=knowledge_document_ids).update(**kwargs)
-        doc_list = KnowledgeDocumentUtils.general_embed_by_document_list(
-            knowledge_document_ids, knowledge_base_id, source_type
-        )
+        doc_list = KnowledgeDocumentUtils.general_embed_by_document_list(knowledge_document_ids, source_type)
         return JsonResponse({"result": True, "data": doc_list})
 
     @action(methods=["post"], detail=False)

@@ -46,7 +46,7 @@ class KnowledgeSearchService:
                         "knowledge_title": doc.metadata["_source"]["metadata"]["knowledge_title"],
                         "knowledge_id": doc.metadata["_source"]["metadata"]["knowledge_id"],
                         "knowledge_folder_id": doc.metadata["_source"]["metadata"]["knowledge_folder_id"],
-                        "knowledge_source_type": doc.metadata["_source"]["metadata"]["knowledge_source_type"],
+                        "knowledge_source_type": doc.metadata["_source"]["metadata"]["knowledge_type"],
                     }
                     if knowledge_base_folder.enable_rerank:
                         doc_info["rerank_score"] = doc.metadata["relevance_score"]
