@@ -16,17 +16,6 @@ class KeyCloakAuthMiddleware(MiddlewareMixin):
         super().__init__(get_response)
         self.logger = logging.getLogger(__name__)
 
-    @staticmethod
-    def set_userinfo(request, user):
-        """设置用户信息"""
-        request.userinfo = {
-            "username": user.username,
-            "email": user.email,
-            "roles": user.roles,
-            "group_list": user.group_list,
-            "is_superuser": user.is_superuser,
-        }
-
     def process_view(self, request, view, args, kwargs):
         token = request.META.get(settings.AUTH_TOKEN_HEADER_NAME)
         if token is None:
@@ -45,7 +34,6 @@ class KeyCloakAuthMiddleware(MiddlewareMixin):
                 request.session.cycle_key()
             session_key = request.session.session_key
             cache.set(session_key, token, settings.LOGIN_CACHE_EXPIRED)
-            self.set_userinfo(request, user)
             # 登录成功，重新调用自身函数，即可退出
             return self.process_view(request, view, args, kwargs)
         return WebUtils.response_401(_("please provide Token"))
