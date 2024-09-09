@@ -11,22 +11,22 @@ an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express o
 specific language governing permissions and limitations under the License.
 """
 
-import sys
+from __future__ import absolute_import, unicode_literals
 
-if not hasattr(sys, "argv"):
-    sys.argv = [""]
+import os
 
-DJANGO_CONF_MODULE = "config.default"
+from celery import Celery
+from django.conf import settings
 
-try:
-    _module = __import__(DJANGO_CONF_MODULE, globals(), locals(), ["*"])
-except ImportError as e:
-    raise ImportError("Could not import config '{}' (Is it on sys.path?): {}".format(DJANGO_CONF_MODULE, e))
+# http://docs.celeryproject.org/en/latest/userguide/daemonizing.html#running-the-worker-with-superuser-privileges-root
+# set the default Django settings module for the 'celery' program.
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
-for _setting in dir(_module):
-    if _setting == _setting.upper():
-        locals()[_setting] = getattr(_module, _setting)
+app = Celery("munchkin")
+app.config_from_object("django.conf:settings", namespace="CELERY")
+app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
-INSTALLED_APPS = locals()["INSTALLED_APPS"]
-CELERY_IMPORTS = locals()["CELERY_IMPORTS"]
-MIDDLEWARE = locals()["MIDDLEWARE"]
+
+@app.task(bind=True)
+def debug_task(self):
+    print("Request: {!r}".format(self.request))

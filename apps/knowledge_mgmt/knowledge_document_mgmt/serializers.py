@@ -4,9 +4,12 @@ from apps.knowledge_mgmt.models import KnowledgeDocument
 
 
 class KnowledgeDocumentSerializer(serializers.ModelSerializer):
+    train_status_display = serializers.SerializerMethodField()
+
     class Meta:
         model = KnowledgeDocument
         fields = "__all__"
 
-    def __init__(self, instance, **kwargs):
-        super(KnowledgeDocumentSerializer, self).__init__(instance, **kwargs)
+    @staticmethod
+    def get_train_status_display(obj):
+        return obj.get_train_status_display()

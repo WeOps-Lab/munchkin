@@ -4,52 +4,48 @@ from django.conf import settings
 from langserve import RemoteRunnable
 
 from apps.knowledge_mgmt.remote_service import RAG_SERVER_URL
+from apps.model_provider_mgmt.models import EmbedProvider, RerankProvider
 
 
 class KnowledgeSearchService:
     @staticmethod
-    def search(knowledge_base_folders, query, metadata={}, score_threshold=0) -> List[dict]:
+    def search(knowledge_base_folder, query, kwargs) -> List[dict]:
         docs = []
         remote_indexer = RemoteRunnable(RAG_SERVER_URL)
 
-        for knowledge_base_folder in knowledge_base_folders:
-            embed_model_address = ""
-            if knowledge_base_folder.embed_model:
-                embed_model_address = knowledge_base_folder.embed_model.embed_config["base_url"]
-            rerank_model_address = ""
+        embed_model_address = EmbedProvider.objects.get(id=kwargs["embed_model"]).embed_config["base_url"]
+        rerank_model_address = ""
 
-            if knowledge_base_folder.rerank_model:
-                rerank_model_address = knowledge_base_folder.rerank_model.rerank_config["base_url"]
-            result = remote_indexer.invoke(
-                {
-                    "elasticsearch_url": settings.ELASTICSEARCH_URL,
-                    "elasticsearch_password": settings.ELASTICSEARCH_PASSWORD,
-                    "embed_model_address": embed_model_address,
-                    "index_name": knowledge_base_folder.knowledge_index_name(),
-                    "search_query": query,
-                    "metadata_filter": metadata,
-                    "text_search_weight": knowledge_base_folder.text_search_weight,
-                    "rag_k": knowledge_base_folder.rag_k,
-                    "rag_num_candidates": knowledge_base_folder.rag_num_candidates,
-                    "vector_search_weight": knowledge_base_folder.vector_search_weight,
-                    "enable_rerank": knowledge_base_folder.enable_rerank,
-                    "rerank_model_address": rerank_model_address,
-                    "rerank_top_k": knowledge_base_folder.rerank_top_k,
-                }
-            )
-            for doc in result:
-                score = doc.metadata["_score"] * 10
-                if score > score_threshold:
-                    doc_info = {
-                        "content": doc.page_content,
-                        "score": doc.metadata["_score"] * 10,
-                        "knowledge_title": doc.metadata["_source"]["metadata"]["knowledge_title"],
-                        "knowledge_id": doc.metadata["_source"]["metadata"]["knowledge_id"],
-                        "knowledge_folder_id": doc.metadata["_source"]["metadata"]["knowledge_folder_id"],
-                        "knowledge_source_type": doc.metadata["_source"]["metadata"]["knowledge_type"],
-                    }
-                    if knowledge_base_folder.enable_rerank:
-                        doc_info["rerank_score"] = doc.metadata["relevance_score"]
-                    docs.append(doc_info)
+        if kwargs["enable_rerank"]:
+            rerank_model_address = RerankProvider.objects.get(id=kwargs["rerank_model"]).rerank_config["base_url"]
+        result = remote_indexer.invoke(
+            {
+                "elasticsearch_url": settings.ELASTICSEARCH_URL,
+                "elasticsearch_password": settings.ELASTICSEARCH_PASSWORD,
+                "embed_model_address": embed_model_address,
+                "index_name": knowledge_base_folder.knowledge_index_name(),
+                "search_query": query,
+                "metadata_filter": {},
+                "text_search_weight": kwargs["text_search_weight"],
+                "rag_k": kwargs["rag_k"],  # 返回结果数量
+                "rag_num_candidates": kwargs["rag_num_candidates"],  # 候选数量
+                "vector_search_weight": kwargs["vector_search_weight"],
+                "enable_rerank": kwargs["enable_rerank"],
+                "rerank_model_address": rerank_model_address,
+                "rerank_top_k": 10,  # Rerank返回结果数量
+            }
+        )
+        for doc in result:
+            score = doc.metadata["_score"] * 10
+            if not score:
+                continue
+            doc_info = {
+                "content": doc.page_content,
+                "score": score,
+                "knowledge_id": doc.metadata["_source"]["metadata"]["knowledge_id"],
+            }
+            if knowledge_base_folder.enable_rerank:
+                doc_info["rerank_score"] = doc.metadata["relevance_score"]
+            docs.append(doc_info)
 
         return docs

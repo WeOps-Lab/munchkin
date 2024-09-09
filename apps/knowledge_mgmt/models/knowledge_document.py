@@ -49,16 +49,14 @@ class KnowledgeDocument(MaintainerInfo, TimeInfo):
     def __str__(self):
         return self.name
 
-    def knowledge_index_name(self):
-        return f"knowledge_document_{self.id}"
-
     def delete_es_content(self, es_client):
-        index_name = self.knowledge_index_name()
+        index_name = self.knowledge_base.knowledge_index_name()
+        query = {"query": {"term": {"metadata.knowledge_id": self.id}}}
         try:
-            es_client.indices.delete(index=index_name)
-            logger.info(_("Index {} successfully deleted.").format(index_name))
+            es_client.delete_by_query(index=index_name, body=query)
+            logger.info(_("Document {} successfully deleted.").format(self.name))
         except NotFoundError:
-            logger.info(_("Index {} not found, skipping deletion.").format(index_name))
+            logger.info(_("Document {} not found, skipping deletion.").format(self.name))
 
     def delete(self, *args, **kwargs):
         es_client = get_es_client()

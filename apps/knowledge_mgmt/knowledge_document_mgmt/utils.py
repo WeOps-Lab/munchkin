@@ -73,7 +73,7 @@ class KnowledgeDocumentUtils(object):
                     "elasticsearch_url": settings.ELASTICSEARCH_URL,
                     "elasticsearch_password": settings.ELASTICSEARCH_PASSWORD,
                     "embed_model_address": document.knowledge_base.embed_model.embed_config["base_url"],
-                    "index_name": document.knowledge_index_name(),
+                    "index_name": document.knowledge_base.knowledge_index_name(),
                     "index_mode": "",
                     "docs": knowledge_docs,
                 }

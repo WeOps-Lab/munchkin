@@ -1,6 +1,8 @@
 from django.http import JsonResponse
 from django.utils.translation import gettext as _
+from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from apps.core.decorators.api_perminssion import HasRole
 from apps.core.utils.keycloak_client import KeyCloakClient
@@ -23,7 +25,7 @@ class KnowledgeBaseViewSet(AuthViewSet):
         if not request.user.is_superuser:
             teams = [i["id"] for i in request.user.group_list]
             queryset = queryset.filter(team__in=teams)
-        return self._list(queryset)
+        return self._list(queryset.order_by("-id"))
 
     @HasRole()
     def create(self, request, *args, **kwargs):
@@ -32,10 +34,14 @@ class KnowledgeBaseViewSet(AuthViewSet):
         embed_model = EmbedProvider.objects.get(name="FastEmbed(BAAI/bge-small-zh-v1.5)")
         if KnowledgeBase.objects.filter(name=params["name"]).exists():
             return JsonResponse({"result": False, "message": _("The knowledge base name already exists.")})
-        KnowledgeBase.objects.create(
-            **params, rerank_model_id=rerank_model.id, embed_model_id=embed_model.id, created_by=request.user.username
-        )
-        return JsonResponse({"result": True})
+        params["created_by"] = request.user.username
+        params["rerank_model"] = rerank_model.id
+        params["embed_model"] = embed_model.id
+        serializer = self.get_serializer(data=params)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     @HasRole()
     def update(self, request, *args, **kwargs):

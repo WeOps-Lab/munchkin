@@ -45,10 +45,12 @@ INSTALLED_APPS = (
     "rest_framework",
     "rest_framework.authtoken",
     # "version_log",
+    "django_minio_backend",
+    "django_filters",
     "unfold",
     "guardian",
 )
-
+IS_USE_CELERY = True
 # 获取 apps 目录下的所有子目录名称
 APPS_DIR = os.path.join(BASE_DIR, "apps")
 if os.path.exists(APPS_DIR):
@@ -61,7 +63,6 @@ INSTALLED_APPS += tuple(f"apps.{app}" for app in app_folders)
 
 ASGI_APPLICATION = "asgi.application"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-CELERY_IMPORTS = ()
 
 MIDDLEWARE = (
     "django.middleware.security.SecurityMiddleware",
@@ -155,20 +156,30 @@ DATABASES = {
     }
 }
 
+# celery
+CELERY_IMPORTS = ()
+CELERY_TIMEZONE = TIME_ZONE  # celery 时区问题
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
+
+if IS_USE_CELERY:
+    INSTALLED_APPS = locals().get("INSTALLED_APPS", [])
+    INSTALLED_APPS += ("django_celery_beat", "django_celery_results")
+    CELERY_ENABLE_UTC = False
+    CELERYBEAT_SCHEDULER = "django_celery_beat.schedulers.DatabaseScheduler"
+    CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
 # DRF 配置
 
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": (
-        # "rest_framework.permissions.IsAuthenticated",
-    ),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_PAGINATION_CLASS": "config.drf.pagination.CustomPageNumberPagination",
     "PAGE_SIZE": 10,
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
-    "DEFAULT_FILTER_BACKENDS": (
+    "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.SearchFilter",
         "rest_framework.filters.OrderingFilter",
-    ),
+    ],
     # "DATETIME_FORMAT": "%Y-%m-%d %H:%M:%S",
     "DATETIME_FORMAT": "%Y-%m-%dT%H:%M:%S%z",
     "NON_FIELD_ERRORS_KEY": "params_error",

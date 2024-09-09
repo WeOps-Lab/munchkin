@@ -31,3 +31,6 @@ class KnowledgeBase(MaintainerInfo, TimeInfo):
         blank=True,
         null=True,
     )
+
+    def knowledge_index_name(self):
+        return f"knowledge_base_{self.id}"

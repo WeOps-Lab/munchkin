@@ -120,8 +120,16 @@ class KeyCloakClient:
 
     def get_user_groups(self, sub, is_admin):
         if is_admin:
-            res = self.realm_client.get_groups()
+            res = self.realm_client.get_groups({"search": ""})
+
         else:
-            res = self.realm_client.get_user_groups(sub)
-        return_data = [{"id": i["id"], "name": i["name"]} for i in res]
+            res = self.realm_client.get_user_groups(sub, {"search": ""})
+        return_data = [{"id": i["id"], "name": i["name"], "path": i["path"]} for i in res]
+        return return_data
+
+    def get_child_groups(self, group):
+        res = self.realm_client.get_subgroups(
+            group,
+        )
+        return_data = [{"id": i["id"], "name": i["name"], "path": i["path"]} for i in res]
         return return_data
