@@ -2,11 +2,11 @@ FROM python:3.10
 WORKDIR /apps
 
 RUN apt-get update -y
-RUN apt-get install -y supervisor
+RUN apt-get install -y supervisor vim
 
 ADD ./support-files/supervisor/app.conf  /etc/supervisor/conf.d/app.conf
 ADD ./support-files/supervisor/celery.conf  /etc/supervisor/conf.d/celery.conf
-ADD ./support-files/supervisor/beat.conf  /etc/supervisor/conf.d/beat.conf
+#ADD ./support-files/supervisor/beat.conf  /etc/supervisor/conf.d/beat.conf
 
 ADD . .
 
