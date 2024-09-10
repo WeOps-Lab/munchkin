@@ -25,4 +25,4 @@ class KnowledgeBaseSerializer(serializers.ModelSerializer):
         self.group_map = {i["id"]: i["name"] for i in groups}
 
     def get_team_name(self, instance: KnowledgeBase):
-        return self.group_map.get(instance.team, "")
+        return [self.group_map.get(i["id"]) for i in instance.team]

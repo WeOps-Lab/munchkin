@@ -119,17 +119,27 @@ class KeyCloakClient:
             return UserTokenEntity(token=None, error_message="用户名密码不匹配", success=False)
 
     def get_user_groups(self, sub, is_admin):
+        all_groups = self.realm_client.get_groups({"search": ""})
         if is_admin:
-            res = self.realm_client.get_groups({"search": ""})
+            return self.get_child_groups(all_groups)
+        res = self.realm_client.get_user_groups(sub, {"search": ""})
+        return self.get_normal_user_all_groups(res, all_groups)
 
-        else:
-            res = self.realm_client.get_user_groups(sub, {"search": ""})
+    def get_normal_user_all_groups(self, res, all_groups):
         return_data = [{"id": i["id"], "name": i["name"], "path": i["path"]} for i in res]
+        group_ids = [i["id"] for i in return_data]
+        for i in all_groups:
+            if i["id"] not in group_ids:
+                continue
+            sub_groups = i.pop("subGroups", [])
+            return_data.extend(self.get_child_groups(sub_groups))
         return return_data
 
-    def get_child_groups(self, group):
-        res = self.realm_client.get_subgroups(
-            group,
-        )
-        return_data = [{"id": i["id"], "name": i["name"], "path": i["path"]} for i in res]
+    def get_child_groups(self, groups):
+        return_data = []
+        for i in groups:
+            sub_groups = i.pop("subGroups", [])
+            return_data.append({"id": i["id"], "name": i["name"], "path": i["path"]})
+            if sub_groups:
+                return_data.extend(self.get_child_groups(sub_groups))
         return return_data

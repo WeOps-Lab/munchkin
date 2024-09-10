@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
                 ("updated_by", models.CharField(default="", max_length=32, verbose_name="更新者")),
                 ("name", models.CharField(max_length=100, unique=True)),
                 ("introduction", models.TextField(blank=True, null=True)),
-                ("team", models.CharField(db_index=True, max_length=100)),
+                ("team", models.JSONField(default=list)),
                 ("enable_vector_search", models.BooleanField(default=True, verbose_name="Enable Vector Search")),
                 ("vector_search_weight", models.FloatField(default=0.1, verbose_name="Vector Search weight")),
                 ("enable_text_search", models.BooleanField(default=True, verbose_name="Enable Text Search")),
