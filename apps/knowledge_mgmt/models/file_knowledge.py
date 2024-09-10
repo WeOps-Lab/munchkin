@@ -33,3 +33,7 @@ class FileKnowledge(models.Model):
     class Meta:
         verbose_name = _("File Knowledge")
         verbose_name_plural = verbose_name
+
+    def delete(self, using=None, keep_parents=False):
+        self.file.delete(False)
+        return super().delete(using, keep_parents)
