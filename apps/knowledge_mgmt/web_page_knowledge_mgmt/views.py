@@ -26,4 +26,4 @@ class WebPageKnowledgeViewSet(AuthViewSet):
             url=kwargs.get("url", ""),
             max_depth=kwargs.get("max_depth", 1),
         )
-        return JsonResponse({"result": True, "data": knowledge_obj.id})
+        return JsonResponse({"result": True, "data": knowledge_obj.knowledge_document_id})

@@ -22,4 +22,4 @@ class ManualKnowledgeViewSet(AuthViewSet):
             knowledge_document_id=new_doc.id,
             content=kwargs.get("content", ""),
         )
-        return JsonResponse({"result": True, "data": knowledge_obj.id})
+        return JsonResponse({"result": True, "data": knowledge_obj.knowledge_document_id})

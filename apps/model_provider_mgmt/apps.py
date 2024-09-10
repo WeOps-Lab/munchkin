@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from django.db.models.signals import post_migrate
 
 
 class EmbedMgmtConfig(AppConfig):
@@ -7,4 +8,6 @@ class EmbedMgmtConfig(AppConfig):
     verbose_name = "模型供应商"
 
     def ready(self):
-        import apps.model_provider_mgmt.signals  # noqa
+        from apps.model_provider_mgmt.signals import user_create_signal
+
+        post_migrate.connect(user_create_signal, sender=self)
