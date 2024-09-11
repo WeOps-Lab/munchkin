@@ -5,6 +5,8 @@ from django_filters import filters
 from django_filters.rest_framework import FilterSet
 from rest_framework.decorators import action
 
+from apps.core.logger import logger
+from apps.core.utils.elasticsearch_utils import get_es_client
 from apps.knowledge_mgmt.knowledge_document_mgmt.serializers import KnowledgeDocumentSerializer
 from apps.knowledge_mgmt.knowledge_document_mgmt.utils import KnowledgeDocumentUtils
 from apps.knowledge_mgmt.models import KnowledgeBase, KnowledgeDocument
@@ -69,3 +71,74 @@ class KnowledgeDocumentViewSet(AuthViewSet):
             doc_obj = doc_map.get(i.pop("knowledge_id"))
             i.update(doc_obj)
         return JsonResponse({"result": True, "data": docs})
+
+    @action(methods=["GET"], detail=True)
+    def get_detail(self, request, *args, **kwargs):
+        instance: KnowledgeDocument = self.get_object()
+        es_client = get_es_client()
+        search_text = request.GET.get("search_text", "")
+        query = {
+            "query": {
+                "bool": {
+                    "must": [
+                        {"term": {"metadata.knowledge_id": instance.id}},
+                    ],
+                }
+            }
+        }
+        if search_text:
+            query["query"]["bool"]["must"].append({"match": {"text": search_text}})  # noqa
+        res = es_client.search(index=instance.knowledge_index_name(), body=query)
+        hits = res.get("hits", {}).get("hits", [])
+        es_client.transport.close()
+        return JsonResponse({"result": True, "data": [{"id": i["_id"], "content": i["_source"]["text"]} for i in hits]})
+
+    @action(methods=["POST"], detail=True)
+    def enable_chunk(self, request, *args, **kwargs):
+        instance: KnowledgeDocument = self.get_object()
+        enabled = request.data.get("enabled", False)
+        chunk_id = request.data.get("chunk_id", "")
+        if not chunk_id:
+            return JsonResponse({"result": False, "message": _("chunk_id is required")})
+        es_client = get_es_client()
+        update_body = {"doc": {"metadata": {"enabled": enabled}}}
+        try:
+            es_client.update(index=instance.knowledge_index_name(), id=chunk_id, body=update_body)
+            es_client.transport.close()
+            return JsonResponse({"result": True})
+        except Exception as e:
+            es_client.transport.close()
+            logger.exception(e)
+            return JsonResponse({"result": False, "message": _("update failed")})
+
+    @action(methods=["POST"], detail=True)
+    def delete_chunk(self, request, *args, **kwargs):
+        instance: KnowledgeDocument = self.get_object()
+        chunk_id = request.data.get("chunk_id", "")
+        if not chunk_id:
+            return JsonResponse({"result": False, "message": _("chunk_id is required")})
+        es_client = get_es_client()
+        try:
+            res = es_client.delete(index=instance.knowledge_index_name(), id=chunk_id)
+            es_client.transport.close()
+            return JsonResponse({"result": True, "data": res})
+        except Exception as e:
+            es_client.transport.close()
+            logger.exception(e)
+            return JsonResponse({"result": False, "message": _("delete failed")})
+
+    @action(methods=["POST"], detail=False)
+    def batch_delete(self, request):
+        doc_ids = request.data.get("doc_ids", [])
+        knowledge_base_id = request.data.get("knowledge_base_id", 0)
+        KnowledgeDocument.objects.filter(id__in=doc_ids).delete()
+        index_name = f"knowledge_base_{knowledge_base_id}"
+        query = {"query": {"terms": {"metadata.knowledge_id": doc_ids}}}
+        es_client = get_es_client()
+        try:
+            es_client.delete_by_query(index=index_name, body=query)
+        except Exception as e:
+            logger.exception(e)
+            return JsonResponse({"result": False, "message": _("delete failed")})
+        es_client.transport.close()
+        return JsonResponse({"result": True})

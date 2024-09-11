@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from elasticsearch import NotFoundError
+from elasticsearch import Elasticsearch, NotFoundError
 
 from apps.core.logger import logger
 from apps.core.models.maintainer_info import MaintainerInfo
@@ -49,7 +49,10 @@ class KnowledgeDocument(MaintainerInfo, TimeInfo):
     def __str__(self):
         return self.name
 
-    def delete_es_content(self, es_client):
+    def knowledge_index_name(self):
+        return self.knowledge_base.knowledge_index_name()
+
+    def delete_es_content(self, es_client: Elasticsearch):
         index_name = self.knowledge_base.knowledge_index_name()
         query = {"query": {"term": {"metadata.knowledge_id": self.id}}}
         try:

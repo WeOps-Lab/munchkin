@@ -107,12 +107,12 @@ class KnowledgeDocumentUtils(object):
     @staticmethod
     def format_invoke_kwargs(knowledge_document: KnowledgeDocument, knowledge_source_type):
         semantic_embedding_address = ""
-        if not knowledge_document.semantic_chunk_parse_embedding_model:
+        if knowledge_document.semantic_chunk_parse_embedding_model:
             semantic_embedding_address = knowledge_document.semantic_chunk_parse_embedding_model.embed_config[
                 "base_url"
             ]
         ocr_provider_address = ""
-        if not knowledge_document.ocr_model:
+        if knowledge_document.ocr_model:
             ocr_provider_address = knowledge_document.ocr_model.ocr_config["base_url"]
         return {
             "enable_recursive_chunk_parse": knowledge_document.enable_general_parse,
@@ -129,5 +129,6 @@ class KnowledgeDocumentUtils(object):
                 "knowledge_id": knowledge_document.id,
                 "knowledge_title": knowledge_document.name,
                 "knowledge_base_id": knowledge_document.knowledge_base.id,
+                "enabled": True,
             },
         }
