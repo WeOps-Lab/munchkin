@@ -52,7 +52,7 @@ class KnowledgeDocumentViewSet(AuthViewSet):
             return JsonResponse({"result": False, "message": _("query is required")})
 
         service = KnowledgeSearchService()
-        knowledge_base = KnowledgeBase.objects.filter(id=knowledge_base_id)
+        knowledge_base = KnowledgeBase.objects.get(id=knowledge_base_id)
         docs = service.search(knowledge_base, query, kwargs)
         doc_ids = [doc["knowledge_id"] for doc in docs]
         knowledge_document_list = KnowledgeDocument.objects.filter(id__in=set(doc_ids)).values(

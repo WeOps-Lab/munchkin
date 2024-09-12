@@ -18,13 +18,13 @@ class KnowledgeSearchService:
 
         if kwargs["enable_rerank"]:
             rerank_model_address = RerankProvider.objects.get(id=kwargs["rerank_model"]).rerank_config["base_url"]
-        kwargs = {
+        params = {
             "elasticsearch_url": settings.ELASTICSEARCH_URL,
             "elasticsearch_password": settings.ELASTICSEARCH_PASSWORD,
             "embed_model_address": embed_model_address,
             "index_name": knowledge_base_folder.knowledge_index_name(),
             "search_query": query,
-            "metadata_filter": {"term": {"enabled": True}},
+            "metadata_filter": {"enabled": True},
             "rag_k": kwargs["rag_k"],  # 返回结果数量
             "rag_num_candidates": kwargs["rag_num_candidates"],  # 候选数量
             "enable_rerank": kwargs["enable_rerank"],
@@ -32,14 +32,15 @@ class KnowledgeSearchService:
             "rerank_top_k": 10,  # Rerank返回结果数量
         }
         if kwargs["enable_text_search"]:
-            kwargs["text_search_weight"] = kwargs["text_search_weight"]
+            params["text_search_weight"] = kwargs["text_search_weight"]
         if kwargs["enable_vector_search"]:
-            kwargs["vector_search_weight"] = kwargs["vector_search_weight"]
-        result = remote_indexer.invoke(kwargs)
+            params["vector_search_weight"] = kwargs["vector_search_weight"]
+        result = remote_indexer.invoke(params)
         for doc in result:
             score = doc.metadata["_score"] * 10
             if not score:
                 continue
+
             doc_info = {
                 "content": doc.page_content,
                 "score": score,
