@@ -24,22 +24,18 @@ class KnowledgeDocumentUtils(object):
         )
 
     @classmethod
-    def general_embed_by_document_list(cls, knowledge_document_id_list, source_type):
+    def general_embed_by_document_list(cls, document_list):
         remote_url_map = {
-            "file": FILE_CHUNK_SERIVCE_URL,
-            "manual": MANUAL_CHUNK_SERVICE_URL,
-            "web_page": WEB_PAGE_CHUNK_SERVICE_URL,
+            "file": RemoteRunnable(FILE_CHUNK_SERIVCE_URL),
+            "manual": RemoteRunnable(MANUAL_CHUNK_SERVICE_URL),
+            "web_page": RemoteRunnable(WEB_PAGE_CHUNK_SERVICE_URL),
         }
-        if source_type not in remote_url_map:
-            logger.info(f"source_type [{source_type}] is not supported")
-            return
-        source_remote = RemoteRunnable(remote_url_map[source_type])
-        document_list = KnowledgeDocument.objects.filter(id__in=knowledge_document_id_list)
-        knowledge_docs, show_docs = cls.invoke_remote(source_remote, source_type, document_list)
+
+        knowledge_docs, show_docs = cls.invoke_remote(remote_url_map, document_list)
         return show_docs
 
     @classmethod
-    def invoke_remote(cls, source_remote, source_type, document_list):
+    def invoke_remote(cls, remote_url_map, document_list):
         remote_indexer = RemoteRunnable(REMOTE_INDEX_URL)
         knowledge_docs = []
         source_invoke_format_map = {
@@ -51,6 +47,8 @@ class KnowledgeDocumentUtils(object):
         es_client = get_es_client()
         for document in document_list:
             document.delete_es_content(es_client)
+            source_type = document.knowledge_source_type
+            source_remote = remote_url_map[source_type]
             logger.debug(_("Start handle {} knowledge: {}").format(source_type, document.name))
             kwargs = cls.format_invoke_kwargs(document, source_type)
             kwargs.update(source_invoke_format_map[source_type](document))

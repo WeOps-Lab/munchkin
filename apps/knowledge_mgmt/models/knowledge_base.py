@@ -6,7 +6,7 @@ from apps.core.models.time_info import TimeInfo
 
 
 class KnowledgeBase(MaintainerInfo, TimeInfo):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100, db_index=True)
     introduction = models.TextField(blank=True, null=True)
     team = models.JSONField(default=list)
     embed_model = models.ForeignKey(

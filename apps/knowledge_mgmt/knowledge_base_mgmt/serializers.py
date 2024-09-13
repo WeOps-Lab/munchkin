@@ -3,6 +3,7 @@ from rest_framework.fields import empty
 
 from apps.core.utils.keycloak_client import KeyCloakClient
 from apps.knowledge_mgmt.models import KnowledgeBase
+from apps.knowledge_mgmt.tasks import retrain_all
 
 
 class KnowledgeBaseSerializer(serializers.ModelSerializer):
@@ -26,3 +27,8 @@ class KnowledgeBaseSerializer(serializers.ModelSerializer):
 
     def get_team_name(self, instance: KnowledgeBase):
         return [self.group_map.get(i) for i in instance.team]
+
+    def update(self, instance: KnowledgeBase, validated_data):
+        if instance.embed_model_id != validated_data["embed_model"]:
+            retrain_all.delay(instance.id)
+        return super().update(instance, validated_data)

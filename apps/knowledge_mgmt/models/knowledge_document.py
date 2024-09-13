@@ -22,7 +22,7 @@ class DocumentStatus(object):
 
 class KnowledgeDocument(MaintainerInfo, TimeInfo):
     knowledge_base = models.ForeignKey("KnowledgeBase", on_delete=models.CASCADE)
-    name = models.CharField(max_length=255, unique=True, verbose_name=_("name"))
+    name = models.CharField(max_length=255, db_index=True, verbose_name=_("name"))
     chunk_size = models.IntegerField(default=0, verbose_name=_("chunk size"))
     train_status = models.IntegerField(default=0, choices=DocumentStatus.CHOICE, verbose_name=_("train status"))
     train_progress = models.FloatField(default=0, verbose_name=_("train progress"))

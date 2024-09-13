@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.http import JsonResponse
 from django.utils.translation import gettext as _
 from rest_framework import status
@@ -24,19 +25,22 @@ class KnowledgeBaseViewSet(AuthViewSet):
         queryset = KnowledgeBase.objects.filter(name__icontains=name)
         if not request.user.is_superuser:
             teams = [i["id"] for i in request.user.group_list]
-            queryset = queryset.filter(team__in=teams)
+            query = Q()
+            for team_member in teams:
+                query |= Q(team__contains=team_member)
+            queryset = queryset.filter(query)
         return self._list(queryset.order_by("-id"))
 
     @HasRole()
     def create(self, request, *args, **kwargs):
         params = request.data
         rerank_model = RerankProvider.objects.get(name="bce-reranker-base_v1")
-        embed_model = EmbedProvider.objects.get(name="FastEmbed(BAAI/bge-small-zh-v1.5)")
+        if "embed_model" not in params:
+            params["embed_model"] = EmbedProvider.objects.get(name="FastEmbed(BAAI/bge-small-zh-v1.5)").id
         if KnowledgeBase.objects.filter(name=params["name"]).exists():
             return JsonResponse({"result": False, "message": _("The knowledge base name already exists.")})
         params["created_by"] = request.user.username
         params["rerank_model"] = rerank_model.id
-        params["embed_model"] = embed_model.id
         serializer = self.get_serializer(data=params)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -47,13 +51,19 @@ class KnowledgeBaseViewSet(AuthViewSet):
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
 
-    @action(methods=["post"], detail=True)
+    @action(methods=["POST"], detail=True)
     @HasRole()
     def update_settings(self, request, *args, **kwargs):
         instance: KnowledgeBase = self.get_object()
         kwargs = request.data
-        instance.introduction = kwargs["introduction"]
-        instance.embed_model_id = kwargs["embed_model"]
+        if kwargs.get("name"):
+            if KnowledgeBase.objects.filter(name=kwargs["name"]).exclude(id=instance.id).exists():
+                return JsonResponse({"result": False, "message": _("The knowledge base name already exists.")})
+            instance.name = kwargs["name"]
+        if kwargs.get("introduction"):
+            instance.introduction = kwargs["introduction"]
+        if kwargs.get("team"):
+            instance.team = kwargs["team"]
         instance.enable_vector_search = kwargs["enable_vector_search"]
         instance.vector_search_weight = kwargs["vector_search_weight"]
         instance.enable_text_search = kwargs["enable_text_search"]

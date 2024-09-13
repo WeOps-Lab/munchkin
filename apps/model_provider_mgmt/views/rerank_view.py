@@ -1,6 +1,4 @@
 from django.http import JsonResponse
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
 from langchain_core.documents import Document
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -12,21 +10,7 @@ from apps.model_provider_mgmt.services.rerank_service import RerankService
 
 
 class RerankViewSet(viewsets.ViewSet):
-    @action(methods=["post"], detail=False, url_path="rerank_sentences")
-    @swagger_auto_schema(
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                "rerank_id": openapi.Schema(type=openapi.TYPE_INTEGER),
-                "query": openapi.Schema(type=openapi.TYPE_STRING),
-                "top_k": openapi.Schema(type=openapi.TYPE_INTEGER),
-                "sentences": openapi.Schema(
-                    type=openapi.TYPE_ARRAY,
-                    items=openapi.Schema(type=openapi.TYPE_STRING),
-                ),
-            },
-        ),
-    )
+    @action(methods=["post"], detail=False)
     def rerank_sentences(self, request):
         rerank_id = request.data.get("rerank_id")
         top_k = request.data.get("top_k")
