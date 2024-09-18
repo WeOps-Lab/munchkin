@@ -22,7 +22,7 @@ class ModelProviderInitService:
             RerankProvider.objects.get_or_create(
                 name="bce-reranker-base_v1",
                 rerank_model_type=RerankModelChoices.LANG_SERVE,
-                defaults={"rerank_config": {"base_url": "http://bce-embed-server.lite/rerank"}},
+                defaults={"rerank_config": {"base_url": "http://bce-embed-server/rerank"}},
             )
 
             EmbedProvider.objects.get_or_create(
@@ -30,7 +30,7 @@ class ModelProviderInitService:
                 embed_model_type=EmbedModelChoices.LANG_SERVE,
                 defaults={
                     "embed_config": {
-                        "base_url": "http://bce-embed-server.lite/embed",
+                        "base_url": "http://bce-embed-server/embed",
                     }
                 },
             )
@@ -40,7 +40,7 @@ class ModelProviderInitService:
                 embed_model_type=EmbedModelChoices.LANG_SERVE,
                 defaults=dict(
                     embed_config={
-                        "base_url": "http://fast-embed-server.lite",
+                        "base_url": "http://fast-embed-server",
                     },
                     enabled=True,
                 ),
@@ -188,7 +188,7 @@ class ModelProviderInitService:
             defaults={
                 "enabled": True,
                 "ocr_config": {
-                    "base_url": "http://ocr-server.lite/paddle_ocr",
+                    "base_url": "http://ocr-server/paddle_ocr",
                 },
             },
         )
@@ -198,7 +198,7 @@ class ModelProviderInitService:
             defaults={
                 "enabled": True,
                 "ocr_config": {
-                    "base_url": "http://ocr-server.lite/azure_ocr",
+                    "base_url": "http://ocr-server/azure_ocr",
                 },
             },
         )
