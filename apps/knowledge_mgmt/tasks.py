@@ -1,5 +1,6 @@
 from celery import shared_task
 
+from apps.core.logger import celery_logger as logger
 from apps.knowledge_mgmt.models import KnowledgeDocument
 
 
@@ -7,6 +8,7 @@ from apps.knowledge_mgmt.models import KnowledgeDocument
 def general_embed(knowledge_document_id_list):
     from apps.knowledge_mgmt.knowledge_document_mgmt.utils import KnowledgeDocumentUtils
 
+    logger.info(f"general_embed: {knowledge_document_id_list}")
     document_list = KnowledgeDocument.objects.filter(id__in=knowledge_document_id_list)
     KnowledgeDocumentUtils.general_embed_by_document_list(document_list)
 

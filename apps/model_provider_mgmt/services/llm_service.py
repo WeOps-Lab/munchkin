@@ -1,9 +1,9 @@
 from typing import List
 
+from django.conf import settings
 from langchain_core.documents import Document
 from langserve import RemoteRunnable
 
-from apps.knowledge_mgmt.remote_service import ONLINE_SEARCH_SERVER_URL, OPENAI_CHAT_SERVICE_URL
 from apps.knowledge_mgmt.services.knowledge_search_service import KnowledgeSearchService
 from apps.model_provider_mgmt.models import LLMModelChoices, LLMSkill
 
@@ -38,7 +38,7 @@ class LLMService:
                 context += f"知识内容:[{r['content'].replace('{', '').replace('}', '')}]\n"
 
         if enable_online_search:
-            rag_server = RemoteRunnable(ONLINE_SEARCH_SERVER_URL)
+            rag_server = RemoteRunnable(settings.ONLINE_SEARCH_SERVER_URL)
             online_search_result: List[Document] = rag_server.invoke(
                 {
                     "query": user_message,
@@ -50,7 +50,7 @@ class LLMService:
                 context += f"标题:[{r.page_content}\n"
 
         if llm_model.llm_model_type == LLMModelChoices.CHAT_GPT:
-            chat_server = RemoteRunnable(OPENAI_CHAT_SERVICE_URL)
+            chat_server = RemoteRunnable(settings.OPENAI_CHAT_SERVICE_URL)
             result = chat_server.invoke(
                 {
                     "system_message_prompt": llm_skill.skill_prompt,

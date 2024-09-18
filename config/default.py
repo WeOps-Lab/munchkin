@@ -51,15 +51,7 @@ INSTALLED_APPS = (
     "guardian",
 )
 IS_USE_CELERY = True
-# 获取 apps 目录下的所有子目录名称
-APPS_DIR = os.path.join(BASE_DIR, "apps")
-if os.path.exists(APPS_DIR):
-    app_folders = [
-        name for name in os.listdir(APPS_DIR) if os.path.isdir(os.path.join(APPS_DIR, name)) and name != "__pycache__"
-    ]
-else:
-    app_folders = []
-INSTALLED_APPS += tuple(f"apps.{app}" for app in app_folders)
+
 
 ASGI_APPLICATION = "asgi.application"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -165,9 +157,24 @@ if IS_USE_CELERY:
     INSTALLED_APPS = locals().get("INSTALLED_APPS", [])
     INSTALLED_APPS += ("django_celery_beat", "django_celery_results")
     CELERY_ENABLE_UTC = False
-    CELERYBEAT_SCHEDULER = "django_celery_beat.schedulers.DatabaseScheduler"
+    CELERY_WORKER_CONCURRENCY = 2  # 并发数
+    CELERY_MAX_TASKS_PER_CHILD = 5  # worker最多执行5个任务便自我销毁释放内存
+    CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers.DatabaseScheduler"
     CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-
+    CELERY_ACCEPT_CONTENT = ["application/json"]
+    CELERY_TASK_SERIALIZER = "json"
+    CELERY_RESULT_SERIALIZER = "json"
+    CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
+    DJANGO_CELERY_BEAT_TZ_AWARE = False
+# 获取 apps 目录下的所有子目录名称
+APPS_DIR = os.path.join(BASE_DIR, "apps")
+if os.path.exists(APPS_DIR):
+    app_folders = [
+        name for name in os.listdir(APPS_DIR) if os.path.isdir(os.path.join(APPS_DIR, name)) and name != "__pycache__"
+    ]
+else:
+    app_folders = []
+INSTALLED_APPS += tuple(f"apps.{app}" for app in app_folders)
 # DRF 配置
 
 REST_FRAMEWORK = {
@@ -204,6 +211,16 @@ KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM")
 KEYCLOAK_CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID")
 KEYCLOAK_ADMIN_USERNAME = os.getenv("KEYCLOAK_ADMIN_USERNAME")
 KEYCLOAK_ADMIN_PASSWORD = os.getenv("KEYCLOAK_ADMIN_PASSWORD")
+# REMOTE_SERVICE
+FILE_CHUNK_SERVICE_URL = os.getenv("FILE_CHUNK_SERVICE_URL")
+MANUAL_CHUNK_SERVICE_URL = os.getenv("MANUAL_CHUNK_SERVICE_URL")
+WEB_PAGE_CHUNK_SERVICE_URL = os.getenv("WEB_PAGE_CHUNK_SERVICE_URL")
+OPENAI_CHAT_SERVICE_URL = os.getenv("OPENAI_CHAT_SERVICE_URL")
+REMOTE_INDEX_URL = os.getenv("REMOTE_INDEX_URL")
+RAG_SERVER_URL = os.getenv("RAG_SERVER_URL")
+ONLINE_SEARCH_SERVER_URL = os.getenv("ONLINE_SEARCH_SERVER_URL")
+
+
 # 日志配置
 if DEBUG:
     log_dir = os.path.join(os.path.dirname(BASE_DIR), "logs", APP_CODE)

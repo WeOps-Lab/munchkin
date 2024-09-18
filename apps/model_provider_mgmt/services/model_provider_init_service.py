@@ -22,7 +22,7 @@ class ModelProviderInitService:
             RerankProvider.objects.get_or_create(
                 name="bce-reranker-base_v1",
                 rerank_model_type=RerankModelChoices.LANG_SERVE,
-                defaults={"rerank_config": {"base_url": "http://bce-embed-server.ops-pilot/rerank"}},
+                defaults={"rerank_config": {"base_url": "http://bce-embed-server.lite/rerank"}},
             )
 
             EmbedProvider.objects.get_or_create(
@@ -30,7 +30,7 @@ class ModelProviderInitService:
                 embed_model_type=EmbedModelChoices.LANG_SERVE,
                 defaults={
                     "embed_config": {
-                        "base_url": "http://bce-embed-server.ops-pilot/embed",
+                        "base_url": "http://bce-embed-server.lite/embed",
                     }
                 },
             )
@@ -38,10 +38,12 @@ class ModelProviderInitService:
             EmbedProvider.objects.get_or_create(
                 name="FastEmbed(BAAI/bge-small-zh-v1.5)",
                 embed_model_type=EmbedModelChoices.LANG_SERVE,
-                embed_config={
-                    "base_url": "http://fast-embed-server.ops-pilot",
-                },
-                enabled=True,
+                defaults=dict(
+                    embed_config={
+                        "base_url": "http://fast-embed-server.lite",
+                    },
+                    enabled=True,
+                ),
             )
 
             LLMModel.objects.get_or_create(
@@ -57,7 +59,7 @@ class ModelProviderInitService:
                 },
             )
 
-            llm_model, created = LLMModel.objects.get_or_create(
+            LLMModel.objects.get_or_create(
                 name="GPT-3.5 Turbo 16K",
                 llm_model_type=LLMModelChoices.CHAT_GPT,
                 enabled=True,
@@ -186,7 +188,7 @@ class ModelProviderInitService:
             defaults={
                 "enabled": True,
                 "ocr_config": {
-                    "base_url": "http://ocr-server.ops-pilot/paddle_ocr",
+                    "base_url": "http://ocr-server.lite/paddle_ocr",
                 },
             },
         )
@@ -196,7 +198,7 @@ class ModelProviderInitService:
             defaults={
                 "enabled": True,
                 "ocr_config": {
-                    "base_url": "http://ocr-server.ops-pilot/azure_ocr",
+                    "base_url": "http://ocr-server.lite/azure_ocr",
                 },
             },
         )

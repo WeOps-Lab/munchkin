@@ -3,17 +3,18 @@ import traceback
 
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import User
+from django.core.cache import caches
 from django.db import IntegrityError
 from django.utils import translation
 
 from apps.core.utils.keycloak_client import KeyCloakClient
 
 logger = logging.getLogger("app")
+cache = caches["db"]
 
 
 class KeycloakAuthBackend(ModelBackend):
     def authenticate(self, request=None, username=None, password=None, token=None):
-        logger.debug("Enter in TokenBackend")
         # 判断是否传入验证所需的bk_token,没传入则返回None
         if not token:
             return None
@@ -25,7 +26,10 @@ class KeycloakAuthBackend(ModelBackend):
         if user_info.get("locale"):
             translation.activate(user_info["locale"])
         roles = user_info["realm_access"]["roles"]
-        groups = client.get_user_groups(user_info["sub"], "admin" in roles)
+        groups = cache.get(f"group_{user_info['sub']}")
+        if not groups:
+            groups = client.get_user_groups(user_info["sub"], "admin" in roles)
+            cache.set(f"group_{user_info['sub']}", groups, 60 * 30)
         return self.set_user_info(groups, roles, user_info)
 
     @staticmethod

@@ -126,20 +126,28 @@ class KeyCloakClient:
         return self.get_normal_user_all_groups(res, all_groups)
 
     def get_normal_user_all_groups(self, res, all_groups):
+        exist_data = [i["id"] for i in res]
         return_data = [{"id": i["id"], "name": i["name"], "path": i["path"]} for i in res]
         group_ids = [i["id"] for i in return_data]
         for i in all_groups:
             if i["id"] not in group_ids:
                 continue
             sub_groups = i.pop("subGroups", [])
-            return_data.extend(self.get_child_groups(sub_groups))
+            group_children = [u for u in self.get_child_groups(sub_groups) if u["id"] not in exist_data]
+            return_data.extend(group_children)
+            exist_data.extend([u["id"] for u in group_children])
         return return_data
 
     def get_child_groups(self, groups):
         return_data = []
+        exist_data = []
         for i in groups:
             sub_groups = i.pop("subGroups", [])
-            return_data.append({"id": i["id"], "name": i["name"], "path": i["path"]})
+            if i["id"] not in return_data:
+                return_data.append({"id": i["id"], "name": i["name"], "path": i["path"]})
+                exist_data.append(i["id"])
             if sub_groups:
-                return_data.extend(self.get_child_groups(sub_groups))
+                group_children = [u for u in self.get_child_groups(sub_groups) if u["id"] not in exist_data]
+                return_data.extend(group_children)
+                exist_data.extend([u["id"] for u in group_children])
         return return_data

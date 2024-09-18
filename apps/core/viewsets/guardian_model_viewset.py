@@ -1,5 +1,5 @@
 from django.core.exceptions import PermissionDenied
-from guardian.shortcuts import assign_perm, get_objects_for_user
+from guardian.shortcuts import assign_perm
 from rest_framework import viewsets
 
 
@@ -12,23 +12,23 @@ class GuardianModelViewSet(viewsets.ModelViewSet):
     # weather only superuser can access model api
     superuser_only = False
 
-    def get_queryset(self):
-        """
-        Override get_queryset to only include objects that the current user has
-        view permission for or the current user is the owner of the object.
-        """
-        queryset = super().get_queryset()
-        is_auth_and_superuser = self.request.user.is_authenticated and self.request.user.is_superuser
-        if self.superuser_only and not is_auth_and_superuser:
-            raise PermissionDenied()
-
-        if is_auth_and_superuser:
-            return queryset
-        elif hasattr(queryset.model, "created_by"):
-            queryset = queryset.filter(created_by=self.request.user.username)
-        else:
-            queryset = get_objects_for_user(self.request.user, "view", queryset)
-        return queryset
+    # def get_queryset(self):
+    #     """
+    #     Override get_queryset to only include objects that the current user has
+    #     view permission for or the current user is the owner of the object.
+    #     """
+    #     queryset = super().get_queryset()
+    #     is_auth_and_superuser = self.request.user.is_authenticated and self.request.user.is_superuser
+    #     if self.superuser_only and not is_auth_and_superuser:
+    #         raise PermissionDenied()
+    #
+    #     if is_auth_and_superuser:
+    #         return queryset
+    #     elif hasattr(queryset.model, "created_by"):
+    #         queryset = queryset.filter(created_by=self.request.user.username)
+    #     else:
+    #         queryset = get_objects_for_user(self.request.user, "view", queryset)
+    #     return queryset
 
     def has_permission(self, user, obj, permission):
         """

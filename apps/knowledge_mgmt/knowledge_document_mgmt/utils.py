@@ -5,12 +5,6 @@ from langserve import RemoteRunnable
 from apps.core.logger import celery_logger as logger
 from apps.core.utils.elasticsearch_utils import get_es_client
 from apps.knowledge_mgmt.models import FileKnowledge, KnowledgeDocument, ManualKnowledge, WebPageKnowledge
-from apps.knowledge_mgmt.remote_service import (
-    FILE_CHUNK_SERIVCE_URL,
-    MANUAL_CHUNK_SERVICE_URL,
-    REMOTE_INDEX_URL,
-    WEB_PAGE_CHUNK_SERVICE_URL,
-)
 
 
 class KnowledgeDocumentUtils(object):
@@ -24,46 +18,32 @@ class KnowledgeDocumentUtils(object):
         )
 
     @classmethod
-    def general_embed_by_document_list(cls, document_list):
+    def general_embed_by_document_list(cls, document_list, is_show=False):
         remote_url_map = {
-            "file": RemoteRunnable(FILE_CHUNK_SERIVCE_URL),
-            "manual": RemoteRunnable(MANUAL_CHUNK_SERVICE_URL),
-            "web_page": RemoteRunnable(WEB_PAGE_CHUNK_SERVICE_URL),
+            "file": RemoteRunnable(settings.FILE_CHUNK_SERVICE_URL),
+            "manual": RemoteRunnable(settings.MANUAL_CHUNK_SERVICE_URL),
+            "web_page": RemoteRunnable(settings.WEB_PAGE_CHUNK_SERVICE_URL),
         }
 
-        knowledge_docs, show_docs = cls.invoke_remote(remote_url_map, document_list)
-        return show_docs
+        show_docs = cls.invoke_remote(remote_url_map, document_list, is_show)
+        if is_show:
+            return show_docs
 
     @classmethod
-    def invoke_remote(cls, remote_url_map, document_list):
-        remote_indexer = RemoteRunnable(REMOTE_INDEX_URL)
+    def invoke_remote(cls, remote_url_map, document_list, is_show=False):
+        remote_indexer = RemoteRunnable(settings.REMOTE_INDEX_URL)
         knowledge_docs = []
         source_invoke_format_map = {
             "file": cls.format_file_invoke_kwargs,
             "manual": cls.format_manual_invoke_kwargs,
             "web_page": cls.format_web_page_invoke_kwargs,
         }
-        docs = []
         es_client = get_es_client()
+        if is_show:
+            return cls.invoke_one_document(document_list[0], knowledge_docs, remote_url_map, source_invoke_format_map)
         for document in document_list:
             document.delete_es_content(es_client)
-            source_type = document.knowledge_source_type
-            source_remote = remote_url_map[source_type]
-            logger.debug(_("Start handle {} knowledge: {}").format(source_type, document.name))
-            kwargs = cls.format_invoke_kwargs(document, source_type)
-            kwargs.update(source_invoke_format_map[source_type](document))
-            try:
-                remote_docs = source_remote.invoke(kwargs)
-                if not docs:
-                    docs = [i.page_content for i in remote_docs]
-                elif len(docs) > len(remote_docs):
-                    docs = [i.page_content for i in remote_docs]
-                document.chunk_size = len(remote_docs)
-                knowledge_docs.extend(remote_docs)
-                document.train_status = 1
-            except Exception as e:
-                logger.exception(e)
-                document.train_status = 2
+            cls.invoke_one_document(document, knowledge_docs, remote_url_map, source_invoke_format_map)
             document.train_progress = 100
             document.save()
             remote_indexer.invoke(
@@ -77,7 +57,28 @@ class KnowledgeDocumentUtils(object):
                 }
             )
         es_client.transport.close()
-        return knowledge_docs, docs
+
+    @classmethod
+    def invoke_one_document(cls, document, knowledge_docs, remote_url_map, source_invoke_format_map):
+        docs = []
+        source_type = document.knowledge_source_type
+        source_remote = remote_url_map[source_type]
+        logger.info(_("Start handle {} knowledge: {}").format(source_type, document.name))
+        kwargs = cls.format_invoke_kwargs(document, source_type)
+        kwargs.update(source_invoke_format_map[source_type](document))
+        try:
+            remote_docs = source_remote.invoke(kwargs)
+            if not docs:
+                docs = [i.page_content for i in remote_docs]
+            elif len(docs) > len(remote_docs):
+                docs = [i.page_content for i in remote_docs]
+            document.chunk_size = len(remote_docs)
+            knowledge_docs.extend(remote_docs)
+            document.train_status = 1
+        except Exception as e:
+            logger.exception(e)
+            document.train_status = 2
+        return docs
 
     @staticmethod
     def format_file_invoke_kwargs(document):

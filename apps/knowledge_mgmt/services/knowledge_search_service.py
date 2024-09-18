@@ -3,7 +3,6 @@ from typing import List
 from django.conf import settings
 from langserve import RemoteRunnable
 
-from apps.knowledge_mgmt.remote_service import RAG_SERVER_URL
 from apps.model_provider_mgmt.models import EmbedProvider, RerankProvider
 
 
@@ -11,7 +10,7 @@ class KnowledgeSearchService:
     @staticmethod
     def search(knowledge_base_folder, query, kwargs) -> List[dict]:
         docs = []
-        remote_indexer = RemoteRunnable(RAG_SERVER_URL)
+        remote_indexer = RemoteRunnable(settings.RAG_SERVER_URL)
 
         embed_model_address = EmbedProvider.objects.get(id=kwargs["embed_model"]).embed_config["base_url"]
         rerank_model_address = ""
@@ -46,8 +45,8 @@ class KnowledgeSearchService:
                 "score": score,
                 "knowledge_id": doc.metadata["_source"]["metadata"]["knowledge_id"],
             }
-            if knowledge_base_folder.enable_rerank:
+            if kwargs["enable_rerank"]:
                 doc_info["rerank_score"] = doc.metadata["relevance_score"]
             docs.append(doc_info)
-
+        docs.sort(key=lambda x: x["score"], reverse=True)
         return docs

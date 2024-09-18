@@ -1,4 +1,3 @@
-from django.db.models import Case, IntegerField, Value, When
 from django.http import JsonResponse
 from django.utils.translation import gettext as _
 from django_filters import filters
@@ -38,7 +37,7 @@ class KnowledgeDocumentViewSet(AuthViewSet):
         KnowledgeDocument.objects.filter(id__in=knowledge_document_ids).update(**kwargs)
         if preview:
             document_list = KnowledgeDocument.objects.filter(id__in=knowledge_document_ids)
-            doc_list = KnowledgeDocumentUtils.general_embed_by_document_list(document_list)
+            doc_list = KnowledgeDocumentUtils.general_embed_by_document_list(document_list, True)
             return JsonResponse({"result": True, "data": doc_list})
         general_embed.delay(knowledge_document_ids)
         return JsonResponse({"result": True})
@@ -58,14 +57,6 @@ class KnowledgeDocumentViewSet(AuthViewSet):
         knowledge_document_list = KnowledgeDocument.objects.filter(id__in=set(doc_ids)).values(
             "id", "name", "knowledge_source_type", "created_by", "created_at"
         )
-        seen = set()
-        ordered_unique_docs_ids = [x for x in doc_ids if not (x in seen or seen.add(x))]
-        # 构建排序条件
-        preserved_order = Case(
-            *[When(pk=pk, then=Value(i)) for i, pk in enumerate(ordered_unique_docs_ids)], output_field=IntegerField()
-        )
-        ordering = preserved_order
-        knowledge_document_list = knowledge_document_list.order_by(ordering)
         doc_map = {doc["id"]: doc for doc in knowledge_document_list}
         for i in docs:
             doc_obj = doc_map.get(i.pop("knowledge_id"))
