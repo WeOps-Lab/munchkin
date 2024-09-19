@@ -212,13 +212,13 @@ KEYCLOAK_CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID")
 KEYCLOAK_ADMIN_USERNAME = os.getenv("KEYCLOAK_ADMIN_USERNAME")
 KEYCLOAK_ADMIN_PASSWORD = os.getenv("KEYCLOAK_ADMIN_PASSWORD")
 # REMOTE_SERVICE
-FILE_CHUNK_SERVICE_URL = os.getenv("FILE_CHUNK_SERVICE_URL")
-MANUAL_CHUNK_SERVICE_URL = os.getenv("MANUAL_CHUNK_SERVICE_URL")
-WEB_PAGE_CHUNK_SERVICE_URL = os.getenv("WEB_PAGE_CHUNK_SERVICE_URL")
-OPENAI_CHAT_SERVICE_URL = os.getenv("OPENAI_CHAT_SERVICE_URL")
-REMOTE_INDEX_URL = os.getenv("REMOTE_INDEX_URL")
-RAG_SERVER_URL = os.getenv("RAG_SERVER_URL")
-ONLINE_SEARCH_SERVER_URL = os.getenv("ONLINE_SEARCH_SERVER_URL")
+FILE_CHUNK_SERVICE_URL = os.getenv("FILE_CHUNK_SERVICE_URL", "http://chunk-server/file_chunk")
+MANUAL_CHUNK_SERVICE_URL = os.getenv("MANUAL_CHUNK_SERVICE_URL", "http://chunk-server/manual_chunk")
+WEB_PAGE_CHUNK_SERVICE_URL = os.getenv("WEB_PAGE_CHUNK_SERVICE_URL", "http://chunk-server/webpage_chunk")
+OPENAI_CHAT_SERVICE_URL = os.getenv("OPENAI_CHAT_SERVICE_URL", "http://chat-server/openai")
+REMOTE_INDEX_URL = os.getenv("REMOTE_INDEX_URL", "http://rag-server/elasticsearch_index")
+RAG_SERVER_URL = os.getenv("RAG_SERVER_URL", "http://rag-server/elasticsearch_rag")
+ONLINE_SEARCH_SERVER_URL = os.getenv("ONLINE_SEARCH_SERVER_URL", "http://rag-server/online_search")
 
 
 # 日志配置
