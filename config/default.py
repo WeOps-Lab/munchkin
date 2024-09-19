@@ -151,7 +151,7 @@ DATABASES = {
 # celery
 CELERY_IMPORTS = ()
 CELERY_TIMEZONE = TIME_ZONE  # celery 时区问题
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "amqp://admin:password@rabbitmq.lite/")
 
 if IS_USE_CELERY:
     INSTALLED_APPS = locals().get("INSTALLED_APPS", [])
