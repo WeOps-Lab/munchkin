@@ -11,5 +11,5 @@ class TimeInfo(models.Model):
         verbose_name = _("Time Fields")
         abstract = True
 
-    created_at = models.DateTimeField(_("创建时间"), auto_now_add=True, db_index=True)
-    updated_at = models.DateTimeField(_("修改时间"), auto_now=True)
+    created_at = models.DateTimeField(_("Created Time"), auto_now_add=True, db_index=True)
+    updated_at = models.DateTimeField(_("Updated Time"), auto_now=True)

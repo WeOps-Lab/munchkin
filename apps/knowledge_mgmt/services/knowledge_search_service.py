@@ -8,7 +8,7 @@ from apps.model_provider_mgmt.models import EmbedProvider, RerankProvider
 
 class KnowledgeSearchService:
     @staticmethod
-    def search(knowledge_base_folder, query, kwargs) -> List[dict]:
+    def search(knowledge_base_folder, query, kwargs, score_threshold=0) -> List[dict]:
         docs = []
         remote_indexer = RemoteRunnable(settings.RAG_SERVER_URL)
 
@@ -37,13 +37,14 @@ class KnowledgeSearchService:
         result = remote_indexer.invoke(params)
         for doc in result:
             score = doc.metadata["_score"] * 10
-            if not score:
+            if score <= score_threshold:
                 continue
 
             doc_info = {
                 "content": doc.page_content,
                 "score": score,
                 "knowledge_id": doc.metadata["_source"]["metadata"]["knowledge_id"],
+                "knowledge_title": doc.metadata["_source"]["metadata"]["knowledge_title"],
             }
             if kwargs["enable_rerank"]:
                 doc_info["rerank_score"] = doc.metadata["relevance_score"]

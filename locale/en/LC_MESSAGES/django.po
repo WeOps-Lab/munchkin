@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-02 16:57+0800\n"
+"POT-Creation-Date: 2024-09-18 15:41+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12,28 +12,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: .\apps\base\user_api_secret_mgmt\views.py:27
+#: .\apps\base\user_api_secret_mgmt\views.py:32
 msgid "This user already has an API Secret"
 msgstr "This user already has an API Secret"
 
 #: .\apps\core\decorators\api_perminssion.py:39
-#: .\apps\knowledge_base\knowledge_document_mgmt\views.py:52
 msgid "insufficient permissions"
 msgstr "insufficient permissions"
 
 #: .\apps\core\middlewares\api_middleware.py:22
-#: .\apps\core\middlewares\keycloak_auth_middleware.py:54
 #: .\apps\core\views\index_view.py:28
 msgid "token validation failed"
 msgstr "token validation failed"
 
-#: .\apps\core\middlewares\keycloak_auth_middleware.py:44
+#: .\apps\core\middlewares\keycloak_auth_middleware.py:22
+#: .\apps\core\middlewares\keycloak_auth_middleware.py:32
 #: .\apps\core\views\index_view.py:21
 msgid "please provide Token"
 msgstr "please provide Token"
 
 #: .\apps\core\models\time_info.py:11
-msgid "时间相关字段"
+msgid "Time Fields"
 msgstr ""
 
 #: .\apps\core\models\time_info.py:14
@@ -44,39 +43,215 @@ msgstr ""
 msgid "修改时间"
 msgstr ""
 
-#: .\apps\knowledge_base\enums.py:10
-msgid "Training"
+#: .\apps\knowledge_mgmt\file_knowledge_mgmt\views.py:44
+msgid "Failed to import file."
 msgstr ""
 
-#: .\apps\knowledge_base\enums.py:11
-msgid "Ready"
+#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:41
+#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:61
+msgid "The knowledge base name already exists."
 msgstr ""
 
-#: .\apps\knowledge_base\enums.py:12
-msgid "Error"
-msgstr ""
-
-#: .\apps\knowledge_base\enums.py:22
-msgid "Local File"
-msgstr ""
-
-#: .\apps\knowledge_base\enums.py:23
-msgid "Web Link"
-msgstr ""
-
-#: .\apps\knowledge_base\enums.py:24
-msgid "Custom Text"
-msgstr ""
-
-#: .\apps\knowledge_base\knowledge_base_mgmt\views.py:39
+#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:80
 msgid "This knowledge base contains documents and cannot be deleted."
 msgstr ""
 
-#: .\apps\knowledge_base\knowledge_document_mgmt\views.py:22
-#: .\apps\knowledge_base\knowledge_document_mgmt\views.py:42
-#: .\apps\knowledge_base\knowledge_document_mgmt\views.py:47
-#: .\apps\knowledge_base\knowledge_document_mgmt\views.py:59
-msgid "{} is required"
+#: .\apps\knowledge_mgmt\knowledge_document_mgmt\utils.py:66
+msgid "Start handle {} knowledge: {}"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:51
+msgid "query is required"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:93
+#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:110
+msgid "chunk_id is required"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:103
+msgid "update failed"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:119
+#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:133
+msgid "delete failed"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\file_knowledge.py:13
+msgid "File"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\file_knowledge.py:21
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:71
+#: .\apps\knowledge_mgmt\models\manual_knowledge.py:9
+#: .\apps\knowledge_mgmt\models\web_page_knowledge.py:9
+msgid "Knowledge Document"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\file_knowledge.py:34
+msgid "File Knowledge"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_base.py:15
+msgid "Embed Model"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_base.py:21
+msgid "Enable Vector Search"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_base.py:23
+msgid "Vector Search weight"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_base.py:24
+msgid "Enable Text Search"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_base.py:25
+msgid "Text Search Weight"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_base.py:26
+msgid "Enable Rerank"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_base.py:30
+msgid "Rerank Model"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:17
+msgid "Training"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:18
+msgid "Ready"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:19
+msgid "Error"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:25
+msgid "name"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:26
+msgid "chunk size"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:27
+msgid "train status"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:28
+msgid "train progress"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:29
+msgid "enable general parse"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:30
+msgid "general parse chunk size"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:31
+msgid "general parse chunk overlap"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:32
+msgid "enable semantic chunk parse"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:38
+msgid "embedding model"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:40
+msgid "enable OCR parse"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:42
+msgid "OCR model"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:44
+msgid "enable Excel parse"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:45
+msgid "Excel header row parse"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:46
+msgid "Excel full content parse"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:47
+msgid "source type"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:60
+msgid "Document {} successfully deleted."
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:62
+msgid "Document {} not found, skipping deletion."
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\manual_knowledge.py:6
+msgid "content"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\manual_knowledge.py:16
+msgid "Manual Knowledge"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\web_page_knowledge.py:6
+msgid "URL"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\web_page_knowledge.py:14
+msgid "max depth"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\web_page_knowledge.py:17
+msgid "Web Page Knowledge"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\web_page_knowledge_mgmt\views.py:21
+msgid "url is required"
+msgstr ""
+
+#: .\apps\model_provider_mgmt\services\llm_service.py:40
+msgid ""
+"\n"
+"The following is the background knowledge provided to you. The format of the "
+"background knowledge is as follows:\n"
+"--------\n"
+"Knowledge Title: [Title]\n"
+"Knowledge Content: [Content]\n"
+"--------\n"
+"    \n"
+"                 "
+msgstr ""
+
+#: .\apps\model_provider_mgmt\services\llm_service.py:61
+msgid "The following are the online search results:"
+msgstr ""
+
+#: .\apps\model_provider_mgmt\services\llm_service.py:63
+msgid "Title:[{}]\n"
+msgstr ""
+
+#: .\apps\model_provider_mgmt\services\llm_service.py:83
+msgid "Citing Knowledge: {}"
+msgstr ""
+
+#: .\apps\model_provider_mgmt\services\llm_service.py:87
+msgid "Website Source:"
 msgstr ""
 
 #~ msgid "Request method is not supported"

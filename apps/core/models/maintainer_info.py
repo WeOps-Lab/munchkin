@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class MaintainerInfo(models.Model):
@@ -7,8 +8,8 @@ class MaintainerInfo(models.Model):
     """
 
     class Meta:
-        verbose_name = "维护者相关字段"
+        verbose_name = _("Maintainer Fields")
         abstract = True
 
-    created_by = models.CharField("创建者", max_length=32, default="")
-    updated_by = models.CharField("更新者", max_length=32, default="")
+    created_by = models.CharField(_("Creator"), max_length=32, default="")
+    updated_by = models.CharField(_("Updater"), max_length=32, default="")

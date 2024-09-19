@@ -12,12 +12,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="knowledgebase",
             name="rag_k",
-            field=models.IntegerField(default=50, verbose_name="返回结果数量"),
+            field=models.IntegerField(default=50, verbose_name="Number of Results"),
         ),
         migrations.AddField(
             model_name="knowledgebase",
             name="rag_num_candidates",
-            field=models.IntegerField(default=1000, verbose_name="候选数量"),
+            field=models.IntegerField(default=1000, verbose_name="Number of Candidates"),
         ),
         migrations.AlterField(
             model_name="knowledgebase",

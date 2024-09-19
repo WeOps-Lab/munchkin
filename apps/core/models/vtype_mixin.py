@@ -1,6 +1,16 @@
 from django.db import models
-from django.db.models import JSONField, CharField, IntegerField, FloatField, DateTimeField, DateField, TimeField, Field, \
-    BooleanField
+from django.db.models import (
+    BooleanField,
+    CharField,
+    DateField,
+    DateTimeField,
+    Field,
+    FloatField,
+    IntegerField,
+    JSONField,
+    TimeField,
+)
+from django.utils.translation import gettext_lazy as _
 
 
 class VtypeMixin(models.Model):
@@ -26,19 +36,19 @@ class VtypeMixin(models.Model):
         DEFAULT: Field,
     }
     VTYPE_CHOICE = (
-        (STRING, "字符串"),
-        (INTEGER, "整型"),
-        (FLOAT, "浮点型"),
-        (DATETIME, "时间日期"),
-        (TIME, "时间"),
-        (DATE, "日期"),
-        (JSON, "JSON"),
-        (BOOLEAN, "布尔值"),
-        (DEFAULT, "其它"),
+        (STRING, _("string")),
+        (INTEGER, _("integer")),
+        (FLOAT, _("float")),
+        (DATETIME, _("datetime")),
+        (TIME, _("time")),
+        (DATE, _("date")),
+        (JSON, _("json")),
+        (BOOLEAN, _("boolean")),
+        (DEFAULT, _("default")),
     )
 
-    vtype = models.CharField("类型", max_length=32, default=STRING)
+    vtype = models.CharField(_("Type"), max_length=32, default=STRING)
 
     class Meta:
-        verbose_name = "文本值类型"
+        verbose_name = _("Text Value Type Fields")
         abstract = True

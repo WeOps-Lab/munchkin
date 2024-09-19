@@ -31,8 +31,8 @@ class KnowledgeBase(MaintainerInfo, TimeInfo):
         blank=True,
         null=True,
     )
-    rag_k = models.IntegerField(default=50, verbose_name="返回结果数量")
-    rag_num_candidates = models.IntegerField(default=1000, verbose_name="候选数量")
+    rag_k = models.IntegerField(default=50, verbose_name=_("Number of Results"))
+    rag_num_candidates = models.IntegerField(default=1000, verbose_name=_("Number of Candidates"))
 
     def knowledge_index_name(self):
         return f"knowledge_base_{self.id}"
