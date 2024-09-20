@@ -7,10 +7,10 @@ from rest_framework.decorators import action
 from apps.core.logger import logger
 from apps.core.utils.elasticsearch_utils import get_es_client
 from apps.knowledge_mgmt.knowledge_document_mgmt.serializers import KnowledgeDocumentSerializer
-from apps.knowledge_mgmt.knowledge_document_mgmt.utils import KnowledgeDocumentUtils
 from apps.knowledge_mgmt.models import KnowledgeBase, KnowledgeDocument
+from apps.knowledge_mgmt.models.knowledge_document import DocumentStatus
 from apps.knowledge_mgmt.services.knowledge_search_service import KnowledgeSearchService
-from apps.knowledge_mgmt.tasks import general_embed
+from apps.knowledge_mgmt.tasks import general_embed, general_embed_by_document_list
 from apps.knowledge_mgmt.viewset_utils import AuthViewSet
 
 
@@ -34,11 +34,25 @@ class KnowledgeDocumentViewSet(AuthViewSet):
         if type(knowledge_document_ids) is not list:
             knowledge_document_ids = [knowledge_document_ids]
         preview = kwargs.pop("preview", False)
-        KnowledgeDocument.objects.filter(id__in=knowledge_document_ids).update(**kwargs)
+        is_save_only = kwargs.pop("is_save_only", False)
         if preview:
             document_list = KnowledgeDocument.objects.filter(id__in=knowledge_document_ids)
-            doc_list = KnowledgeDocumentUtils.general_embed_by_document_list(document_list, True)
+            doc_list = general_embed_by_document_list(document_list, True)
             return JsonResponse({"result": True, "data": doc_list})
+        if not is_save_only:
+            kwargs["train_status"] = DocumentStatus.TRAINING
+        KnowledgeDocument.objects.filter(id__in=knowledge_document_ids).update(**kwargs)
+        if not is_save_only:
+            general_embed.delay(knowledge_document_ids)
+        return JsonResponse({"result": True})
+
+    @action(methods=["POST"], detail=False)
+    def batch_train(self, request):
+        kwargs = request.data
+        knowledge_document_ids = kwargs.pop("knowledge_document_ids", [])
+        if type(knowledge_document_ids) is not list:
+            knowledge_document_ids = [knowledge_document_ids]
+        KnowledgeDocument.objects.filter(id__in=knowledge_document_ids).update(train_status=DocumentStatus.TRAINING)
         general_embed.delay(knowledge_document_ids)
         return JsonResponse({"result": True})
 
@@ -68,6 +82,8 @@ class KnowledgeDocumentViewSet(AuthViewSet):
         instance: KnowledgeDocument = self.get_object()
         es_client = get_es_client()
         search_text = request.GET.get("search_text", "")
+        page = int(request.GET.get("page", 1))
+        page_size = int(request.GET.get("page_size", 10))
         query = {
             "query": {
                 "bool": {
@@ -75,14 +91,26 @@ class KnowledgeDocumentViewSet(AuthViewSet):
                         {"term": {"metadata.knowledge_id": instance.id}},
                     ],
                 }
-            }
+            },
+            "sort": [{"_doc": {"order": "desc"}}],
+            "from": (page - 1) * page_size,
+            "size": page_size,
         }
         if search_text:
             query["query"]["bool"]["must"].append({"match": {"text": search_text}})  # noqa
         res = es_client.search(index=instance.knowledge_index_name(), body=query)
         hits = res.get("hits", {}).get("hits", [])
+        total_hits = res.get("hits", {}).get("total", {}).get("value", 0)
         es_client.transport.close()
-        return JsonResponse({"result": True, "data": [{"id": i["_id"], "content": i["_source"]["text"]} for i in hits]})
+        return JsonResponse(
+            {
+                "result": True,
+                "data": {
+                    "items": [{"id": i["_id"], "content": i["_source"]["text"]} for i in hits],
+                    "count": total_hits,
+                },
+            }
+        )
 
     @action(methods=["POST"], detail=True)
     def enable_chunk(self, request, *args, **kwargs):

@@ -12,11 +12,13 @@ class DocumentStatus(object):
     TRAINING = 0
     READY = 1
     ERROR = 2
+    PENDING = 3
 
     CHOICE = (
         (TRAINING, _("Training")),
         (READY, _("Ready")),
         (ERROR, _("Error")),
+        (PENDING, _("Pending")),
     )
 
 
