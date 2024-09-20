@@ -21,8 +21,8 @@ def general_embed(knowledge_document_id_list):
 def retrain_all(knowledge_base_id):
     logger.info("Start retraining")
     document_list = KnowledgeDocument.objects.filter(knowledge_base_id=knowledge_base_id)
+    document_list.update(train_status=DocumentStatus.TRAINING)
     general_embed_by_document_list(document_list)
-    logger.info("Retraining is complete")
 
 
 def general_embed_by_document_list(document_list, is_show=False):
