@@ -31,11 +31,15 @@ def general_embed_by_document_list(document_list, is_show=False):
         docs = [i.page_content for i in remote_docs][:10]
         return docs
     for index, document in tqdm(enumerate(document_list)):
-        invoke_document_to_es.delay(document)
+        invoke_document_to_es.delay(document.id)
 
 
 @shared_task
-def invoke_document_to_es(document):
+def invoke_document_to_es(document_id):
+    document = KnowledgeDocument.objects.filter(id=document_id).first()
+    if not document:
+        logger.error(f"document {document_id} not found")
+        return
     es_client = get_es_client()
     remote_indexer = RemoteRunnable(settings.REMOTE_INDEX_URL)
     document.train_progress = 0
