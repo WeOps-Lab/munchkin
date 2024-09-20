@@ -44,7 +44,7 @@ def invoke_document_to_es(document_id):
     remote_indexer = RemoteRunnable(settings.REMOTE_INDEX_URL)
     document.train_progress = 0
     document.save()
-    logger.info(f"document {document.name} process: {document.train_progress}")
+    logger.info(f"document {document.name} progress: {document.train_progress}")
     document.delete_es_content(es_client)
     knowledge_docs = invoke_one_document(document)
     if not knowledge_docs:
@@ -53,7 +53,7 @@ def invoke_document_to_es(document_id):
         return
     document.train_progress = 10
     document.save()
-    logger.info(f"document {document.name} process: {document.train_progress}")
+    logger.info(f"document {document.name} progress: {document.train_progress}")
     splice_docs = [knowledge_docs[i : i + 100] for i in range(0, document.chunk_size, 100)]
     splice_count = len(splice_docs)
     process_num = round(85 / splice_count, 4)
@@ -62,7 +62,7 @@ def invoke_document_to_es(document_id):
     document.train_status = DocumentStatus.READY
     document.train_progress = 100
     document.save()
-    logger.info(f"document {document.name} process: {document.train_progress}")
+    logger.info(f"document {document.name} progress: {document.train_progress}")
     es_client.transport.close()
 
 
