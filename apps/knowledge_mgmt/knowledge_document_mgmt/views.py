@@ -73,7 +73,11 @@ class KnowledgeDocumentViewSet(AuthViewSet):
         )
         doc_map = {doc["id"]: doc for doc in knowledge_document_list}
         for i in docs:
-            doc_obj = doc_map.get(i.pop("knowledge_id"))
+            knowledge_id = i.pop("knowledge_id")
+            doc_obj = doc_map.get(knowledge_id)
+            if not doc_obj:
+                logger.warning(f"knowledge_id: {knowledge_id} not found")
+                continue
             i.update(doc_obj)
         return JsonResponse({"result": True, "data": docs})
 
