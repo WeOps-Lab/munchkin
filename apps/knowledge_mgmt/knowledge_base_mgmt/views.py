@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.db.transaction import atomic
 from django.http import JsonResponse
 from django.utils.translation import gettext as _
 from rest_framework import status
@@ -6,6 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from apps.core.decorators.api_perminssion import HasRole
+from apps.core.utils.elasticsearch_utils import get_es_client
 from apps.core.utils.keycloak_client import KeyCloakClient
 from apps.knowledge_mgmt.knowledge_base_mgmt.serializers import KnowledgeBaseSerializer
 from apps.knowledge_mgmt.models import KnowledgeBase, KnowledgeDocument
@@ -43,7 +45,11 @@ class KnowledgeBaseViewSet(AuthViewSet):
         params["rerank_model"] = rerank_model.id
         serializer = self.get_serializer(data=params)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        es_client = get_es_client()
+        with atomic():
+            self.perform_create(serializer)
+            index = f"knowledge_base_{serializer.data.get('id')}"
+            es_client.indices.create(index=index)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 

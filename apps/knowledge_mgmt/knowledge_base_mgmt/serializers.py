@@ -26,7 +26,7 @@ class KnowledgeBaseSerializer(serializers.ModelSerializer):
         self.group_map = {i["id"]: i["name"] for i in groups}
 
     def get_team_name(self, instance: KnowledgeBase):
-        return [self.group_map.get(i) for i in instance.team]
+        return [self.group_map.get(i) for i in instance.team if i in self.group_map]
 
     def update(self, instance: KnowledgeBase, validated_data):
         if instance.embed_model_id != validated_data["embed_model"]:

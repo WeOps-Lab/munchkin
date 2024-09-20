@@ -40,11 +40,21 @@ class KnowledgeDocumentViewSet(AuthViewSet):
             doc_list = general_embed_by_document_list(document_list, True)
             return JsonResponse({"result": True, "data": doc_list})
         if not is_save_only:
+            if KnowledgeDocument.objects.filter(
+                id__in=knowledge_document_ids, train_status=DocumentStatus.TRAINING
+            ).exists():
+                return JsonResponse({"result": False, "message": _("training document can not be retrained")})
             kwargs["train_status"] = DocumentStatus.TRAINING
         KnowledgeDocument.objects.filter(id__in=knowledge_document_ids).update(**kwargs)
         if not is_save_only:
             general_embed.delay(knowledge_document_ids)
         return JsonResponse({"result": True})
+
+    def destroy(self, request, *args, **kwargs):
+        instance: KnowledgeDocument = self.get_object()
+        if instance.train_status == DocumentStatus.TRAINING:
+            return JsonResponse({"result": False, "message": _("training document can not be deleted")})
+        return super().destroy(request, *args, **kwargs)
 
     @action(methods=["POST"], detail=False)
     def batch_train(self, request):
@@ -154,6 +164,8 @@ class KnowledgeDocumentViewSet(AuthViewSet):
     def batch_delete(self, request):
         doc_ids = request.data.get("doc_ids", [])
         knowledge_base_id = request.data.get("knowledge_base_id", 0)
+        if KnowledgeDocument.objects.filter(id__in=doc_ids, train_status=DocumentStatus.TRAINING).exists():
+            return JsonResponse({"result": False, "message": _("training document can not be deleted")})
         KnowledgeDocument.objects.filter(id__in=doc_ids).delete()
         index_name = f"knowledge_base_{knowledge_base_id}"
         query = {"query": {"terms": {"metadata.knowledge_id": doc_ids}}}
