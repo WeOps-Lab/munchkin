@@ -25,7 +25,7 @@ class UserAPISecretViewSet(viewsets.ModelViewSet):
         api_secret = UserAPISecret.generate_api_secret()
         return JsonResponse({"result": True, "data": {"api_secret": api_secret}})
 
-    @HasRole(["admin"])
+    @HasRole()
     def create(self, request, *args, **kwargs):
         username = request.user.username
         if UserAPISecret.objects.filter(username=username).exists():

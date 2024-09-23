@@ -5,7 +5,13 @@ from tqdm import tqdm
 
 from apps.core.logger import celery_logger as logger
 from apps.core.utils.elasticsearch_utils import get_es_client
-from apps.knowledge_mgmt.models import FileKnowledge, KnowledgeDocument, ManualKnowledge, WebPageKnowledge
+from apps.knowledge_mgmt.models import (
+    FileKnowledge,
+    KnowledgeBase,
+    KnowledgeDocument,
+    ManualKnowledge,
+    WebPageKnowledge,
+)
 from apps.knowledge_mgmt.models.knowledge_document import DocumentStatus
 
 
@@ -20,6 +26,8 @@ def general_embed(knowledge_document_id_list):
 @shared_task
 def retrain_all(knowledge_base_id):
     logger.info("Start retraining")
+    knowledge_base = KnowledgeBase.objects.get(id=knowledge_base_id)
+    knowledge_base.recreate_es_index()
     document_list = KnowledgeDocument.objects.filter(knowledge_base_id=knowledge_base_id)
     document_list.update(train_status=DocumentStatus.TRAINING)
     general_embed_by_document_list(document_list)

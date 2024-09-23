@@ -1,8 +1,10 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from apps.core.logger import logger
 from apps.core.models.maintainer_info import MaintainerInfo
 from apps.core.models.time_info import TimeInfo
+from apps.core.utils.elasticsearch_utils import get_es_client
 
 
 class KnowledgeBase(MaintainerInfo, TimeInfo):
@@ -36,3 +38,21 @@ class KnowledgeBase(MaintainerInfo, TimeInfo):
 
     def knowledge_index_name(self):
         return f"knowledge_base_{self.id}"
+
+    def delete(self, *args, **kwargs):
+        es_client = get_es_client()
+        es_client.indices.delete(index=self.knowledge_index_name())
+        es_client.transport.close()
+        super().delete(*args, **kwargs)
+
+    def recreate_es_index(self):
+        es_client = get_es_client()
+        try:
+            es_client.indices.delete(index=self.knowledge_index_name())
+            logger.info("delete es index success")
+            es_client.indices.create(index=self.knowledge_index_name())
+            logger.info("recreate es index success")
+        except Exception as e:
+            logger.error("recreate es index failed")
+            logger.exception(e)
+        es_client.transport.close()
