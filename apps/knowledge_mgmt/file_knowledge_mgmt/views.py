@@ -8,6 +8,7 @@ from apps.knowledge_mgmt.file_knowledge_mgmt.serializers import FileKnowledgeSer
 from apps.knowledge_mgmt.knowledge_document_mgmt.utils import KnowledgeDocumentUtils
 from apps.knowledge_mgmt.models import FileKnowledge
 from apps.knowledge_mgmt.viewset_utils import AuthViewSet
+from apps.model_provider_mgmt.models import OCRProvider
 
 
 class FileKnowledgeViewSet(AuthViewSet):
@@ -26,6 +27,7 @@ class FileKnowledgeViewSet(AuthViewSet):
     @staticmethod
     def import_file_knowledge(files, kwargs, username):
         file_knowledge_list = []
+        ocr_model = OCRProvider.objects.first()
         try:
             for file_obj in files:
                 title = file_obj.name
@@ -34,7 +36,7 @@ class FileKnowledgeViewSet(AuthViewSet):
                     continue
                 kwargs["name"] = title
                 kwargs["knowledge_source_type"] = "file"
-                new_doc = KnowledgeDocumentUtils.get_new_document(kwargs, username)
+                new_doc = KnowledgeDocumentUtils.get_new_document(kwargs, username, ocr_model)
                 content_file = ContentFile(file_obj.read(), name=title)
                 file_knowledge_list.append(FileKnowledge(file=content_file, knowledge_document_id=new_doc.id))
             objs = FileKnowledge.objects.bulk_create(file_knowledge_list, batch_size=10)

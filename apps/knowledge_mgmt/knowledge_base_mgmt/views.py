@@ -43,6 +43,7 @@ class KnowledgeBaseViewSet(AuthViewSet):
             return JsonResponse({"result": False, "message": _("The knowledge base name already exists.")})
         params["created_by"] = request.user.username
         params["rerank_model"] = rerank_model.id
+        params["enable_rerank"] = False
         serializer = self.get_serializer(data=params)
         serializer.is_valid(raise_exception=True)
         es_client = get_es_client()
