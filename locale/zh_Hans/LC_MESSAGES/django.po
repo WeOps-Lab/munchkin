@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-18 15:50+0800\n"
+"POT-Creation-Date: 2024-09-24 15:48+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,8 +31,8 @@ msgstr "权限不足"
 msgid "token validation failed"
 msgstr "Token验证失败"
 
-#: .\apps\core\middlewares\keycloak_auth_middleware.py:22
-#: .\apps\core\middlewares\keycloak_auth_middleware.py:32
+#: .\apps\core\middlewares\keycloak_auth_middleware.py:24
+#: .\apps\core\middlewares\keycloak_auth_middleware.py:34
 #: .\apps\core\views\index_view.py:21
 msgid "please provide Token"
 msgstr "请提供Token"
@@ -57,92 +57,105 @@ msgstr "时间相关字段"
 
 #: .\apps\core\models\time_info.py:14
 msgid "Created Time"
-msgstr ""
+msgstr "创建时间"
 
 #: .\apps\core\models\time_info.py:15
 msgid "Updated Time"
-msgstr ""
+msgstr "更新时间"
 
 #: .\apps\core\models\vtype_mixin.py:39
 msgid "string"
-msgstr ""
+msgstr "字符串"
 
 #: .\apps\core\models\vtype_mixin.py:40
 msgid "integer"
-msgstr ""
+msgstr "数字"
 
 #: .\apps\core\models\vtype_mixin.py:41
 msgid "float"
-msgstr ""
+msgstr "浮点数"
 
 #: .\apps\core\models\vtype_mixin.py:42
 msgid "datetime"
-msgstr ""
+msgstr "日期时间"
 
 #: .\apps\core\models\vtype_mixin.py:43
 msgid "time"
-msgstr ""
+msgstr "时间"
 
 #: .\apps\core\models\vtype_mixin.py:44
 msgid "date"
-msgstr ""
+msgstr "日期"
 
 #: .\apps\core\models\vtype_mixin.py:45
 msgid "json"
-msgstr ""
+msgstr "JSON"
 
 #: .\apps\core\models\vtype_mixin.py:46
 msgid "boolean"
-msgstr ""
+msgstr "布尔"
 
 #: .\apps\core\models\vtype_mixin.py:47
 msgid "default"
-msgstr ""
+msgstr "默认"
 
 #: .\apps\core\models\vtype_mixin.py:50
 msgid "Type"
-msgstr ""
+msgstr "类型"
 
 #: .\apps\core\models\vtype_mixin.py:53
 msgid "Text Value Type Fields"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\file_knowledge_mgmt\views.py:44
+#: .\apps\knowledge_mgmt\file_knowledge_mgmt\views.py:46
 msgid "Failed to import file."
 msgstr ""
 
-#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:41
-#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:61
+#: .\apps\knowledge_mgmt\knowledge_base_mgmt\serializers.py:44
+#, fuzzy
+#| msgid "This knowledge base contains documents and cannot be deleted."
+msgid "The knowledge base is training and cannot be modified."
+msgstr "该知识库下存在文档，无法删除"
+
+#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:43
+#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:68
 msgid "The knowledge base name already exists."
 msgstr ""
 
-#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:80
+#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:87
 msgid "This knowledge base contains documents and cannot be deleted."
 msgstr "该知识库下存在文档，无法删除"
 
-#: .\apps\knowledge_mgmt\knowledge_document_mgmt\utils.py:66
-msgid "Start handle {} knowledge: {}"
+#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:46
+msgid "training document can not be retrained"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:51
+#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:56
+#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:168
+#, fuzzy
+#| msgid "This knowledge base contains documents and cannot be deleted."
+msgid "training document can not be deleted"
+msgstr "该知识库下存在文档，无法删除"
+
+#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:75
 #, fuzzy
 #| msgid "{} is required"
 msgid "query is required"
 msgstr "{}是必填项"
 
-#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:93
-#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:110
+#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:135
+#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:152
 #, fuzzy
 #| msgid "{} is required"
 msgid "chunk_id is required"
 msgstr "{}是必填项"
 
-#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:103
+#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:145
 msgid "update failed"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:119
-#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:133
+#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:161
+#: .\apps\knowledge_mgmt\knowledge_document_mgmt\views.py:177
 msgid "delete failed"
 msgstr ""
 
@@ -151,7 +164,7 @@ msgid "File"
 msgstr ""
 
 #: .\apps\knowledge_mgmt\models\file_knowledge.py:21
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:71
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:73
 #: .\apps\knowledge_mgmt\models\manual_knowledge.py:9
 #: .\apps\knowledge_mgmt\models\web_page_knowledge.py:9
 msgid "Knowledge Document"
@@ -161,111 +174,127 @@ msgstr ""
 msgid "File Knowledge"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_base.py:15
+#: .\apps\knowledge_mgmt\models\knowledge_base.py:17
 msgid "Embed Model"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_base.py:21
+#: .\apps\knowledge_mgmt\models\knowledge_base.py:23
 msgid "Enable Vector Search"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_base.py:23
+#: .\apps\knowledge_mgmt\models\knowledge_base.py:25
 msgid "Vector Search weight"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_base.py:24
+#: .\apps\knowledge_mgmt\models\knowledge_base.py:26
 msgid "Enable Text Search"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_base.py:25
+#: .\apps\knowledge_mgmt\models\knowledge_base.py:27
 msgid "Text Search Weight"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_base.py:26
+#: .\apps\knowledge_mgmt\models\knowledge_base.py:28
 msgid "Enable Rerank"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_base.py:30
+#: .\apps\knowledge_mgmt\models\knowledge_base.py:32
 msgid "Rerank Model"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:17
-msgid "Training"
+#: .\apps\knowledge_mgmt\models\knowledge_base.py:36
+msgid "Number of Results"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_base.py:37
+msgid "Number of Candidates"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_base.py:38
+msgid "Text search mode"
 msgstr ""
 
 #: .\apps\knowledge_mgmt\models\knowledge_document.py:18
-msgid "Ready"
+msgid "Training"
 msgstr ""
 
 #: .\apps\knowledge_mgmt\models\knowledge_document.py:19
+msgid "Ready"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:20
 msgid "Error"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:25
-msgid "name"
-msgstr ""
-
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:26
-msgid "chunk size"
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:21
+msgid "Pending"
 msgstr ""
 
 #: .\apps\knowledge_mgmt\models\knowledge_document.py:27
-msgid "train status"
+msgid "name"
 msgstr ""
 
 #: .\apps\knowledge_mgmt\models\knowledge_document.py:28
-msgid "train progress"
+msgid "chunk size"
 msgstr ""
 
 #: .\apps\knowledge_mgmt\models\knowledge_document.py:29
-msgid "enable general parse"
+msgid "train status"
 msgstr ""
 
 #: .\apps\knowledge_mgmt\models\knowledge_document.py:30
-msgid "general parse chunk size"
+msgid "train progress"
 msgstr ""
 
 #: .\apps\knowledge_mgmt\models\knowledge_document.py:31
-msgid "general parse chunk overlap"
+msgid "enable general parse"
 msgstr ""
 
 #: .\apps\knowledge_mgmt\models\knowledge_document.py:32
+msgid "general parse chunk size"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:33
+msgid "general parse chunk overlap"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:34
 msgid "enable semantic chunk parse"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:38
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:40
 msgid "embedding model"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:40
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:42
 msgid "enable OCR parse"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:42
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:44
 msgid "OCR model"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:44
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:46
 msgid "enable Excel parse"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:45
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:47
 msgid "Excel header row parse"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:46
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:48
 msgid "Excel full content parse"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:47
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:49
 msgid "source type"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:60
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:62
 msgid "Document {} successfully deleted."
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:62
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:64
 msgid "Document {} not found, skipping deletion."
 msgstr ""
 
@@ -292,10 +321,21 @@ msgstr ""
 #: .\apps\knowledge_mgmt\web_page_knowledge_mgmt\views.py:21
 #, fuzzy
 #| msgid "{} is required"
-msgid "{} is required"
+msgid "url is required"
 msgstr "{}是必填项"
 
-#: .\apps\model_provider_mgmt\services\llm_service.py:40
+#: .\apps\model_provider_mgmt\services\llm_service.py:37
+#, fuzzy
+#| msgid ""
+#| "\n"
+#| "The following is the background knowledge provided to you. The format of "
+#| "the background knowledge is as follows:\n"
+#| "--------\n"
+#| "Knowledge Title: [Title]\n"
+#| "Knowledge Content: [Content]\n"
+#| "--------\n"
+#| "    \n"
+#| "                 "
 msgid ""
 "\n"
 "The following is the background knowledge provided to you. The format of the "
@@ -304,7 +344,7 @@ msgid ""
 "Knowledge Title: [Title]\n"
 "Knowledge Content: [Content]\n"
 "--------\n"
-"    \n"
+"\n"
 "                 "
 msgstr ""
 "\n"
@@ -315,20 +355,21 @@ msgstr ""
 "--------\n"
 "    \n"
 "                 "
-#: .\apps\model_provider_mgmt\services\llm_service.py:61
-msgid "The following are the online search results:"
-msgstr "以下是联网在线搜索结果:"
 
-#: .\apps\model_provider_mgmt\services\llm_service.py:63
-msgid "Title:[{}]\n"
+#: .\apps\model_provider_mgmt\services\llm_service.py:48
+#, fuzzy
+#| msgid "Title:[{}]\n"
+msgid "Knowledge Title:[{}]\n"
 msgstr "标题：【{}】\n"
 
-#: .\apps\model_provider_mgmt\services\llm_service.py:83
+#: .\apps\model_provider_mgmt\services\llm_service.py:49
+msgid "Knowledge Content:[{}]\n"
+msgstr ""
+
+#: .\apps\model_provider_mgmt\services\llm_service.py:50
+msgid "Knowledge Base[{}]--{}"
+msgstr ""
+
+#: .\apps\model_provider_mgmt\services\llm_service.py:67
 msgid "Citing Knowledge: {}"
 msgstr "引用知识："
-
-#: .\apps\model_provider_mgmt\services\llm_service.py:87
-msgid "Website Source:"
-msgstr "网站来源："
-
-

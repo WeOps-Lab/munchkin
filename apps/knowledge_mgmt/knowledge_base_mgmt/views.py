@@ -1,4 +1,3 @@
-from django.db.models import Q
 from django.db.transaction import atomic
 from django.http import JsonResponse
 from django.utils.translation import gettext as _
@@ -25,13 +24,7 @@ class KnowledgeBaseViewSet(AuthViewSet):
     def list(self, request, *args, **kwargs):
         name = request.query_params.get("name", "")
         queryset = KnowledgeBase.objects.filter(name__icontains=name)
-        if not request.user.is_superuser:
-            teams = [i["id"] for i in request.user.group_list]
-            query = Q()
-            for team_member in teams:
-                query |= Q(team__contains=team_member)
-            queryset = queryset.filter(query)
-        return self._list(queryset.order_by("-id"))
+        return self.query_by_groups(request, queryset)
 
     @HasRole()
     def create(self, request, *args, **kwargs):
@@ -77,6 +70,7 @@ class KnowledgeBaseViewSet(AuthViewSet):
         instance.text_search_weight = kwargs["text_search_weight"]
         instance.enable_rerank = kwargs["enable_rerank"]
         instance.rerank_model_id = kwargs["rerank_model"]
+        instance.text_search_mode = kwargs["text_search_mode"]
         instance.save()
         return JsonResponse({"result": True})
 

@@ -31,6 +31,7 @@ class KnowledgeSearchService:
             "rerank_top_k": 10,  # Rerank返回结果数量
             "enable_text_search": kwargs["enable_text_search"],
             "enable_vector_search": kwargs["enable_vector_search"],
+            "text_search_mode": kwargs["text_search_mode"],
         }
         if kwargs["enable_text_search"]:
             params["text_search_weight"] = kwargs["text_search_weight"]

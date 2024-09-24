@@ -1,18 +1,27 @@
 from django.http import JsonResponse
 from rest_framework.decorators import action
 
+from apps.core.decorators.api_perminssion import HasRole
 from apps.core.viewsets.guardian_model_viewset import GuardianModelViewSet
+from apps.knowledge_mgmt.viewset_utils import AuthViewSet
 from apps.model_provider_mgmt.models import LLMModel, LLMSkill
 from apps.model_provider_mgmt.serializers.llm_serializer import LLMModelSerializer, LLMSerializer
 from apps.model_provider_mgmt.services.llm_service import llm_service
 
 
-class LLMViewSet(GuardianModelViewSet):
+class LLMViewSet(AuthViewSet):
     serializer_class = LLMSerializer
     queryset = LLMSkill.objects.all()
     search_fields = ["name"]
 
+    @HasRole()
+    def list(self, request, *args, **kwargs):
+        name = request.query_params.get("name", "")
+        queryset = LLMSkill.objects.filter(name__icontains=name)
+        return self.query_by_groups(request, queryset)
+
     @action(methods=["POST"], detail=False)
+    @HasRole()
     def execute(self, request):
         """
         {

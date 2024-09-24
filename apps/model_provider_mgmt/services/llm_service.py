@@ -28,6 +28,7 @@ class LLMService:
                     "text_search_weight": i.text_search_weight,
                     "enable_vector_search": i.enable_vector_search,
                     "vector_search_weight": i.vector_search_weight,
+                    "text_search_mode": i.text_search_mode,
                 }
                 rag_result = self.knowledge_search_service.search(
                     knowledge_base_list, kwargs["user_message"], params, score_threshold=kwargs["rag_score_threshold"]
@@ -44,9 +45,9 @@ Knowledge Content: [Content]
                 )
                 for r in rag_result:
                     context += "--------\n"
-                    context += f"Knowledge Title:[{r['knowledge_title']}\n"
-                    context += f"Knowledge Content:[{r['content'].replace('{', '').replace('}', '')}]\n"
-                    title_list.add(f"Knowledge Base[{i.name}]--{r['knowledge_title']}")
+                    context += _("Knowledge Title:[{}]\n").format(r["knowledge_title"])
+                    context += _("Knowledge Content:[{}]\n").format(r["content"].replace("{", "").replace("}", ""))
+                    title_list.add(_("Knowledge Base[{}]--{}").format(i.name, r["knowledge_title"]))
         chat_server = RemoteRunnable(settings.OPENAI_CHAT_SERVICE_URL)
         result = chat_server.invoke(
             {
