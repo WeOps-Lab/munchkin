@@ -1,25 +1,34 @@
 from django.http import JsonResponse
-from rest_framework import viewsets
 from rest_framework.decorators import action
 
 from apps.core.viewsets.guardian_model_viewset import GuardianModelViewSet
 from apps.model_provider_mgmt.models import LLMModel, LLMSkill
-from apps.model_provider_mgmt.serializers.llm_serializer import LLMModelSerializer
+from apps.model_provider_mgmt.serializers.llm_serializer import LLMModelSerializer, LLMSerializer
 from apps.model_provider_mgmt.services.llm_service import llm_service
 
 
-class LLMViewSet(viewsets.ViewSet):
-    @action(methods=["post"], detail=False)
-    def execute(self, request):
-        user_message = request.data.get("user_message")
-        chat_history = request.data.get("chat_history")
-        super_system_prompt = request.data.get("super_system_prompt", None)
+class LLMViewSet(GuardianModelViewSet):
+    serializer_class = LLMSerializer
+    queryset = LLMSkill.objects.all()
+    search_fields = ["name"]
 
-        llm_skill_id = request.data.get("llm_skill_id")
-        llm_skill = LLMSkill.objects.get(id=llm_skill_id)
-        if super_system_prompt:
-            llm_skill.skill_prompt = super_system_prompt
-        result = llm_service.chat(llm_skill, user_message, chat_history)
+    @action(methods=["POST"], detail=False)
+    def execute(self, request):
+        """
+        {
+            "user_message": "你好", # 用户消息
+            "llm_model": 1, # 大模型ID
+            "skill_prompt": "abc", # Prompt
+            "enable_rag": True, # 是否启用RAG
+            "enable_rag_knowledge_source": True, # 是否显示RAG知识来源
+            "knowledge_base": [1], # 知识库ID列表
+            "rag_score_threshold": 0.7, # RAG分数阈值
+            "chat_history": "abc", # 对话历史
+            "conversation_window_size": 10 # 对话窗口大小
+        }
+        """
+        params = request.data
+        result = llm_service.chat(params)
         return JsonResponse({"result": result})
 
 

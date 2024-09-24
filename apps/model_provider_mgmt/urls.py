@@ -11,6 +11,6 @@ router.register(r"embed_provider", EmbedProviderViewSet)
 router.register(r"rerank_provider", RerankProviderViewSet)
 router.register(r"ocr_provider", OCRProviderViewSet)
 router.register(r"rerank", RerankViewSet, basename="rerank")
-router.register(r"llm", LLMViewSet, basename="llm")
+router.register(r"llm", LLMViewSet)
 router.register(r"llm_model", LLMModelViewSet)
 urlpatterns = router.urls

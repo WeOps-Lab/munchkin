@@ -17,6 +17,8 @@ class KeyCloakAuthMiddleware(MiddlewareMixin):
         # 开发模式，默认放行
         if getattr(request, "api_pass", False):
             return None
+        if request.path == "/swagger/":
+            return None
         token = request.META.get(settings.AUTH_TOKEN_HEADER_NAME)
         if token is None:
             return WebUtils.response_401(_("please provide Token"))
