@@ -4,12 +4,13 @@ from rest_framework.response import Response
 
 
 class AuthViewSet(viewsets.ModelViewSet):
-    def query_by_groups(self, request, queryset):
+    def query_by_groups(self, request, queryset, key="team"):
+        query_key = f"{key}__contains"
         if not request.user.is_superuser:
             teams = [i["id"] for i in request.user.group_list]
             query = Q()
             for team_member in teams:
-                query |= Q(team__contains=team_member)
+                query |= Q(**{query_key: team_member})
             queryset = queryset.filter(query)
         return self._list(queryset.order_by("-id"))
 
