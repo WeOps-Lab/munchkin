@@ -18,7 +18,7 @@ class LLMViewSet(AuthViewSet):
     def list(self, request, *args, **kwargs):
         name = request.query_params.get("name", "")
         queryset = LLMSkill.objects.filter(name__icontains=name)
-        return self.query_by_groups(request, queryset, "groups")
+        return self.query_by_groups(request, queryset)
 
     @action(methods=["POST"], detail=False)
     @HasRole()

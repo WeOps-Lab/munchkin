@@ -21,7 +21,7 @@ class LLMSkill(MaintainerInfo):
 
     knowledge_base = models.ManyToManyField("knowledge_mgmt.KnowledgeBase", blank=True, verbose_name="知识库")
     introduction = models.TextField(blank=True, null=True, default="", verbose_name="介绍")
-    groups = models.JSONField(default=list, verbose_name="分组")
+    team = models.JSONField(default=list, verbose_name="分组")
 
     def __str__(self):
         return self.name
