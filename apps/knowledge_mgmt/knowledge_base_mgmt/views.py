@@ -43,7 +43,8 @@ class KnowledgeBaseViewSet(AuthViewSet):
         with atomic():
             self.perform_create(serializer)
             index = f"knowledge_base_{serializer.data.get('id')}"
-            es_client.indices.create(index=index)
+            if not es_client.indices.exists(index=index):
+                es_client.indices.create(index=index)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 

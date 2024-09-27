@@ -17,11 +17,12 @@ class LLMSkill(MaintainerInfo):
 
     enable_rag = models.BooleanField(default=False, verbose_name="启用RAG")
     enable_rag_knowledge_source = models.BooleanField(default=False, verbose_name="显示RAG知识来源")
-    rag_score_threshold = models.FloatField(default=0.7, verbose_name="RAG分数阈值")
-
+    rag_score_threshold_map = models.JSONField(default=dict, verbose_name="知识库RAG分数阈值映射")
     knowledge_base = models.ManyToManyField("knowledge_mgmt.KnowledgeBase", blank=True, verbose_name="知识库")
     introduction = models.TextField(blank=True, null=True, default="", verbose_name="介绍")
     team = models.JSONField(default=list, verbose_name="分组")
+
+    temperature = models.FloatField(default=0.7, verbose_name="温度")
 
     def __str__(self):
         return self.name

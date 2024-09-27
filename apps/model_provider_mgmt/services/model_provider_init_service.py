@@ -73,14 +73,14 @@ class ModelProviderInitService:
             )
 
             LLMModel.objects.get_or_create(
-                name="ChatGLM-4",
-                llm_model_type=LLMModelChoices.ZHIPU,
+                name="GPT-4o",
+                llm_model_type=LLMModelChoices.CHAT_GPT,
                 defaults={
                     "llm_config": {
-                        "api_key": "your_openai_api_key",
-                        "api_base": "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+                        "openai_api_key": "your_openai_api_key",
+                        "openai_base_url": "https://api.openai.com",
                         "temperature": 0.7,
-                        "model": "glm-4",
+                        "model": "gpt-4o",
                     }
                 },
             )

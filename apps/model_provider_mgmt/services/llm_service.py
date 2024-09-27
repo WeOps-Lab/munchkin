@@ -16,7 +16,8 @@ class LLMService:
         context = ""
         title_list = set()
         if kwargs["enable_rag"]:
-            knowledge_base_list = KnowledgeBase.objects.filter(id__in=kwargs["knowledge_base"])
+            score_threshold_map = {i["knowledge_base"]: i["score"] for i in kwargs["rag_score_threshold"]}
+            knowledge_base_list = KnowledgeBase.objects.filter(id__in=list(score_threshold_map.keys()))
             for i in knowledge_base_list:
                 params = {
                     "enable_rerank": i.enable_rerank,
@@ -30,8 +31,9 @@ class LLMService:
                     "vector_search_weight": i.vector_search_weight,
                     "text_search_mode": i.text_search_mode,
                 }
+                score_threshold = score_threshold_map.get(i.id, 0.7)
                 rag_result = self.knowledge_search_service.search(
-                    knowledge_base_list, kwargs["user_message"], params, score_threshold=kwargs["rag_score_threshold"]
+                    i, kwargs["user_message"], params, score_threshold=score_threshold
                 )
                 context += _(
                     """
@@ -54,7 +56,7 @@ Knowledge Content: [Content]
                 "system_message_prompt": kwargs["skill_prompt"],
                 "openai_api_base": llm_model.decrypted_llm_config["openai_base_url"],
                 "openai_api_key": llm_model.decrypted_llm_config["openai_api_key"],
-                "temperature": llm_model.decrypted_llm_config["temperature"],
+                "temperature": kwargs["temperature"],
                 "model": llm_model.decrypted_llm_config["model"],
                 "user_message": kwargs["user_message"],
                 "chat_history": kwargs["chat_history"],
