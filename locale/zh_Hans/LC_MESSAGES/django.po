@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-24 15:48+0800\n"
+"POT-Creation-Date: 2024-10-10 11:07+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -111,18 +111,18 @@ msgstr ""
 msgid "Failed to import file."
 msgstr ""
 
-#: .\apps\knowledge_mgmt\knowledge_base_mgmt\serializers.py:44
+#: .\apps\knowledge_mgmt\knowledge_base_mgmt\serializers.py:34
 #, fuzzy
 #| msgid "This knowledge base contains documents and cannot be deleted."
 msgid "The knowledge base is training and cannot be modified."
 msgstr "该知识库下存在文档，无法删除"
 
-#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:43
-#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:68
+#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:36
+#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:62
 msgid "The knowledge base name already exists."
 msgstr ""
 
-#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:87
+#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:82
 msgid "This knowledge base contains documents and cannot be deleted."
 msgstr "该知识库下存在文档，无法删除"
 
@@ -324,7 +324,7 @@ msgstr ""
 msgid "url is required"
 msgstr "{}是必填项"
 
-#: .\apps\model_provider_mgmt\services\llm_service.py:37
+#: .\apps\model_provider_mgmt\services\llm_service.py:39
 #, fuzzy
 #| msgid ""
 #| "\n"
@@ -356,20 +356,24 @@ msgstr ""
 "    \n"
 "                 "
 
-#: .\apps\model_provider_mgmt\services\llm_service.py:48
+#: .\apps\model_provider_mgmt\services\llm_service.py:50
 #, fuzzy
 #| msgid "Title:[{}]\n"
 msgid "Knowledge Title:[{}]\n"
 msgstr "标题：【{}】\n"
 
-#: .\apps\model_provider_mgmt\services\llm_service.py:49
+#: .\apps\model_provider_mgmt\services\llm_service.py:51
 msgid "Knowledge Content:[{}]\n"
 msgstr ""
 
-#: .\apps\model_provider_mgmt\services\llm_service.py:50
+#: .\apps\model_provider_mgmt\services\llm_service.py:52
 msgid "Knowledge Base[{}]--{}"
 msgstr ""
 
-#: .\apps\model_provider_mgmt\services\llm_service.py:67
+#: .\apps\model_provider_mgmt\services\llm_service.py:69
 msgid "Citing Knowledge: {}"
 msgstr "引用知识："
+
+#: .\apps\model_provider_mgmt\views\llm_view.py:30
+msgid "The name already exists."
+msgstr "名称重复"

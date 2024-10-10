@@ -2,11 +2,11 @@ import logging
 import traceback
 
 from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth.models import User
 from django.core.cache import caches
 from django.db import IntegrityError
 from django.utils import translation
 
+from apps.base.models import User
 from apps.core.utils.keycloak_client import KeyCloakClient
 
 logger = logging.getLogger("app")
@@ -20,7 +20,7 @@ class KeycloakAuthBackend(ModelBackend):
             return None
         client = KeyCloakClient()
         is_active, user_info = client.token_is_valid(token)
-        # 判断bk_token是否验证通过,不通过则返回None
+        # 判断token是否验证通过,不通过则返回None
         if not is_active:
             return None
         if user_info.get("locale"):
@@ -39,9 +39,10 @@ class KeycloakAuthBackend(ModelBackend):
             user.email = user_info.get("email", "")
             user.is_superuser = "admin" in roles
             user.is_staff = user.is_superuser
-            user.save()
             user.group_list = groups
             user.roles = roles
+            user.locale = user_info.get("locale", "zh-Hans")
+            user.save()
             return user
         except IntegrityError:
             logger.exception(traceback.format_exc())

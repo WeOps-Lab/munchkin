@@ -1,5 +1,4 @@
-from django.contrib.auth.models import User
-
+from apps.base.models import User
 from apps.model_provider_mgmt.services.model_provider_init_service import ModelProviderInitService
 
 

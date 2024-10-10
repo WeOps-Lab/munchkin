@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.utils.translation import gettext as _
 from django_filters import filters
 from django_filters.rest_framework import FilterSet
 from rest_framework import status
@@ -26,7 +27,7 @@ class LLMViewSet(AuthViewSet):
     def create(self, request, *args, **kwargs):
         params = request.data
         if LLMSkill.objects.filter(name=params["name"]).exists():
-            return JsonResponse({"result": False, "message": "The name already exists."})
+            return JsonResponse({"result": False, "message": _("The name already exists.")})
         params["enable_conversation_history"] = True
         serializer = self.get_serializer(data=params)
         serializer.is_valid(raise_exception=True)
@@ -46,21 +47,25 @@ class LLMViewSet(AuthViewSet):
         params = request.data
         if LLMSkill.objects.filter(name=params["name"]).exclude(id=instance.id).exists():
             return JsonResponse({"result": False, "message": "The name already exists."})
-        instance.name = params["name"]
-        instance.team = params["team"]
-        instance.introduction = params["introduction"]
-        instance.llm_model_id = params["llm_model"]
-        instance.skill_prompt = params["skill_prompt"]
-        instance.enable_conversation_history = params["enable_conversation_history"]
-        instance.conversation_window_size = params.get("conversation_window_size", 10)
-        instance.enable_rag = params["enable_rag"]
-        instance.temperature = params["temperature"]
-        instance.enable_rag_knowledge_source = params["enable_rag_knowledge_source"]
+        for key in params.keys():
+            if hasattr(instance, key):
+                setattr(instance, key, params[key])
+        # instance.name = params["name"]
+        # instance.team = params["team"]
+        # instance.introduction = params["introduction"]
+        # instance.llm_model_id = params.get("llm_model", instance.llm_model_id)
+        # instance.skill_prompt = params["skill_prompt"]
+        # instance.enable_conversation_history = params["enable_conversation_history"]
+        # instance.conversation_window_size = params.get("conversation_window_size", 10)
+        # instance.enable_rag = params["enable_rag"]
+        # instance.temperature = params["temperature"]
+        # instance.enable_rag_knowledge_source = params["enable_rag_knowledge_source"]
         instance.updated_by = request.user.username
-        score_threshold_map = {i["knowledge_base"]: i["score"] for i in params["rag_score_threshold"]}
-        instance.rag_score_threshold_map = score_threshold_map
-        knowledge_base_list = KnowledgeBase.objects.filter(id__in=list(score_threshold_map.keys()))
-        instance.knowledge_base.set(knowledge_base_list)
+        if "rag_score_threshold" in params:
+            score_threshold_map = {i["knowledge_base"]: i["score"] for i in params["rag_score_threshold"]}
+            instance.rag_score_threshold_map = score_threshold_map
+            knowledge_base_list = KnowledgeBase.objects.filter(id__in=list(score_threshold_map.keys()))
+            instance.knowledge_base.set(knowledge_base_list)
         instance.save()
         return JsonResponse({"result": True})
 

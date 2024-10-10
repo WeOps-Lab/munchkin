@@ -14,7 +14,8 @@ class LLMService:
     def chat(self, kwargs: dict):
         llm_model = LLMModel.objects.get(id=kwargs["llm_model"])
         context = ""
-        title_list = set()
+        title_map = {}
+        citing_knowledge = []
         if kwargs["enable_rag"]:
             score_threshold_map = {i["knowledge_base"]: i["score"] for i in kwargs["rag_score_threshold"]}
             knowledge_base_list = KnowledgeBase.objects.filter(id__in=list(score_threshold_map.keys()))
@@ -49,7 +50,9 @@ Knowledge Content: [Content]
                     context += "--------\n"
                     context += _("Knowledge Title:[{}]\n").format(r["knowledge_title"])
                     context += _("Knowledge Content:[{}]\n").format(r["content"].replace("{", "").replace("}", ""))
-                    title_list.add(_("Knowledge Base[{}]--{}").format(i.name, r["knowledge_title"]))
+                    title_map.setdefault(r["knowledge_title"], []).append(
+                        {"content": r["content"], "score": r["score"]}
+                    )
         chat_server = RemoteRunnable(settings.OPENAI_CHAT_SERVICE_URL)
         result = chat_server.invoke(
             {
@@ -64,10 +67,10 @@ Knowledge Content: [Content]
                 "rag_context": context,
             }
         )
+
         if kwargs["enable_rag_knowledge_source"]:
-            result += "\n"
-            result += _("Citing Knowledge: {}").format(", ".join(list(title_list))) + "\n"
-        return result
+            citing_knowledge = [{"knowledge_title": k, "result": v, "citing_num": len(v)} for k, v in title_map.items()]
+        return {"content": result, "citing_knowledge": citing_knowledge}
 
 
 llm_service = LLMService()

@@ -1,6 +1,6 @@
-from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
+from apps.base.models import User
 from apps.model_provider_mgmt.models import (
     EmbedModelChoices,
     EmbedProvider,

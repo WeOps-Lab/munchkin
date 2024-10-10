@@ -78,6 +78,8 @@ AUTHENTICATION_BACKENDS = (
 )
 ROOT_URLCONF = "urls"
 
+AUTH_USER_MODEL = "base.User"
+
 DEBUG = os.getenv("DEBUG", "0") == "1"
 
 STATIC_URL = "static/"
@@ -270,7 +272,7 @@ LOGGING = {
             "propagate": True,
         },
         "django.db.backends": {"handlers": ["db"], "level": "INFO", "propagate": True},
-        "app": {"handlers": ["root"], "level": "DEBUG", "propagate": True},
+        "app": {"handlers": ["root", "console"], "level": "DEBUG", "propagate": True},
         "celery": {"handlers": ["root"], "level": "INFO", "propagate": True},
     },
 }
