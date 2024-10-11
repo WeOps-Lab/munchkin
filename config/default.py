@@ -52,7 +52,6 @@ INSTALLED_APPS = (
 )
 IS_USE_CELERY = True
 
-
 ASGI_APPLICATION = "asgi.application"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -74,6 +73,7 @@ MIDDLEWARE = (
 )
 AUTHENTICATION_BACKENDS = (
     "apps.core.backends.KeycloakAuthBackend",  # this is default
+    "apps.core.backends.APISecretAuthBackend",
     "guardian.backends.ObjectPermissionBackend",
 )
 ROOT_URLCONF = "urls"
@@ -95,7 +95,16 @@ if DEBUG:
     MIDDLEWARE = ("corsheaders.middleware.CorsMiddleware",) + MIDDLEWARE  # noqa
     CORS_ORIGIN_ALLOW_ALL = True
     CORS_ALLOW_CREDENTIALS = True
-
+    CORS_ALLOW_HEADERS = [
+        "accept",
+        "authorization",
+        "content-type",
+        "user-agent",
+        "x-csrftoken",
+        "x-requested-with",
+        "api-authorization",
+        "debug",
+    ]
 # 缓存配置
 REDIS_CACHE_URL = os.environ.get("REDIS_CACHE_URL", "")
 
@@ -221,7 +230,6 @@ OPENAI_CHAT_SERVICE_URL = os.getenv("OPENAI_CHAT_SERVICE_URL", "http://chat-serv
 REMOTE_INDEX_URL = os.getenv("REMOTE_INDEX_URL", "http://rag-server/elasticsearch_index")
 RAG_SERVER_URL = os.getenv("RAG_SERVER_URL", "http://rag-server/elasticsearch_rag")
 ONLINE_SEARCH_SERVER_URL = os.getenv("ONLINE_SEARCH_SERVER_URL", "http://rag-server/online_search")
-
 
 # 日志配置
 if DEBUG:

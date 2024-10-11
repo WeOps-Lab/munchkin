@@ -4,7 +4,6 @@ from django.utils.deprecation import MiddlewareMixin
 from django.utils.translation import gettext as _
 from rest_framework import status
 
-from apps.base.models import User, UserAPISecret
 from apps.core.utils.web_utils import WebUtils
 
 
@@ -14,12 +13,13 @@ class APISecretFMiddleware(MiddlewareMixin):
         if token is None:
             setattr(request, "api_pass", False)
             return None
-
-        user_secret = UserAPISecret.objects.filter(api_secret=token).first()
-        if user_secret:
+        user = auth.authenticate(request=request, api_token=token)
+        if user is not None:
             setattr(request, "api_pass", True)
-            user = User.objects.get(username=user_secret.username)
             auth.login(request, user)
+            session_key = request.session.session_key
+            if not session_key:
+                request.session.cycle_key()
             return None
         return WebUtils.response_error(
             error_message=_("token validation failed"), status_code=status.HTTP_403_FORBIDDEN

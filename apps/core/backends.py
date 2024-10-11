@@ -6,11 +6,22 @@ from django.core.cache import caches
 from django.db import IntegrityError
 from django.utils import translation
 
-from apps.base.models import User
+from apps.base.models import User, UserAPISecret
 from apps.core.utils.keycloak_client import KeyCloakClient
 
 logger = logging.getLogger("app")
 cache = caches["db"]
+
+
+class APISecretAuthBackend(ModelBackend):
+    def authenticate(self, request=None, username=None, password=None, api_token=None):
+        if not api_token:
+            return None
+        user_secret = UserAPISecret.objects.filter(api_secret=api_token).first()
+        if user_secret:
+            user = User.objects.get(username=user_secret.username)
+            return user
+        return None
 
 
 class KeycloakAuthBackend(ModelBackend):

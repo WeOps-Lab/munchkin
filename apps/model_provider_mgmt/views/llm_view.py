@@ -47,6 +47,8 @@ class LLMViewSet(AuthViewSet):
         params = request.data
         if LLMSkill.objects.filter(name=params["name"]).exclude(id=instance.id).exists():
             return JsonResponse({"result": False, "message": "The name already exists."})
+        if "llm_model" in params:
+            params["llm_model_id"] = params.pop("llm_model")
         for key in params.keys():
             if hasattr(instance, key):
                 setattr(instance, key, params[key])
