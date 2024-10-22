@@ -84,7 +84,7 @@ class Migration(migrations.Migration):
                 (
                     "train_status",
                     models.IntegerField(
-                        choices=[(0, "Training"), (1, "Ready"), (2, "Error"), (3, "Pending")],
+                        choices=[(0, "Training"), (1, "Ready"), (2, "Error"), (3, "Pending"), (4, "Queuing")],
                         default=0,
                         verbose_name="train status",
                     ),

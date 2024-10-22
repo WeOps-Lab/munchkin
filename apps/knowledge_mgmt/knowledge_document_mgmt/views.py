@@ -6,12 +6,12 @@ from rest_framework.decorators import action
 
 from apps.core.logger import logger
 from apps.core.utils.elasticsearch_utils import get_es_client
+from apps.core.utils.viewset_utils import AuthViewSet
 from apps.knowledge_mgmt.knowledge_document_mgmt.serializers import KnowledgeDocumentSerializer
 from apps.knowledge_mgmt.models import KnowledgeBase, KnowledgeDocument
 from apps.knowledge_mgmt.models.knowledge_document import DocumentStatus
 from apps.knowledge_mgmt.services.knowledge_search_service import KnowledgeSearchService
 from apps.knowledge_mgmt.tasks import general_embed, general_embed_by_document_list
-from apps.knowledge_mgmt.viewset_utils import AuthViewSet
 
 
 class ObjFilter(FilterSet):

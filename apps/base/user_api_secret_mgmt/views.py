@@ -40,6 +40,6 @@ class UserAPISecretViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         return JsonResponse({"result": False, "message": "API密钥不支持修改"})
 
-    @HasRole("admin")
+    @HasRole()
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)

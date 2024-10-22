@@ -4,10 +4,10 @@ from django.utils.translation import gettext as _
 from rest_framework.decorators import action
 
 from apps.core.logger import logger
+from apps.core.utils.viewset_utils import AuthViewSet
 from apps.knowledge_mgmt.file_knowledge_mgmt.serializers import FileKnowledgeSerializer
 from apps.knowledge_mgmt.knowledge_document_mgmt.utils import KnowledgeDocumentUtils
 from apps.knowledge_mgmt.models import FileKnowledge
-from apps.knowledge_mgmt.viewset_utils import AuthViewSet
 from apps.model_provider_mgmt.models import OCRProvider
 
 

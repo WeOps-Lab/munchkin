@@ -54,19 +54,18 @@ Knowledge Content: [Content]
                         {"content": r["content"], "score": r["score"]}
                     )
         chat_server = RemoteRunnable(settings.OPENAI_CHAT_SERVICE_URL)
-        result = chat_server.invoke(
-            {
-                "system_message_prompt": kwargs["skill_prompt"],
-                "openai_api_base": llm_model.decrypted_llm_config["openai_base_url"],
-                "openai_api_key": llm_model.decrypted_llm_config["openai_api_key"],
-                "temperature": kwargs["temperature"],
-                "model": llm_model.decrypted_llm_config["model"],
-                "user_message": kwargs["user_message"],
-                "chat_history": kwargs["chat_history"],
-                "conversation_window_size": kwargs["conversation_window_size"],
-                "rag_context": context,
-            }
-        )
+        chat_kwargs = {
+            "system_message_prompt": kwargs["skill_prompt"],
+            "openai_api_base": llm_model.decrypted_llm_config["openai_base_url"],
+            "openai_api_key": llm_model.decrypted_llm_config["openai_api_key"],
+            "temperature": kwargs["temperature"],
+            "model": llm_model.decrypted_llm_config["model"],
+            "user_message": kwargs["user_message"],
+            "chat_history": kwargs["chat_history"],
+            "conversation_window_size": kwargs["conversation_window_size"],
+            "rag_context": context,
+        }
+        result = chat_server.invoke(chat_kwargs)
 
         if kwargs["enable_rag_knowledge_source"]:
             citing_knowledge = [{"knowledge_title": k, "result": v, "citing_num": len(v)} for k, v in title_map.items()]

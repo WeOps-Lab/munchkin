@@ -1,10 +1,10 @@
 from django.http import JsonResponse
 from rest_framework.decorators import action
 
+from apps.core.utils.viewset_utils import AuthViewSet
 from apps.knowledge_mgmt.knowledge_document_mgmt.utils import KnowledgeDocumentUtils
 from apps.knowledge_mgmt.manual_knowledge_mgmt.serializers import ManualKnowledgeSerializer
 from apps.knowledge_mgmt.models import ManualKnowledge
-from apps.knowledge_mgmt.viewset_utils import AuthViewSet
 
 
 class ManualKnowledgeViewSet(AuthViewSet):

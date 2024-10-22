@@ -8,9 +8,9 @@ from rest_framework.response import Response
 from apps.core.decorators.api_perminssion import HasRole
 from apps.core.utils.elasticsearch_utils import get_es_client
 from apps.core.utils.keycloak_client import KeyCloakClient
+from apps.core.utils.viewset_utils import AuthViewSet
 from apps.knowledge_mgmt.knowledge_base_mgmt.serializers import KnowledgeBaseSerializer
 from apps.knowledge_mgmt.models import KnowledgeBase, KnowledgeDocument
-from apps.knowledge_mgmt.viewset_utils import AuthViewSet
 from apps.model_provider_mgmt.models import EmbedProvider, RerankProvider
 
 

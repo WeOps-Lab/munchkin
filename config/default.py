@@ -231,6 +231,18 @@ REMOTE_INDEX_URL = os.getenv("REMOTE_INDEX_URL", "http://rag-server/elasticsearc
 RAG_SERVER_URL = os.getenv("RAG_SERVER_URL", "http://rag-server/elasticsearch_rag")
 ONLINE_SEARCH_SERVER_URL = os.getenv("ONLINE_SEARCH_SERVER_URL", "http://rag-server/online_search")
 
+# BOT 环境变量
+KUBE_SERVER_URL = os.getenv("KUBE_SERVER_URL", "http://kube-service.lite")
+KUBE_NAMESPACE = os.getenv("KUBE_NAMESPACE", "lite")
+KUBE_TOKEN = os.getenv("KUBE_TOKEN", "")
+
+MUNCHKIN_BASE_URL = os.getenv("MUNCHKIN_BASE_URL", "https://ops-pilot.canway.net")
+
+CONVERSATION_MQ_HOST = os.getenv("CONVERSATION_MQ_HOST", "rabbitmq.ops-pilot")
+CONVERSATION_MQ_PORT = int(os.getenv("CONVERSATION_MQ_PORT", 5672))
+CONVERSATION_MQ_USER = os.getenv("CONVERSATION_MQ_USER", "admin")
+CONVERSATION_MQ_PASSWORD = os.getenv("CONVERSATION_MQ_PASSWORD", "password")
+
 # 日志配置
 if DEBUG:
     log_dir = os.path.join(os.path.dirname(BASE_DIR), "logs", APP_CODE)

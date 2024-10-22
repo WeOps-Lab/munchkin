@@ -29,7 +29,7 @@ def retrain_all(knowledge_base_id):
     knowledge_base = KnowledgeBase.objects.get(id=knowledge_base_id)
     knowledge_base.recreate_es_index()
     document_list = KnowledgeDocument.objects.filter(knowledge_base_id=knowledge_base_id)
-    document_list.update(train_status=DocumentStatus.TRAINING)
+    document_list.update(train_status=DocumentStatus.QUEUING)
     general_embed_by_document_list(document_list)
 
 
@@ -50,7 +50,7 @@ def invoke_document_to_es(document_id):
         return
     es_client = get_es_client()
     remote_indexer = RemoteRunnable(settings.REMOTE_INDEX_URL)
-    document.train_progress = 0
+    document.train_status = DocumentStatus.QUEUING
     document.save()
     logger.info(f"document {document.name} progress: {document.train_progress}")
     document.delete_es_content(es_client)
@@ -59,12 +59,13 @@ def invoke_document_to_es(document_id):
         document.train_status = DocumentStatus.ERROR
         document.save()
         return
-    document.train_progress = 10
+    document.train_status = DocumentStatus.TRAINING
+    document.train_progress = 0
     document.save()
     logger.info(f"document {document.name} progress: {document.train_progress}")
     splice_docs = [knowledge_docs[i : i + 100] for i in range(0, document.chunk_size, 100)]
     splice_count = len(splice_docs)
-    process_num = round(85 / splice_count, 4)
+    process_num = round(98 / splice_count, 4)
     for docs in splice_docs:
         invoke_to_es_by_splice(docs, document, process_num, remote_indexer)
     document.train_status = DocumentStatus.READY

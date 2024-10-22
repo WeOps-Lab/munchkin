@@ -7,9 +7,9 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from apps.core.decorators.api_perminssion import HasRole
+from apps.core.utils.viewset_utils import AuthViewSet
 from apps.core.viewsets.guardian_model_viewset import GuardianModelViewSet
 from apps.knowledge_mgmt.models import KnowledgeBase
-from apps.knowledge_mgmt.viewset_utils import AuthViewSet
 from apps.model_provider_mgmt.models import LLMModel, LLMSkill
 from apps.model_provider_mgmt.serializers.llm_serializer import LLMModelSerializer, LLMSerializer
 from apps.model_provider_mgmt.services.llm_service import llm_service
