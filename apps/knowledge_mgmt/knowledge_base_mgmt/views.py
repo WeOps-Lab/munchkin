@@ -29,6 +29,8 @@ class KnowledgeBaseViewSet(AuthViewSet):
     @HasRole()
     def create(self, request, *args, **kwargs):
         params = request.data
+        if not params.get("team"):
+            return JsonResponse({"result": False, "message": _("The team field is required.")})
         rerank_model = RerankProvider.objects.get(name="bce-reranker-base_v1")
         if "embed_model" not in params:
             params["embed_model"] = EmbedProvider.objects.get(name="FastEmbed(BAAI/bge-small-zh-v1.5)").id
