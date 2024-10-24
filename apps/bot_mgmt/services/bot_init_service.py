@@ -19,6 +19,6 @@ class BotInitService:
             defaults={
                 "created_by": self.owner,
                 "rasa_model": rasa_model,
-                "description": "智能运维助理",
+                "introduction": "智能运维助理",
             },
         )
