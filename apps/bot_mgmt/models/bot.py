@@ -1,6 +1,10 @@
 from django.db import models
+from django.utils.functional import cached_property
+from django.utils.translation import gettext_lazy as _
+from django_yaml_field import YAMLField
 
-from apps.channel_mgmt.models import Channel
+from apps.channel_mgmt.models import ChannelChoices
+from apps.core.mixinx import EncryptMixin
 from apps.core.models.maintainer_info import MaintainerInfo
 
 
@@ -8,8 +12,7 @@ class Bot(MaintainerInfo):
     name = models.CharField(max_length=255, verbose_name="名称")
     introduction = models.TextField(blank=True, null=True, verbose_name="描述")
     team = models.JSONField(default=list)
-
-    channels = models.ManyToManyField(Channel, verbose_name="通道", blank=True)
+    channels = models.JSONField(default=list)
     rasa_model = models.ForeignKey(
         "bot_mgmt.RasaModel", on_delete=models.CASCADE, verbose_name="模型", blank=True, null=True
     )
@@ -28,3 +31,77 @@ class Bot(MaintainerInfo):
     class Meta:
         verbose_name = "机器人"
         verbose_name_plural = verbose_name
+
+
+class BotChannel(models.Model, EncryptMixin):
+    bot = models.ForeignKey(Bot, on_delete=models.CASCADE, verbose_name="机器人")
+    name = models.CharField(max_length=100, verbose_name=_("name"))
+    channel_type = models.CharField(max_length=100, choices=ChannelChoices.choices, verbose_name=_("channel type"))
+    channel_config = YAMLField(verbose_name=_("channel config"), blank=True, null=True)
+    enabled = models.BooleanField(default=False, verbose_name=_("enabled"))
+
+    def save(self, *args, **kwargs):
+        if self.channel_config is None:
+            super(BotChannel, self).save()
+        if self.channel_type == ChannelChoices.GITLAB:
+            self.encrypt_field(
+                "secret_token", self.channel_config["channels.gitlab_review_channel.GitlabReviewChannel"]
+            )
+
+        elif self.channel_type == ChannelChoices.DING_TALK:
+            self.encrypt_field("client_secret", self.channel_config["channels.dingtalk_channel.DingTalkChannel"])
+
+        elif self.channel_type == ChannelChoices.ENTERPRISE_WECHAT:
+            self.encrypt_field(
+                "secret_token", self.channel_config["channels.enterprise_wechat_channel.EnterpriseWechatChannel"]
+            )
+            self.encrypt_field(
+                "aes_key", self.channel_config["channels.enterprise_wechat_channel.EnterpriseWechatChannel"]
+            )
+            self.encrypt_field(
+                "secret", self.channel_config["channels.enterprise_wechat_channel.EnterpriseWechatChannel"]
+            )
+            self.encrypt_field(
+                "token", self.channel_config["channels.enterprise_wechat_channel.EnterpriseWechatChannel"]
+            )
+
+        elif self.channel_type == ChannelChoices.ENTERPRISE_WECHAT_BOT:
+            self.encrypt_field(
+                "secret_token",
+                self.channel_config["channels.enterprise_wechat_bot_channel.EnterpriseWechatBotChannel"],
+            )
+
+        super().save(*args, **kwargs)
+
+    @cached_property
+    def decrypted_channel_config(self):
+        decrypted_config = self.channel_config.copy()
+        if self.channel_type == ChannelChoices.GITLAB:
+            self.decrypt_field("secret_token", decrypted_config["channels.gitlab_review_channel.GitlabReviewChannel"])
+
+        if self.channel_type == ChannelChoices.DING_TALK:
+            self.decrypt_field("client_secret", decrypted_config["channels.dingtalk_channel.DingTalkChannel"])
+
+        elif self.channel_type == ChannelChoices.ENTERPRISE_WECHAT:
+            self.decrypt_field(
+                "secret_token", decrypted_config["channels.enterprise_wechat_channel.EnterpriseWechatChannel"]
+            )
+            self.decrypt_field(
+                "aes_key", decrypted_config["channels.enterprise_wechat_channel.EnterpriseWechatChannel"]
+            )
+            self.decrypt_field("secret", decrypted_config["channels.enterprise_wechat_channel.EnterpriseWechatChannel"])
+            self.decrypt_field("token", decrypted_config["channels.enterprise_wechat_channel.EnterpriseWechatChannel"])
+
+        elif self.channel_type == ChannelChoices.ENTERPRISE_WECHAT_BOT:
+            self.decrypt_field(
+                "secret_token", decrypted_config["channels.enterprise_wechat_bot_channel.EnterpriseWechatBotChannel"]
+            )
+
+        return decrypted_config
+
+    def format_channel_config(self):
+        return_data = {}
+        keys = ["secret", "token", "aes_key", "client_secret"]
+        for key, value in self.channel_config.items():
+            return_data[key] = {i: "******" if v and i in keys else v for i, v in value.items()}
+        return return_data
