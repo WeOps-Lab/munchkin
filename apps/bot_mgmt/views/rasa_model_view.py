@@ -12,6 +12,7 @@ from apps.bot_mgmt.serializers.rasa_model_serializer import RasaModelSerializer
 
 class RasaModelViewSet(ModelViewSet):
     serializer_class = RasaModelSerializer
+    queryset = RasaModel.objects.all()
 
     @action(methods=["GET"], detail=False)
     def model_download(self, request):
