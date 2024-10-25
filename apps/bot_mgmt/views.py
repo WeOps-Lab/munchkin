@@ -11,7 +11,7 @@ from apps.core.utils.exempt import api_exempt
 
 @api_exempt
 def get_bot_detail(request, bot_id):
-    channels = BotChannel.objects.filter(bot_id=bot_id)
+    channels = BotChannel.objects.filter(bot_id=bot_id, enabled=True)
     return_data = {
         "channels": [
             {
@@ -19,7 +19,6 @@ def get_bot_detail(request, bot_id):
                 "name": i.name,
                 "channel_type": i.channel_type,
                 "channel_config": i.format_channel_config(),
-                "enabled": i.enabled,
             }
             for i in channels
         ],
