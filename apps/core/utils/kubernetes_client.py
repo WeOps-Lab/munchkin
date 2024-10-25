@@ -31,7 +31,7 @@ class KubernetesClient:
             "rabbitmq_password": settings.CONVERSATION_MQ_PASSWORD,
             "enable_bot_domain": bot.enable_bot_domain,
             "enable_ssl": bot.enable_ssl,
-            "bot_domain": bot.bot_domain,
+            "bot_domain": bot.bot_domain or "",
             "enable_nodeport": bot.enable_node_port,
             "web_nodeport": bot.node_port,
             "namespace": settings.KUBE_NAMESPACE,
