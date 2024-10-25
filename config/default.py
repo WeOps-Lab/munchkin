@@ -236,7 +236,7 @@ KUBE_SERVER_URL = os.getenv("KUBE_SERVER_URL", "http://kube-service.lite")
 KUBE_NAMESPACE = os.getenv("KUBE_NAMESPACE", "lite")
 KUBE_TOKEN = os.getenv("KUBE_TOKEN", "")
 
-MUNCHKIN_BASE_URL = os.getenv("MUNCHKIN_BASE_URL", "https://ops-pilot.canway.net")
+MUNCHKIN_BASE_URL = os.getenv("MUNCHKIN_BASE_URL", "http://munchkin")
 
 CONVERSATION_MQ_HOST = os.getenv("CONVERSATION_MQ_HOST", "rabbitmq.ops-pilot")
 CONVERSATION_MQ_PORT = int(os.getenv("CONVERSATION_MQ_PORT", 5672))
