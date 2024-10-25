@@ -1,5 +1,4 @@
 from django.http import JsonResponse
-from django.utils.translation import gettext as _
 from rest_framework.decorators import action
 
 from apps.bot_mgmt.models import Bot
@@ -84,9 +83,10 @@ class BotViewSet(AuthViewSet):
         return JsonResponse({"result": True})
 
     def destroy(self, request, *args, **kwargs):
+        client = KubernetesClient()
         obj: Bot = self.get_object()
         if obj.online:
-            return JsonResponse({"result": False, "message": _("Please stop the bot first.")})
+            client.stop_pilot(obj.id)
         return super().destroy(request, *args, **kwargs)
 
     @HasRole()
