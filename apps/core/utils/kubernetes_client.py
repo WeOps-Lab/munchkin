@@ -22,6 +22,7 @@ class KubernetesClient:
         server_runnable = RemoteRunnable(self.kube_remote_url + "/start_pilot", headers=self.headers)
         token = Token.objects.first()
         kwargs = {
+            "id": bot.id,
             "pilot_id": bot.id,
             "api_key": token.key,
             "base_url": settings.MUNCHKIN_BASE_URL,
@@ -44,6 +45,7 @@ class KubernetesClient:
         server_runnable = RemoteRunnable(self.kube_remote_url + "/stop_pilot", headers=self.headers)
         kwargs = {
             "bot_id": bot_id,
+            "id": bot_id,
             "namespace": settings.KUBE_NAMESPACE,
         }
         result = server_runnable.invoke(kwargs)
