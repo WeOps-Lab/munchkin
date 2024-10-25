@@ -6,6 +6,7 @@ from apps.bot_mgmt.models.bot import BotChannel
 from apps.bot_mgmt.serializers import BotSerializer
 from apps.channel_mgmt.models import Channel
 from apps.core.decorators.api_perminssion import HasRole
+from apps.core.utils.exempt import api_exempt
 from apps.core.utils.kubernetes_client import KubernetesClient
 from apps.core.utils.viewset_utils import AuthViewSet
 from apps.model_provider_mgmt.models import LLMSkill
@@ -14,6 +15,25 @@ from apps.model_provider_mgmt.models import LLMSkill
 class BotViewSet(AuthViewSet):
     serializer_class = BotSerializer
     queryset = Bot.objects.all()
+
+    @api_exempt
+    @action(methods=["GET"], detail=True)
+    def get_detail(self, request, *args, **kwargs):
+        instance = self.get_object()
+        channels = BotChannel.objects.filter(bot_id=instance.id)
+        return_data = {
+            "channels": [
+                {
+                    "id": i.id,
+                    "name": i.name,
+                    "channel_type": i.channel_type,
+                    "channel_config": i.format_channel_config(),
+                    "enabled": i.enabled,
+                }
+                for i in channels
+            ],
+        }
+        return JsonResponse({"result": True, "data": return_data})
 
     def create(self, request, *args, **kwargs):
         data = request.data

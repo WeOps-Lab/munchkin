@@ -8,12 +8,14 @@ from rest_framework.viewsets import ModelViewSet
 
 from apps.bot_mgmt.models import Bot, RasaModel
 from apps.bot_mgmt.serializers.rasa_model_serializer import RasaModelSerializer
+from apps.core.utils.exempt import api_exempt
 
 
 class RasaModelViewSet(ModelViewSet):
     serializer_class = RasaModelSerializer
     queryset = RasaModel.objects.all()
 
+    @api_exempt
     @action(methods=["GET"], detail=False)
     def model_download(self, request):
         try:

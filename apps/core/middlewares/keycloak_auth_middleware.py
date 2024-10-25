@@ -15,6 +15,8 @@ class KeyCloakAuthMiddleware(MiddlewareMixin):
 
     def process_view(self, request, view, args, kwargs):
         # 开发模式，默认放行
+        if getattr(view, "api_exempt", False):
+            return None
         if getattr(request, "api_pass", False):
             return None
         if request.path == "/swagger/":
