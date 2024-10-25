@@ -34,7 +34,7 @@ class KubernetesClient:
             "bot_domain": bot.bot_domain or "",
             "enable_nodeport": bot.enable_node_port,
             "web_nodeport": bot.node_port,
-            "namespace": settings.KUBE_NAMESPACE,
+            "namespace": settings.KUBE_NAMESPACE or "",
         }
         logger.info(f"pilot 参数: {kwargs}")
         result = server_runnable.invoke(kwargs)
