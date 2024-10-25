@@ -24,7 +24,7 @@ def get_bot_detail(request, bot_id):
             for i in channels
         ],
     }
-    return JsonResponse({"result": True, "data": return_data})
+    return JsonResponse(return_data)
 
 
 @api_exempt
