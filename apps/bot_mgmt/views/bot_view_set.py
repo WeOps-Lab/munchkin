@@ -47,11 +47,12 @@ class BotViewSet(AuthViewSet):
             obj.channels = channels
         if llm_skills:
             obj.llm_skills.set(LLMSkill.objects.filter(id__in=llm_skills))
-        obj.online = is_publish
         obj.save()
         if is_publish:
             client = KubernetesClient()
             client.start_pilot(obj)
+            obj.online = is_publish
+            obj.save()
         return JsonResponse({"result": True})
 
     @action(methods=["GET"], detail=False)
