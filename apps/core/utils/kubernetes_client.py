@@ -13,7 +13,8 @@ class KubernetesClient:
         :param kube_config_file: 目标KubeConfig，不填写则获取默认配置文件路径
         """
 
-        self.kube_remote_url = settings.KUBE_SERVER_URL
+        # self.kube_remote_url = settings.KUBE_SERVER_URL
+        self.kube_remote_url = "http://10.10.40.190:8001"
         self.headers = {"x-token": settings.KUBE_TOKEN}
 
     def start_pilot(self, bot: Bot):
@@ -22,10 +23,9 @@ class KubernetesClient:
         server_runnable = RemoteRunnable(self.kube_remote_url + "/start_pilot", headers=self.headers)
         token = Token.objects.first()
         kwargs = {
-            "id": bot.id,
             "pilot_id": bot.id,
             "api_key": token.key,
-            "base_url": settings.MUNCHKIN_BASE_URL,
+            "munchkin_url": settings.MUNCHKIN_BASE_URL,
             "rabbitmq_host": settings.CONVERSATION_MQ_HOST,
             "rabbitmq_port": settings.CONVERSATION_MQ_PORT,
             "rabbitmq_user": settings.CONVERSATION_MQ_USER,
@@ -33,8 +33,8 @@ class KubernetesClient:
             "enable_bot_domain": bot.enable_bot_domain,
             "enable_ssl": bot.enable_ssl,
             "bot_domain": bot.bot_domain or "",
-            "enable_nodeport": bot.enable_node_port,
-            "web_nodeport": bot.node_port,
+            "enable_node_port": bot.enable_node_port,
+            "node_port": bot.node_port,
             "namespace": settings.KUBE_NAMESPACE or "",
         }
         logger.info(f"pilot 参数: {kwargs}")
@@ -45,7 +45,6 @@ class KubernetesClient:
         server_runnable = RemoteRunnable(self.kube_remote_url + "/stop_pilot", headers=self.headers)
         kwargs = {
             "bot_id": bot_id,
-            "id": bot_id,
             "namespace": settings.KUBE_NAMESPACE,
         }
         result = server_runnable.invoke(kwargs)
