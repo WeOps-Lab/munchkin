@@ -34,6 +34,7 @@ class KubernetesClient:
             "bot_domain": bot.bot_domain,
             "enable_nodeport": bot.enable_node_port,
             "web_nodeport": bot.node_port,
+            "namespace": settings.KUBE_NAMESPACE,
         }
         result = server_runnable.invoke(kwargs)
         return result
