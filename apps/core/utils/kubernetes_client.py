@@ -13,8 +13,8 @@ class KubernetesClient:
         :param kube_config_file: 目标KubeConfig，不填写则获取默认配置文件路径
         """
 
-        # self.kube_remote_url = settings.KUBE_SERVER_URL
-        self.kube_remote_url = "http://10.10.40.190:8001"
+        self.kube_remote_url = settings.KUBE_SERVER_URL
+        # self.kube_remote_url = "http://10.10.40.190:8001"
         self.headers = {"x-token": settings.KUBE_TOKEN}
 
     def start_pilot(self, bot: Bot):
