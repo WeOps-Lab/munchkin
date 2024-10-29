@@ -7,6 +7,7 @@ from django_minio_backend import MinioBackend
 from apps.bot_mgmt.models import Bot
 from apps.bot_mgmt.models.bot import BotChannel
 from apps.bot_mgmt.services.skill_excute_service import SkillExecuteService
+from apps.core.logger import logger
 from apps.core.utils.exempt import api_exempt
 
 
@@ -61,6 +62,7 @@ def model_download(request):
 @api_exempt
 def skill_execute(request):
     kwargs = json.loads(request.body)
+    logger.info(f"skill_execute kwargs: {kwargs}")
     skill_id = kwargs.get("skill_id")
     user_message = kwargs.get("user_message")
     sender_id = kwargs.get("sender_id", "")
@@ -71,6 +73,7 @@ def skill_execute(request):
         return JsonResponse({"result": "No authorization"})
     bot = Bot.objects.filter(id=bot_id, api_token=api_token).first()
     if not bot:
+        logger.info(f"api_token: {api_token}")
         return JsonResponse({"result": "No bot found"})
     result = SkillExecuteService.execute_skill(bot_id, skill_id, user_message, chat_history, sender_id)
 
