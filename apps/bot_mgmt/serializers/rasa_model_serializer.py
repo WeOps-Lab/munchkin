@@ -1,9 +1,8 @@
-from rest_framework import serializers
-
 from apps.bot_mgmt.models import RasaModel
+from config.drf.serializers import I18nSerializer
 
 
-class RasaModelSerializer(serializers.ModelSerializer):
+class RasaModelSerializer(I18nSerializer):
     class Meta:
         model = RasaModel
         fields = "__all__"

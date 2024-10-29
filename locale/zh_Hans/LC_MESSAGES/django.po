@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-10 11:07+0800\n"
+"POT-Creation-Date: 2024-10-28 16:32+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,17 +22,58 @@ msgstr ""
 msgid "This user already has an API Secret"
 msgstr "该用户已存在API密钥"
 
+#: .\apps\bot_mgmt\models\bot.py:38 .\apps\channel_mgmt\models\channel.py:18
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:29
+msgid "name"
+msgstr ""
+
+#: .\apps\bot_mgmt\models\bot.py:39 .\apps\channel_mgmt\models\channel.py:19
+msgid "channel type"
+msgstr ""
+
+#: .\apps\bot_mgmt\models\bot.py:40 .\apps\channel_mgmt\models\channel.py:20
+msgid "channel config"
+msgstr ""
+
+#: .\apps\bot_mgmt\models\bot.py:41 .\apps\channel_mgmt\models\channel.py:21
+msgid "enabled"
+msgstr ""
+
+#: .\apps\channel_mgmt\models\channel.py:10
+msgid "Enterprise WeChat"
+msgstr ""
+
+#: .\apps\channel_mgmt\models\channel.py:11
+msgid "Enterprise WeChat Bot"
+msgstr ""
+
+#: .\apps\channel_mgmt\models\channel.py:12
+msgid "Ding Talk"
+msgstr ""
+
+#: .\apps\channel_mgmt\models\channel.py:13
+msgid "Web"
+msgstr ""
+
+#: .\apps\channel_mgmt\models\channel.py:14
+msgid "GitLab"
+msgstr ""
+
+#: .\apps\channel_mgmt\models\channel.py:24
+msgid "channel"
+msgstr ""
+
 #: .\apps\core\decorators\api_perminssion.py:39
 msgid "insufficient permissions"
 msgstr "权限不足"
 
-#: .\apps\core\middlewares\api_middleware.py:22
+#: .\apps\core\middlewares\api_middleware.py:25
 #: .\apps\core\views\index_view.py:28
 msgid "token validation failed"
 msgstr "Token验证失败"
 
-#: .\apps\core\middlewares\keycloak_auth_middleware.py:24
-#: .\apps\core\middlewares\keycloak_auth_middleware.py:34
+#: .\apps\core\middlewares\keycloak_auth_middleware.py:26
+#: .\apps\core\middlewares\keycloak_auth_middleware.py:36
 #: .\apps\core\views\index_view.py:21
 msgid "please provide Token"
 msgstr "请提供Token"
@@ -117,12 +158,18 @@ msgstr ""
 msgid "The knowledge base is training and cannot be modified."
 msgstr "该知识库下存在文档，无法删除"
 
-#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:36
-#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:62
+#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:33
+#, fuzzy
+#| msgid "{} is required"
+msgid "The team field is required."
+msgstr "{}是必填项"
+
+#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:38
+#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:64
 msgid "The knowledge base name already exists."
 msgstr ""
 
-#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:82
+#: .\apps\knowledge_mgmt\knowledge_base_mgmt\views.py:84
 msgid "This knowledge base contains documents and cannot be deleted."
 msgstr "该知识库下存在文档，无法删除"
 
@@ -164,7 +211,7 @@ msgid "File"
 msgstr ""
 
 #: .\apps\knowledge_mgmt\models\file_knowledge.py:21
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:73
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:75
 #: .\apps\knowledge_mgmt\models\manual_knowledge.py:9
 #: .\apps\knowledge_mgmt\models\web_page_knowledge.py:9
 msgid "Knowledge Document"
@@ -214,87 +261,87 @@ msgstr ""
 msgid "Text search mode"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:18
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:19
 msgid "Training"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:19
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:20
 msgid "Ready"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:20
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:21
 msgid "Error"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:21
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:22
 msgid "Pending"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:27
-msgid "name"
-msgstr ""
-
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:28
-msgid "chunk size"
-msgstr ""
-
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:29
-msgid "train status"
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:23
+msgid "Queuing"
 msgstr ""
 
 #: .\apps\knowledge_mgmt\models\knowledge_document.py:30
-msgid "train progress"
+msgid "chunk size"
 msgstr ""
 
 #: .\apps\knowledge_mgmt\models\knowledge_document.py:31
-msgid "enable general parse"
+msgid "train status"
 msgstr ""
 
 #: .\apps\knowledge_mgmt\models\knowledge_document.py:32
-msgid "general parse chunk size"
+msgid "train progress"
 msgstr ""
 
 #: .\apps\knowledge_mgmt\models\knowledge_document.py:33
-msgid "general parse chunk overlap"
+msgid "enable general parse"
 msgstr ""
 
 #: .\apps\knowledge_mgmt\models\knowledge_document.py:34
+msgid "general parse chunk size"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:35
+msgid "general parse chunk overlap"
+msgstr ""
+
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:36
 msgid "enable semantic chunk parse"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:40
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:42
 msgid "embedding model"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:42
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:44
 msgid "enable OCR parse"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:44
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:46
 msgid "OCR model"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:46
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:48
 msgid "enable Excel parse"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:47
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:49
 msgid "Excel header row parse"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:48
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:50
 msgid "Excel full content parse"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:49
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:51
 msgid "source type"
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:62
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:64
 msgid "Document {} successfully deleted."
 msgstr ""
 
-#: .\apps\knowledge_mgmt\models\knowledge_document.py:64
+#: .\apps\knowledge_mgmt\models\knowledge_document.py:66
 msgid "Document {} not found, skipping deletion."
 msgstr ""
 
@@ -324,7 +371,7 @@ msgstr ""
 msgid "url is required"
 msgstr "{}是必填项"
 
-#: .\apps\model_provider_mgmt\services\llm_service.py:39
+#: .\apps\model_provider_mgmt\services\llm_service.py:40
 #, fuzzy
 #| msgid ""
 #| "\n"
@@ -356,24 +403,25 @@ msgstr ""
 "    \n"
 "                 "
 
-#: .\apps\model_provider_mgmt\services\llm_service.py:50
+#: .\apps\model_provider_mgmt\services\llm_service.py:51
 #, fuzzy
 #| msgid "Title:[{}]\n"
 msgid "Knowledge Title:[{}]\n"
 msgstr "标题：【{}】\n"
 
-#: .\apps\model_provider_mgmt\services\llm_service.py:51
+#: .\apps\model_provider_mgmt\services\llm_service.py:52
 msgid "Knowledge Content:[{}]\n"
 msgstr ""
-
-#: .\apps\model_provider_mgmt\services\llm_service.py:52
-msgid "Knowledge Base[{}]--{}"
-msgstr ""
-
-#: .\apps\model_provider_mgmt\services\llm_service.py:69
-msgid "Citing Knowledge: {}"
-msgstr "引用知识："
 
 #: .\apps\model_provider_mgmt\views\llm_view.py:30
 msgid "The name already exists."
 msgstr "名称重复"
+
+#~ msgid "Citing Knowledge: {}"
+#~ msgstr "引用知识："
+
+msgid "Core Model"
+msgstr "核心模型"
+
+msgid "Intelligent Operations Assistant"
+msgstr "智能运维助理"
