@@ -36,10 +36,7 @@ def get_bot_detail(request, bot_id):
 @api_exempt
 def model_download(request):
     bot_id = request.GET.get("bot_id")
-    api_token = request.META.get("HTTP_AUTHORIZATION").split("TOKEN")[-1].strip()
-    if not api_token:
-        return JsonResponse({})
-    bot = Bot.objects.filter(id=bot_id, api_token=api_token).first()
+    bot = Bot.objects.filter(id=bot_id).first()
     if not bot:
         return JsonResponse({})
     rasa_model = bot.rasa_model
