@@ -26,9 +26,9 @@ class SkillExecuteService:
             "temperature": llm_skill.temperature,
         }
         result = llm_service.chat(params)
-        result = result["content"]
+        content = result["content"]
         if llm_skill.enable_rag_knowledge_source:
             knowledge_titles = {x["knowledge_title"] for x in result["citing_knowledge"]}
-            result += "\n"
-            result += f'引用知识: {", ".join(knowledge_titles)}\n'
-        return result
+            content += "\n"
+            content += f'引用知识: {", ".join(knowledge_titles)}\n'
+        return content
