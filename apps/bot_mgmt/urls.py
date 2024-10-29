@@ -12,6 +12,6 @@ urlpatterns = router.urls
 urlpatterns += [
     path(r"bot/<int:bot_id>/get_detail/", views.get_bot_detail, name="get_bot_detail"),
     path(r"rasa_model_download/", views.model_download, name="model_download"),
-    # path(r"api/bot/skill_execute", SkillExecuteView.as_view(), name="skill_execute"),
+    path(r"skill_execute/", views.skill_execute, name="skill_execute"),
     # path(r"api/bot/automation_skill_execute", AutomationSkillExecuteView.as_view(), name="automation_skill_execute"),
 ]

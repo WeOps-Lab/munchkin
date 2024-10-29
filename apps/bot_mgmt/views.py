@@ -60,14 +60,19 @@ def model_download(request):
     return response
 
 
+@api_exempt
 def skill_execute(request):
-    bot_id = request.data.get("bot_id")
     skill_id = request.data.get("skill_id")
     user_message = request.data.get("user_message")
     sender_id = request.data.get("sender_id", "")
     chat_history = request.data.get("chat_history", [])
-
-    service = SkillExecuteService()
-    result = service.execute_skill(bot_id, skill_id, user_message, chat_history, sender_id)
+    bot_id = request.GET.get("bot_id")
+    api_token = request.META.get("HTTP_AUTHORIZATION")
+    if not api_token:
+        return JsonResponse({"result": "No authorization"})
+    bot = Bot.objects.filter(id=bot_id, api_token=api_token).first()
+    if not bot:
+        return JsonResponse({"result": "No bot found"})
+    result = SkillExecuteService.execute_skill(bot_id, skill_id, user_message, chat_history, sender_id)
 
     return JsonResponse({"result": result})
