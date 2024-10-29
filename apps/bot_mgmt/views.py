@@ -1,4 +1,5 @@
 import hashlib
+import json
 
 from django.http import FileResponse, JsonResponse
 from django_minio_backend import MinioBackend
@@ -11,7 +12,7 @@ from apps.core.utils.exempt import api_exempt
 
 @api_exempt
 def get_bot_detail(request, bot_id):
-    api_token = request.META.get("HTTP_AUTHORIZATION")
+    api_token = request.META.get("HTTP_AUTHORIZATION").split("TOKEN")[-1].strip()
     if not api_token:
         return JsonResponse({})
     bot = Bot.objects.filter(id=bot_id, api_token=api_token).first()
@@ -35,7 +36,7 @@ def get_bot_detail(request, bot_id):
 @api_exempt
 def model_download(request):
     bot_id = request.GET.get("bot_id")
-    api_token = request.META.get("HTTP_AUTHORIZATION")
+    api_token = request.META.get("HTTP_AUTHORIZATION").split("TOKEN")[-1].strip()
     if not api_token:
         return JsonResponse({})
     bot = Bot.objects.filter(id=bot_id, api_token=api_token).first()
@@ -62,12 +63,13 @@ def model_download(request):
 
 @api_exempt
 def skill_execute(request):
-    skill_id = request.data.get("skill_id")
-    user_message = request.data.get("user_message")
-    sender_id = request.data.get("sender_id", "")
-    chat_history = request.data.get("chat_history", [])
-    bot_id = request.GET.get("bot_id")
-    api_token = request.META.get("HTTP_AUTHORIZATION")
+    kwargs = json.loads(request.body)
+    skill_id = kwargs.get("skill_id")
+    user_message = kwargs.get("user_message")
+    sender_id = kwargs.get("sender_id", "")
+    chat_history = kwargs.get("chat_history", [])
+    bot_id = kwargs.get("bot_id")
+    api_token = request.META.get("HTTP_AUTHORIZATION").split("TOKEN")[-1].strip()
     if not api_token:
         return JsonResponse({"result": "No authorization"})
     bot = Bot.objects.filter(id=bot_id, api_token=api_token).first()
