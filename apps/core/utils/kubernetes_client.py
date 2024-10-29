@@ -1,6 +1,5 @@
 from django.conf import settings
 from langserve import RemoteRunnable
-from rest_framework.authtoken.models import Token
 
 from apps.bot_mgmt.models import Bot
 from apps.core.logger import logger
@@ -21,10 +20,9 @@ class KubernetesClient:
         logger.info(f"启动Pilot: {bot.id}")
 
         server_runnable = RemoteRunnable(self.kube_remote_url + "/start_pilot", headers=self.headers)
-        token = Token.objects.first()
         kwargs = {
             "pilot_id": bot.id,
-            "api_key": token.key,
+            "api_key": bot.api_token,
             "munchkin_url": settings.MUNCHKIN_BASE_URL,
             "rabbitmq_host": settings.CONVERSATION_MQ_HOST,
             "rabbitmq_port": settings.CONVERSATION_MQ_PORT,

@@ -2,15 +2,21 @@ import hashlib
 
 from django.http import FileResponse, JsonResponse
 from django_minio_backend import MinioBackend
-from rest_framework.exceptions import NotFound
 
-from apps.bot_mgmt.models import Bot, RasaModel
+from apps.bot_mgmt.models import Bot
 from apps.bot_mgmt.models.bot import BotChannel
+from apps.bot_mgmt.services.skill_excute_service import SkillExecuteService
 from apps.core.utils.exempt import api_exempt
 
 
 @api_exempt
 def get_bot_detail(request, bot_id):
+    api_token = request.META.get("HTTP_AUTHORIZATION")
+    if not api_token:
+        return JsonResponse({})
+    bot = Bot.objects.filter(id=bot_id, api_token=api_token).first()
+    if not bot:
+        return JsonResponse({})
     channels = BotChannel.objects.filter(bot_id=bot_id, enabled=True)
     return_data = {
         "channels": [
@@ -28,12 +34,16 @@ def get_bot_detail(request, bot_id):
 
 @api_exempt
 def model_download(request):
-    try:
-        bot_id = request.GET.get("bot_id")
-        rasa_model = Bot.objects.filter(id=bot_id).first().rasa_model
-    except RasaModel.DoesNotExist:
-        raise NotFound("RasaModel with given id not found")
-
+    bot_id = request.GET.get("bot_id")
+    api_token = request.META.get("HTTP_AUTHORIZATION")
+    if not api_token:
+        return JsonResponse({})
+    bot = Bot.objects.filter(id=bot_id, api_token=api_token).first()
+    if not bot:
+        return JsonResponse({})
+    rasa_model = bot.rasa_model
+    if not rasa_model:
+        return JsonResponse({})
     storage = MinioBackend(bucket_name="munchkin-private")
     file = storage.open(rasa_model.model_file.name, "rb")
 
@@ -48,3 +58,16 @@ def model_download(request):
     response["ETag"] = etag
 
     return response
+
+
+def skill_execute(request):
+    bot_id = request.data.get("bot_id")
+    skill_id = request.data.get("skill_id")
+    user_message = request.data.get("user_message")
+    sender_id = request.data.get("sender_id", "")
+    chat_history = request.data.get("chat_history", [])
+
+    service = SkillExecuteService()
+    result = service.execute_skill(bot_id, skill_id, user_message, chat_history, sender_id)
+
+    return JsonResponse({"result": result})

@@ -1,3 +1,6 @@
+import binascii
+import os
+
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
@@ -24,6 +27,7 @@ class Bot(MaintainerInfo):
     node_port = models.IntegerField(verbose_name="端口映射", default=5005)
     online = models.BooleanField(verbose_name="是否上线", default=False)
     enable_ssl = models.BooleanField(verbose_name="启用SSL", default=False)
+    api_token = models.CharField(max_length=64, default="", blank=True, null=True, verbose_name="API Token")
 
     def __str__(self):
         return self.name
@@ -31,6 +35,10 @@ class Bot(MaintainerInfo):
     class Meta:
         verbose_name = "机器人"
         verbose_name_plural = verbose_name
+
+    @staticmethod
+    def get_api_token():
+        return binascii.hexlify(os.urandom(32)).decode()
 
 
 class BotChannel(models.Model, EncryptMixin):

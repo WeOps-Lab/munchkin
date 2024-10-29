@@ -47,6 +47,7 @@ class BotViewSet(AuthViewSet):
             obj.channels = channels
         if llm_skills:
             obj.llm_skills.set(LLMSkill.objects.filter(id__in=llm_skills))
+        obj.api_token = obj.get_api_token() if is_publish else ""
         obj.save()
         if is_publish:
             client = KubernetesClient()
@@ -102,6 +103,8 @@ class BotViewSet(AuthViewSet):
         bots = Bot.objects.filter(id__in=bot_ids)
         client = KubernetesClient()
         for bot in bots:
+            bot.api_token = bot.get_api_token()
+            bot.save()
             client.start_pilot(bot)
             bot.online = True
             bot.save()
@@ -114,6 +117,7 @@ class BotViewSet(AuthViewSet):
         client = KubernetesClient()
         for bot in bots:
             client.stop_pilot(bot.id)
+            bot.api_token = ""
             bot.online = False
             bot.save()
         return JsonResponse({"result": True})
