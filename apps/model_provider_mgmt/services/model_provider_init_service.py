@@ -40,8 +40,7 @@ class ModelProviderInitService:
                 defaults=dict(
                     embed_config={
                         "base_url": "http://fast-embed-server",
-                    },
-                    enabled=True,
+                    }
                 ),
             )
 
@@ -61,7 +60,6 @@ class ModelProviderInitService:
             LLMModel.objects.get_or_create(
                 name="GPT-3.5 Turbo 16K",
                 llm_model_type=LLMModelChoices.CHAT_GPT,
-                enabled=True,
                 defaults={
                     "llm_config": {
                         "openai_api_key": "your_openai_api_key",

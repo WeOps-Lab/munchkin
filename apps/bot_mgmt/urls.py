@@ -3,10 +3,12 @@ from rest_framework import routers
 
 from apps.bot_mgmt import views
 from apps.bot_mgmt.viewsets import BotViewSet, RasaModelViewSet
+from apps.bot_mgmt.viewsets.history_view import HistoryViewSet
 
 router = routers.DefaultRouter()
 router.register(r"bot", BotViewSet)
 router.register(r"rasa_model", RasaModelViewSet, basename="rasa_model")
+router.register(r"history", HistoryViewSet)
 urlpatterns = router.urls
 
 urlpatterns += [

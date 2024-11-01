@@ -1,79 +1,56 @@
+import datetime
+import json
 import time
 
 import pika
 from django.conf import settings
 from django.core.management import BaseCommand
 
+from apps.bot_mgmt.models import Bot, BotConversationHistory
+from apps.bot_mgmt.models.channel_user import ChannelUser
+from apps.channel_mgmt.models import ChannelChoices
 from apps.core.logger import logger
 
+channel_map = {}
 
-#
-# user_channels = {}
-#
-#
+
 def on_message(channel, method_frame, header_frame, body):
+    logger.info("开始处理消息")
     try:
-        pass
-        # message = json.loads(body.decode())
+        message = json.loads(body.decode())
+        if "text" in message:
+            sender_id = message["sender_id"]
+            bot_id = int(message.get("bot_id", 7))
+            created_at = datetime.datetime.fromtimestamp(message["timestamp"], tz=datetime.timezone.utc)
+            if "input_channel" in message:
+                input_channel = message["input_channel"]
+                channel_map[sender_id] = input_channel
+            else:
+                input_channel = channel_map.get(sender_id)
+                if not input_channel:
+                    channel_user = ChannelUser.objects.get(user_id=sender_id)
+                    input_channel = (
+                        channel_user.channel_type if channel_user.channel_type != ChannelChoices.WEB else "socketio"
+                    )
 
-        # if "text" in message:
-        #     sender_id = message["sender_id"]
-        #     if "input_channel" in message:
-        #         input_channel = message["input_channel"]
-        #         user_channels[sender_id] = message["input_channel"]
-        #     else:
-        #         input_channel = user_channels[sender_id]
-        #
-        #     assistant_id = message["metadata"]["assistant_id"]
-        #
-        #     logger.debug(f"用户ID:[{sender_id}] BotID:[{assistant_id}] 通道:[{input_channel}] 消息:{message}")
-        #
-        #     bot = Bot.objects.get(assistant_id=assistant_id)
-        #
-        #     channel_obj = Channel.objects.get(name=input_channel)
-        #     channel_user_exists = ChannelUser.objects.filter(
-        #         user_id=sender_id, channel_user_group__channel=channel_obj
-        #     ).exists()
-        #     channel_user_group = ChannelUserGroup.objects.get(channel=channel_obj, owner=bot.owner, name="默认用户组")
-        #
-        #     if channel_user_exists is False:
-        #         logger.info(f"用户[{sender_id}]在[{channel_obj.name}]中不存在,创建用户,并加入默认用户组")
-        #
-        #         if channel_obj.channel_type == ChannelChoices.ENTERPRISE_WECHAT:
-        #             conf = channel_obj.decrypted_channel_config
-        #
-        #             wechat_client = WeChatClient(
-        #                 conf["channels.enterprise_wechat_channel.EnterpriseWechatChannel"]["corp_id"],
-        #                 conf["channels.enterprise_wechat_channel.EnterpriseWechatChannel"]["secret"],
-        #             )
-        #             wechat_username = wechat_client.user.get(sender_id)["name"]
-        #         else:
-        #             ChannelUser.objects.create(
-        #                 channel_user_group=channel_user_group, owner=bot.owner, user_id=sender_id
-        #             )
-        #
-        #     channel_user = ChannelUser.objects.filter(
-        #         user_id=sender_id, channel_user_group=channel_user_group, owner=bot.owner
-        #     ).first()
-        #
-        #     # 创建对话历史
-        #     created_at = datetime.datetime.fromtimestamp(message["timestamp"], tz=datetime.timezone.utc)
-        #     logger.debug(
-        #         f"写入消息，完整信息如下: bot={bot}, user={channel_user}, created_at={created_at}, "
-        #         f'conversation_role={message["event"]}, conversation={message["text"]}'
-        #     )
-        #
-        #     BotConversationHistory.objects.get_or_create(
-        #         bot=bot,
-        #         user=channel_user,
-        #         created_at=created_at,
-        #         owner=bot.owner,
-        #         conversation_role=message["event"],
-        #         conversation=message["text"],
-        #     )
+            if input_channel == "socketio":
+                user, _ = ChannelUser.objects.get_or_create(
+                    user_id=sender_id, name=sender_id, channel_type=ChannelChoices.WEB
+                )
+            else:
+                raise Exception("暂不支持的通道类型")
+            bot = Bot.objects.get(id=bot_id)
+            BotConversationHistory.objects.get_or_create(
+                bot_id=bot_id,
+                channel_user_id=user.id,
+                created_at=created_at,
+                created_by=bot.created_by,
+                conversation_role=message["event"],
+                conversation=message["text"] or "",
+            )
     except Exception as e:
         logger.exception(f"消息处理失败:{e}")
-    # channel.basic_ack(delivery_tag=method_frame.delivery_tag)
+    channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
 
 class Command(BaseCommand):
