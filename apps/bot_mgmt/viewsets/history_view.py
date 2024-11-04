@@ -19,27 +19,7 @@ class HistoryViewSet(viewsets.ModelViewSet):
 
     @action(methods=["GET"], detail=False)
     def search_log(self, request):
-        start_time_str = request.GET.get("start_time")
-        end_time_str = request.GET.get("end_time")
-        page_size = int(request.GET.get("page_size", 10))
-        page = int(request.GET.get("page", 1))
-        bot_id = request.GET.get("bot_id")
-        search = request.GET.get("search", "")
-        channel_type = request.GET.get("channel_type", "")
-        if not channel_type:
-            channel_type = list(dict(ChannelChoices.choices).keys())
-        else:
-            channel_type = channel_type.split(",")
-        today = datetime.datetime.today()
-        # 解析时间字符串到 datetime 对象，并处理空值
-        if start_time_str:
-            start_time = datetime.datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M:%S.%fZ")
-        else:
-            start_time = today.replace(year=2024, month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
-        if end_time_str:
-            end_time = datetime.datetime.strptime(end_time_str, "%Y-%m-%dT%H:%M:%S.%fZ")
-        else:
-            end_time = today.replace(hour=23, minute=59, second=59, microsecond=999999)
+        bot_id, channel_type, end_time, page, page_size, search, start_time = self.set_log_params(request)
 
         earliest_conversation_subquery = (
             BotConversationHistory.objects.filter(
@@ -66,6 +46,11 @@ class HistoryViewSet(viewsets.ModelViewSet):
             )
             .order_by("day", "channel_user__user_id")
         )
+        paginator, result = self.get_log_by_page(aggregated_data, page, page_size)
+        return JsonResponse({"result": True, "data": {"items": result, "count": paginator.count}})
+
+    @staticmethod
+    def get_log_by_page(aggregated_data, page, page_size):
         paginator = Paginator(aggregated_data, page_size)
         # 将结果转换为期望的格式
         result = []
@@ -89,7 +74,32 @@ class HistoryViewSet(viewsets.ModelViewSet):
                     "title": entry["title"],
                 }
             )
-        return JsonResponse({"result": True, "data": {"items": result, "count": paginator.count}})
+        return paginator, result
+
+    @staticmethod
+    def set_log_params(request):
+        start_time_str = request.GET.get("start_time")
+        end_time_str = request.GET.get("end_time")
+        page_size = int(request.GET.get("page_size", 10))
+        page = int(request.GET.get("page", 1))
+        bot_id = request.GET.get("bot_id")
+        search = request.GET.get("search", "")
+        channel_type = request.GET.get("channel_type", "")
+        if not channel_type:
+            channel_type = list(dict(ChannelChoices.choices).keys())
+        else:
+            channel_type = channel_type.split(",")
+        today = datetime.datetime.today()
+        # 解析时间字符串到 datetime 对象，并处理空值
+        if start_time_str:
+            start_time = datetime.datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+        else:
+            start_time = today.replace(year=2024, month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        if end_time_str:
+            end_time = datetime.datetime.strptime(end_time_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+        else:
+            end_time = today.replace(hour=23, minute=59, second=59, microsecond=999999)
+        return bot_id, channel_type, end_time, page, page_size, search, start_time
 
     @action(methods=["POST"], detail=False)
     def get_log_detail(self, request):

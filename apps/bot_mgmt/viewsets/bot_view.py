@@ -80,7 +80,8 @@ class BotViewSet(AuthViewSet):
         channel_config = request.data.get("channel_config")
         channel = BotChannel.objects.get(id=channel_id)
         channel.enabled = enabled
-        channel.channel_config = channel_config
+        if channel_config is not None:
+            channel.channel_config = channel_config
         channel.save()
         return JsonResponse({"result": True})
 
