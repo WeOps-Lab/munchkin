@@ -26,7 +26,7 @@ def get_bot_detail(request, bot_id):
                 "id": i.id,
                 "name": i.name,
                 "channel_type": i.channel_type,
-                "channel_config": i.format_channel_config(),
+                "channel_config": i.decrypted_channel_config,
             }
             for i in channels
         ],
