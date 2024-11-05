@@ -48,7 +48,8 @@ def on_message(channel, method_frame, header_frame, body):
                 )
                 try:
                     wechat_username = wechat_client.user.get(sender_id)["name"]
-                except Exception:
+                except Exception as e:
+                    logger.error(f"获取企业微信用户信息失败: {e}")
                     wechat_username = sender_id
                 user = ChannelUser.objects.update_or_create(
                     user_id=sender_id, channel_type=ChannelChoices.ENTERPRISE_WECHAT, defaults={"name": wechat_username}
