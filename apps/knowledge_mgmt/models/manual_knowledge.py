@@ -15,3 +15,8 @@ class ManualKnowledge(models.Model):
     class Meta:
         verbose_name = _("Manual Knowledge")
         verbose_name_plural = verbose_name
+
+    def to_dict(self):
+        return {
+            "content": self.content,
+        }

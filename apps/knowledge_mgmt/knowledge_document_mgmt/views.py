@@ -8,7 +8,7 @@ from apps.core.logger import logger
 from apps.core.utils.elasticsearch_utils import get_es_client
 from apps.core.utils.viewset_utils import AuthViewSet
 from apps.knowledge_mgmt.knowledge_document_mgmt.serializers import KnowledgeDocumentSerializer
-from apps.knowledge_mgmt.models import KnowledgeBase, KnowledgeDocument
+from apps.knowledge_mgmt.models import KnowledgeBase, KnowledgeDocument, ManualKnowledge, WebPageKnowledge
 from apps.knowledge_mgmt.models.knowledge_document import DocumentStatus
 from apps.knowledge_mgmt.services.knowledge_search_service import KnowledgeSearchService
 from apps.knowledge_mgmt.tasks import general_embed, general_embed_by_document_list
@@ -177,3 +177,16 @@ class KnowledgeDocumentViewSet(AuthViewSet):
             return JsonResponse({"result": False, "message": _("delete failed")})
         es_client.transport.close()
         return JsonResponse({"result": True})
+
+    @action(methods=["GET"], detail=True)
+    def get_document_detail(self, request, *args, **kwargs):
+        obj: KnowledgeDocument = self.get_object()
+        result = {"document_id": obj.id, "name": obj.name, "knowledge_source_type": obj.knowledge_source_type}
+        knowledge_model_map = {
+            "web_page": WebPageKnowledge,
+            "manual": ManualKnowledge,
+        }
+        doc = knowledge_model_map[obj.knowledge_source_type].objects.filter(knowledge_document_id=obj.id).first()
+        result["id"] = obj.id
+        result.update(doc.to_dict())
+        return JsonResponse({"result": True, "data": result})

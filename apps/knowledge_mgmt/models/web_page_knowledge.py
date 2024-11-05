@@ -16,3 +16,9 @@ class WebPageKnowledge(models.Model):
     class Meta:
         verbose_name = _("Web Page Knowledge")
         verbose_name_plural = verbose_name
+
+    def to_dict(self):
+        return {
+            "url": self.url,
+            "max_depth": self.max_depth,
+        }

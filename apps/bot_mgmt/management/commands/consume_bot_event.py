@@ -5,8 +5,10 @@ import time
 import pika
 from django.conf import settings
 from django.core.management import BaseCommand
+from wechatpy.enterprise import WeChatClient
 
 from apps.bot_mgmt.models import Bot, BotConversationHistory
+from apps.bot_mgmt.models.bot import BotChannel
 from apps.bot_mgmt.models.channel_user import ChannelUser
 from apps.channel_mgmt.models import ChannelChoices
 from apps.core.logger import logger
@@ -37,6 +39,20 @@ def on_message(channel, method_frame, header_frame, body):
                 user, _ = ChannelUser.objects.get_or_create(
                     user_id=sender_id, name=sender_id, channel_type=ChannelChoices.WEB
                 )
+            elif input_channel == "enterprise_wechat":
+                channel_obj = BotChannel.objects.get(bot_id=bot_id, channel_type=ChannelChoices.ENTERPRISE_WECHAT)
+                conf = channel_obj.decrypted_channel_config
+                wechat_client = WeChatClient(
+                    conf["channels.enterprise_wechat_channel.EnterpriseWechatChannel"]["corp_id"],
+                    conf["channels.enterprise_wechat_channel.EnterpriseWechatChannel"]["secret"],
+                )
+                try:
+                    wechat_username = wechat_client.user.get(sender_id)["name"]
+                except Exception:
+                    wechat_username = sender_id
+                user = ChannelUser.objects.update_or_create(
+                    user_id=sender_id, channel_type=ChannelChoices.ENTERPRISE_WECHAT, defaults={"name": wechat_username}
+                )
             else:
                 raise Exception("暂不支持的通道类型")
             bot = Bot.objects.get(id=bot_id)
@@ -49,8 +65,9 @@ def on_message(channel, method_frame, header_frame, body):
                 conversation=message["text"] or "",
             )
     except Exception as e:
-        logger.exception(f"消息处理失败:{e}")
-    channel.basic_ack(delivery_tag=method_frame.delivery_tag)
+        logger.exception(f"对话历史保存失败: {e}")
+    else:
+        channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
 
 class Command(BaseCommand):
