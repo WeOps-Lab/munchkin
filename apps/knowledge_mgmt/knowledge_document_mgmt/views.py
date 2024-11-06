@@ -187,6 +187,23 @@ class KnowledgeDocumentViewSet(AuthViewSet):
             "manual": ManualKnowledge,
         }
         doc = knowledge_model_map[obj.knowledge_source_type].objects.filter(knowledge_document_id=obj.id).first()
-        result["id"] = obj.id
         result.update(doc.to_dict())
         return JsonResponse({"result": True, "data": result})
+
+    @action(methods=["POST"], detail=True)
+    def update_document_base_info(self, request, *args, **kwargs):
+        obj: KnowledgeDocument = self.get_object()
+        knowledge_model_map = {
+            "web_page": WebPageKnowledge,
+            "manual": ManualKnowledge,
+        }
+        doc = knowledge_model_map[obj.knowledge_source_type].objects.filter(knowledge_document_id=obj.id).first()
+        params = request.data
+        name = params.pop("name", "")
+        for key, value in params.items():
+            setattr(doc, key, value)
+        if name:
+            obj.name = name
+            obj.save()
+        doc.save()
+        return JsonResponse({"result": True})

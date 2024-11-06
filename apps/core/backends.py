@@ -20,6 +20,7 @@ class APISecretAuthBackend(ModelBackend):
         user_secret = UserAPISecret.objects.filter(api_secret=api_token).first()
         if user_secret:
             user = User.objects.get(username=user_secret.username)
+            user.group_list = [user_secret.team]
             return user
         return None
 

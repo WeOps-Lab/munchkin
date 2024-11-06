@@ -13,14 +13,14 @@ class DocumentStatus(object):
     READY = 1
     ERROR = 2
     PENDING = 3
-    QUEUING = 4
+    CHUNKING = 4
 
     CHOICE = (
         (TRAINING, _("Training")),
         (READY, _("Ready")),
         (ERROR, _("Error")),
         (PENDING, _("Pending")),
-        (QUEUING, _("Queuing")),
+        (CHUNKING, _("Chunking")),
     )
 
 

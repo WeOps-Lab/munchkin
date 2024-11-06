@@ -10,6 +10,7 @@ from wechatpy.enterprise import WeChatClient
 from apps.bot_mgmt.models import Bot, BotConversationHistory
 from apps.bot_mgmt.models.bot import BotChannel
 from apps.bot_mgmt.models.channel_user import ChannelUser
+from apps.bot_mgmt.services.ding_talk_client import DingTalkClient
 from apps.channel_mgmt.models import ChannelChoices
 from apps.core.logger import logger
 
@@ -51,8 +52,24 @@ def on_message(channel, method_frame, header_frame, body):
                 except Exception as e:
                     logger.error(f"获取企业微信用户信息失败: {e}")
                     wechat_username = sender_id
-                user = ChannelUser.objects.update_or_create(
+                user, _ = ChannelUser.objects.update_or_create(
                     user_id=sender_id, channel_type=ChannelChoices.ENTERPRISE_WECHAT, defaults={"name": wechat_username}
+                )
+            elif input_channel == "dingtalk":
+                channel_obj = BotChannel.objects.get(bot_id=bot_id, channel_type=ChannelChoices.DING_TALK)
+                conf = channel_obj.decrypted_channel_config
+                client = DingTalkClient(
+                    conf["channels.dingtalk_channel.DingTalkChannel"]["client_id"],
+                    conf["channels.dingtalk_channel.DingTalkChannel"]["client_secret"],
+                )
+                try:
+                    user_info = client.get_user_info(sender_id)
+                    username = user_info["name"]
+                except Exception as e:
+                    logger.error(f"获取企业微信用户信息失败: {e}")
+                    username = sender_id
+                user, _ = ChannelUser.objects.update_or_create(
+                    user_id=sender_id, channel_type=ChannelChoices.DING_TALK, defaults={"name": username}
                 )
             else:
                 raise Exception("暂不支持的通道类型")

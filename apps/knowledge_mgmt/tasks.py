@@ -29,7 +29,7 @@ def retrain_all(knowledge_base_id):
     knowledge_base = KnowledgeBase.objects.get(id=knowledge_base_id)
     knowledge_base.recreate_es_index()
     document_list = KnowledgeDocument.objects.filter(knowledge_base_id=knowledge_base_id)
-    document_list.update(train_status=DocumentStatus.QUEUING)
+    document_list.update(train_status=DocumentStatus.CHUNKING)
     general_embed_by_document_list(document_list)
 
 
@@ -50,7 +50,7 @@ def invoke_document_to_es(document_id):
         return
     es_client = get_es_client()
     remote_indexer = RemoteRunnable(settings.REMOTE_INDEX_URL)
-    document.train_status = DocumentStatus.QUEUING
+    document.train_status = DocumentStatus.CHUNKING
     document.save()
     logger.info(f"document {document.name} progress: {document.train_progress}")
     document.delete_es_content(es_client)
