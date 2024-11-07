@@ -35,44 +35,7 @@ def on_message(channel, method_frame, header_frame, body):
                     input_channel = (
                         channel_user.channel_type if channel_user.channel_type != ChannelChoices.WEB else "socketio"
                     )
-
-            if input_channel == "socketio":
-                user, _ = ChannelUser.objects.get_or_create(
-                    user_id=sender_id, name=sender_id, channel_type=ChannelChoices.WEB
-                )
-            elif input_channel == "enterprise_wechat":
-                channel_obj = BotChannel.objects.get(bot_id=bot_id, channel_type=ChannelChoices.ENTERPRISE_WECHAT)
-                conf = channel_obj.decrypted_channel_config
-                wechat_client = WeChatClient(
-                    conf["channels.enterprise_wechat_channel.EnterpriseWechatChannel"]["corp_id"],
-                    conf["channels.enterprise_wechat_channel.EnterpriseWechatChannel"]["secret"],
-                )
-                try:
-                    wechat_username = wechat_client.user.get(sender_id)["name"]
-                except Exception as e:
-                    logger.error(f"获取企业微信用户信息失败: {e}")
-                    wechat_username = sender_id
-                user, _ = ChannelUser.objects.update_or_create(
-                    user_id=sender_id, channel_type=ChannelChoices.ENTERPRISE_WECHAT, defaults={"name": wechat_username}
-                )
-            elif input_channel == "dingtalk":
-                channel_obj = BotChannel.objects.get(bot_id=bot_id, channel_type=ChannelChoices.DING_TALK)
-                conf = channel_obj.decrypted_channel_config
-                client = DingTalkClient(
-                    conf["channels.dingtalk_channel.DingTalkChannel"]["client_id"],
-                    conf["channels.dingtalk_channel.DingTalkChannel"]["client_secret"],
-                )
-                try:
-                    user_info = client.get_user_info(sender_id)
-                    username = user_info["name"]
-                except Exception as e:
-                    logger.error(f"获取钉钉用户信息失败: {e}")
-                    username = sender_id
-                user, _ = ChannelUser.objects.update_or_create(
-                    user_id=sender_id, channel_type=ChannelChoices.DING_TALK, defaults={"name": username}
-                )
-            else:
-                raise Exception("暂不支持的通道类型")
+            user = get_user_info(bot_id, input_channel, sender_id)
             bot = Bot.objects.get(id=bot_id)
             BotConversationHistory.objects.get_or_create(
                 bot_id=bot_id,
@@ -86,6 +49,46 @@ def on_message(channel, method_frame, header_frame, body):
         logger.exception(f"对话历史保存失败: {e}")
     else:
         channel.basic_ack(delivery_tag=method_frame.delivery_tag)
+
+
+def get_user_info(bot_id, input_channel, sender_id):
+    channel_type_map = {
+        "socketio": ChannelChoices.WEB,
+        "enterprise_wechat": ChannelChoices.ENTERPRISE_WECHAT,
+        "dingtalk": ChannelChoices.DING_TALK,
+    }
+    if input_channel == "socketio":
+        name = sender_id
+    elif input_channel == "enterprise_wechat":
+        channel_obj = BotChannel.objects.get(bot_id=bot_id, channel_type=ChannelChoices.ENTERPRISE_WECHAT)
+        conf = channel_obj.decrypted_channel_config
+        wechat_client = WeChatClient(
+            conf["channels.enterprise_wechat_channel.EnterpriseWechatChannel"]["corp_id"],
+            conf["channels.enterprise_wechat_channel.EnterpriseWechatChannel"]["secret"],
+        )
+        try:
+            name = wechat_client.user.get(sender_id)["name"]
+        except Exception as e:
+            logger.error(f"获取企业微信用户信息失败: {e}")
+            name = sender_id
+    elif input_channel == "dingtalk":
+        channel_obj = BotChannel.objects.get(bot_id=bot_id, channel_type=ChannelChoices.DING_TALK)
+        conf = channel_obj.decrypted_channel_config
+        client = DingTalkClient(
+            conf["channels.dingtalk_channel.DingTalkChannel"]["client_id"],
+            conf["channels.dingtalk_channel.DingTalkChannel"]["client_secret"],
+        )
+        try:
+            name = client.get_user_info(sender_id)["name"]
+        except Exception as e:
+            logger.error(f"获取钉钉用户信息失败: {e}")
+            name = sender_id
+    else:
+        raise Exception("暂不支持的通道类型")
+    user, _ = ChannelUser.objects.update_or_create(
+        user_id=sender_id, channel_type=channel_type_map[input_channel], defaults={"name": name}
+    )
+    return user
 
 
 class Command(BaseCommand):
