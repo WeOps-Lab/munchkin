@@ -66,7 +66,7 @@ def on_message(channel, method_frame, header_frame, body):
                     user_info = client.get_user_info(sender_id)
                     username = user_info["name"]
                 except Exception as e:
-                    logger.error(f"获取企业微信用户信息失败: {e}")
+                    logger.error(f"获取钉钉用户信息失败: {e}")
                     username = sender_id
                 user, _ = ChannelUser.objects.update_or_create(
                     user_id=sender_id, channel_type=ChannelChoices.DING_TALK, defaults={"name": username}
