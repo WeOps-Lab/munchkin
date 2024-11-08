@@ -18,9 +18,9 @@ channel_map = {}
 
 
 def on_message(channel, method_frame, header_frame, body):
-    logger.info("开始处理消息")
     try:
         message = json.loads(body.decode())
+        logger.info(f"开始处理消息: {message}")
         if "text" in message:
             sender_id = message["sender_id"]
             bot_id = int(message.get("bot_id", 7))
@@ -48,6 +48,7 @@ def on_message(channel, method_frame, header_frame, body):
     except Exception as e:
         logger.exception(f"对话历史保存失败: {e}")
     else:
+        logger.info("消息处理完成")
         channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
 

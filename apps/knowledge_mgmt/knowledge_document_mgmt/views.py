@@ -36,6 +36,7 @@ class KnowledgeDocumentViewSet(AuthViewSet):
         preview = kwargs.pop("preview", False)
         is_save_only = kwargs.pop("is_save_only", False)
         if preview:
+            KnowledgeDocument.objects.filter(id__in=knowledge_document_ids).update(**kwargs)
             document_list = KnowledgeDocument.objects.filter(id__in=knowledge_document_ids)
             doc_list = general_embed_by_document_list(document_list, True)
             return JsonResponse({"result": True, "data": doc_list})
