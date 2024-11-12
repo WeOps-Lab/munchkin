@@ -104,12 +104,21 @@ class HistoryViewSet(viewsets.ModelViewSet):
     @action(methods=["POST"], detail=False)
     def get_log_detail(self, request):
         ids = request.data.get("ids")
+        page_size = int(request.data.get("page_size", 10))
+        page = int(request.data.get("page", 1))
         history_list = (
             BotConversationHistory.objects.filter(id__in=ids)
             .values("conversation_role", "conversation")
             .order_by("created_at")
         )
+        paginator = Paginator(history_list, page_size)
+        # 将结果转换为期望的格式
+        try:
+            page_data = paginator.page(page)
+        except Exception:
+            # 处理无效的页码请求
+            page_data = paginator.page(1)  # 返回第一页数据
         return_data = []
-        for i in history_list:
+        for i in page_data:
             return_data.append({"role": i["conversation_role"], "content": i["conversation"]})
         return JsonResponse({"result": True, "data": return_data})
