@@ -51,6 +51,7 @@ def invoke_document_to_es(document_id):
     es_client = get_es_client()
     remote_indexer = RemoteRunnable(settings.REMOTE_INDEX_URL)
     document.train_status = DocumentStatus.CHUNKING
+    document.chunk_size = 0
     document.train_progress = 0
     document.save()
     logger.info(f"document {document.name} progress: {document.train_progress}")

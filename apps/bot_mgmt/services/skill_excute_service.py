@@ -27,6 +27,7 @@ class SkillExecuteService:
         }
         result = llm_service.chat(params)
         content = result["content"]
+        logger.info(f"问题回答如下： {result['content']}, 知识来源: {result['citing_knowledge']}")
         if llm_skill.enable_rag_knowledge_source:
             knowledge_titles = {x["knowledge_title"] for x in result["citing_knowledge"]}
             content += "\n"
