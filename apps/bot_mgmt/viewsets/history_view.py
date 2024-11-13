@@ -44,7 +44,7 @@ class HistoryViewSet(viewsets.ModelViewSet):
                 last_updated_at=Max("created_at"),
                 title=Subquery(earliest_conversation_subquery),
             )
-            .order_by("day", "channel_user__user_id")
+            .order_by("-earliest_created_at")
         )
         paginator, result = self.get_log_by_page(aggregated_data, page, page_size)
         return JsonResponse({"result": True, "data": {"items": result, "count": paginator.count}})
@@ -117,7 +117,7 @@ class HistoryViewSet(viewsets.ModelViewSet):
             page_data = paginator.page(page)
         except Exception:
             # 处理无效的页码请求
-            page_data = paginator.page(1)  # 返回第一页数据
+            page_data = []  # 返回第一页数据
         return_data = []
         for i in page_data:
             return_data.append({"role": i["conversation_role"], "content": i["conversation"]})
