@@ -31,7 +31,7 @@ class SkillExecuteService:
         if llm_skill.enable_rag_knowledge_source:
             knowledge_titles = {x["knowledge_title"] for x in result["citing_knowledge"]}
             last_content = content.strip().split("\n")[-1]
-            if "引用知识" not in last_content:
+            if "引用知识" not in last_content and knowledge_titles:
                 content += "\n"
                 content += f'引用知识: {", ".join(knowledge_titles)}'
         return content

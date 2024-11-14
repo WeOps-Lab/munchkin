@@ -39,7 +39,7 @@ class KnowledgeSearchService:
             params["vector_search_weight"] = kwargs["vector_search_weight"]
         result = remote_indexer.invoke(params)
         for doc in result:
-            score = doc.metadata["_score"] * 10
+            score = doc.metadata["_score"]
             if score <= score_threshold:
                 continue
 
