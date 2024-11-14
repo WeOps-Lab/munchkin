@@ -20,5 +20,5 @@ ENV DEBUG False
 ENV DB_ENGINE  django.db.backends.sqlite3
 ENV DB_NAME munchkin
 
-
+   
 #CMD [ "supervisord","-n" ]
