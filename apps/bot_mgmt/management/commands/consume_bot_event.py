@@ -86,9 +86,16 @@ def get_user_info(bot_id, input_channel, sender_id):
             name = sender_id
     else:
         raise Exception("暂不支持的通道类型")
-    user, _ = ChannelUser.objects.update_or_create(
+
+    if name == sender_id:
+        fun = "get_or_create"
+    else:
+        fun = "update_or_create"
+
+    user, _ = getattr(ChannelUser.objects, fun)(
         user_id=sender_id, channel_type=channel_type_map[input_channel], defaults={"name": name}
     )
+
     return user
 
 

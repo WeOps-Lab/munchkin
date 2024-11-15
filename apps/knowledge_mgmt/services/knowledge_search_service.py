@@ -40,7 +40,7 @@ class KnowledgeSearchService:
         result = remote_indexer.invoke(params)
         for doc in result:
             score = doc.metadata["_score"]
-            if score <= score_threshold:
+            if score <= score_threshold * 10:
                 continue
 
             doc_info = {
