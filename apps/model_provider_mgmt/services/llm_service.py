@@ -31,9 +31,12 @@ class LLMService:
             "rag_context": context,
         }
         result = chat_server.invoke(chat_kwargs)
+        if not result["result"]:
+            raise Exception(result["message"])
+        data = result["data"]
         TokenConsumption.objects.create(
-            input_tokens=result["input_tokens"],
-            output_tokens=result["output_tokens"],
+            input_tokens=data["input_tokens"],
+            output_tokens=data["output_tokens"],
             username=kwargs["username"],
             user_id=kwargs["user_id"],
         )
@@ -49,7 +52,7 @@ class LLMService:
                 }
                 for k, v in title_map.items()
             ]
-        return {"content": result["content"], "citing_knowledge": citing_knowledge}
+        return {"content": data["content"], "citing_knowledge": citing_knowledge}
 
     def search_doc(self, context, kwargs):
         title_map = {}
