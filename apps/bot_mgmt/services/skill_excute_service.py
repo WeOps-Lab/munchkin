@@ -25,6 +25,7 @@ class SkillExecuteService:
             "temperature": llm_skill.temperature,
             "username": user.name,
             "user_id": user.user_id,
+            "bot_id": bot.id,
         }
         result = llm_service.chat(params)
         content = result["content"]

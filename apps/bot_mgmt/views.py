@@ -2,7 +2,7 @@ import datetime
 import hashlib
 import json
 
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.db.models.functions import TruncDate
 from django.http import FileResponse, JsonResponse
 from django_minio_backend import MinioBackend
@@ -14,6 +14,7 @@ from apps.bot_mgmt.utils import set_time_range
 from apps.core.decorators.api_perminssion import HasRole
 from apps.core.logger import logger
 from apps.core.utils.exempt import api_exempt
+from apps.model_provider_mgmt.models import TokenConsumption
 
 
 @api_exempt
@@ -93,6 +94,14 @@ def get_total_token_consumption(request):
     start_time_str = request.GET.get("start_time")
     end_time_str = request.GET.get("end_time")
     end_time, start_time = set_time_range(end_time_str, start_time_str)
+    total_tokens = TokenConsumption.objects.filter(
+        created_at__range=[start_time, end_time],
+        bot_id=request.GET.get("bot_id"),
+    ).aggregate(total_input_tokens=Sum("input_tokens"), total_output_tokens=Sum("output_tokens"))
+    input_tokens = total_tokens["total_input_tokens"] or 0
+    output_tokens = total_tokens["total_output_tokens"] or 0
+    total_combined_tokens = input_tokens + output_tokens
+    return JsonResponse({"result": True, "data": total_combined_tokens})
 
 
 @HasRole("admin")

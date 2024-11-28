@@ -1,3 +1,5 @@
+import json
+
 from django.conf import settings
 from django.utils.translation import gettext as _
 from langserve import RemoteRunnable
@@ -31,15 +33,19 @@ class LLMService:
             "rag_context": context,
         }
         result = chat_server.invoke(chat_kwargs)
+        if type(result) == str:
+            result = json.loads(result)
         if not result["result"]:
             raise Exception(result["message"])
         data = result["data"]
-        TokenConsumption.objects.create(
-            input_tokens=data["input_tokens"],
-            output_tokens=data["output_tokens"],
-            username=kwargs["username"],
-            user_id=kwargs["user_id"],
-        )
+        if "bot_id" in kwargs:
+            TokenConsumption.objects.create(
+                bot_id=kwargs["bot_id"],
+                input_tokens=data["input_tokens"],
+                output_tokens=data["output_tokens"],
+                username=kwargs["username"],
+                user_id=kwargs["user_id"],
+            )
         if kwargs["enable_rag_knowledge_source"]:
             citing_knowledge = [
                 {
