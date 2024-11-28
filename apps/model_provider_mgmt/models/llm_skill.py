@@ -1,6 +1,14 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from apps.core.models.maintainer_info import MaintainerInfo
+from apps.core.models.time_info import TimeInfo
+
+
+class ActionChoice(object):
+    USE_KNOWLEDGE = 0
+
+    CHOICE = ((USE_KNOWLEDGE, _("Use specified knowledge base")),)
 
 
 class LLMSkill(MaintainerInfo):
@@ -31,3 +39,13 @@ class LLMSkill(MaintainerInfo):
         verbose_name = "LLM技能管理"
         verbose_name_plural = verbose_name
         constraints = [models.UniqueConstraint(fields=["created_by", "name"], name="unique_owner_name")]
+
+
+class SkillRule(MaintainerInfo, TimeInfo):
+    skill = models.ForeignKey("model_provider_mgmt.LLMSkill", on_delete=models.CASCADE, verbose_name="技能")
+    name = models.CharField(max_length=255, verbose_name="规则名称")
+    description = models.TextField(blank=True, null=True, verbose_name="描述")
+    condition = models.JSONField(default=dict, verbose_name="条件")
+    action = models.IntegerField(default=0, verbose_name="动作", choices=ActionChoice.CHOICE)
+    action_set = models.JSONField(default=dict, verbose_name="动作设置")
+    is_enabled = models.BooleanField(default=True, verbose_name="是否启用")

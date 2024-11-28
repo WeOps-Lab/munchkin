@@ -1,16 +1,18 @@
-import datetime
-
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Count, Max, Min, OuterRef, Subquery
 from django.db.models.functions import TruncDay
 from django.http import JsonResponse
 from rest_framework import viewsets
 from rest_framework.decorators import action
 
-from apps.bot_mgmt.models import BotConversationHistory
+from apps.bot_mgmt.models import BotConversationHistory, ConversationTag
 from apps.bot_mgmt.serializers.history_serializer import HistorySerializer
+from apps.bot_mgmt.utils import set_time_range
 from apps.channel_mgmt.models import ChannelChoices
+from apps.knowledge_mgmt.knowledge_document_mgmt.utils import KnowledgeDocumentUtils
+from apps.knowledge_mgmt.models import KnowledgeDocument, ManualKnowledge
 
 
 class HistoryViewSet(viewsets.ModelViewSet):
@@ -89,16 +91,7 @@ class HistoryViewSet(viewsets.ModelViewSet):
             channel_type = list(dict(ChannelChoices.choices).keys())
         else:
             channel_type = channel_type.split(",")
-        today = datetime.datetime.today()
-        # 解析时间字符串到 datetime 对象，并处理空值
-        if start_time_str:
-            start_time = datetime.datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M:%S.%fZ")
-        else:
-            start_time = today.replace(year=2024, month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
-        if end_time_str:
-            end_time = datetime.datetime.strptime(end_time_str, "%Y-%m-%dT%H:%M:%S.%fZ")
-        else:
-            end_time = today.replace(hour=23, minute=59, second=59, microsecond=999999)
+        end_time, start_time = set_time_range(end_time_str, start_time_str)
         return bot_id, channel_type, end_time, page, page_size, search, start_time
 
     @action(methods=["POST"], detail=False)
@@ -108,7 +101,7 @@ class HistoryViewSet(viewsets.ModelViewSet):
         page = int(request.data.get("page", 1))
         history_list = (
             BotConversationHistory.objects.filter(id__in=ids)
-            .values("conversation_role", "conversation")
+            .values("id", "conversation_role", "conversation")
             .order_by("created_at")
         )
         paginator = Paginator(history_list, page_size)
@@ -116,9 +109,80 @@ class HistoryViewSet(viewsets.ModelViewSet):
         try:
             page_data = paginator.page(page)
         except Exception:
-            # 处理无效的页码请求
-            page_data = []  # 返回第一页数据
+            page_data = []
         return_data = []
+        tag_map = dict(ConversationTag.objects.filter(answer_id__in=ids).values_list("answer_id", "id"))
         for i in page_data:
-            return_data.append({"role": i["conversation_role"], "content": i["conversation"]})
+            return_data.append(
+                {
+                    "id": i["id"],
+                    "role": i["conversation_role"],
+                    "content": i["conversation"],
+                    "has_tag": i["id"] in tag_map,
+                    "tag_id": tag_map.get(i["id"], 0),
+                }
+            )
         return JsonResponse({"result": True, "data": return_data})
+
+    @action(methods=["GET"], detail=False)
+    def get_tag_detail(self, request):
+        tag_obj = ConversationTag.objects.get(id=request.GET.get("tag_id"))
+        return JsonResponse(
+            {
+                "result": True,
+                "data": {
+                    "knowledge_base_id": tag_obj.knowledge_base_id,
+                    "content": tag_obj.content,
+                    "question": tag_obj.question,
+                },
+            }
+        )
+
+    @action(methods=["POST"], detail=False)
+    def set_tag(self, request):
+        kwargs = request.data
+        params = {
+            "knowledge_source_type": "manual",
+            "name": kwargs["question"],
+            "knowledge_base_id": kwargs["knowledge_base_id"],
+        }
+        with transaction.atomic():
+            tag_obj = self.get_or_create_tag(kwargs)
+            new_doc = KnowledgeDocumentUtils.get_new_document(params, request.user.username)
+            ManualKnowledge.objects.create(
+                knowledge_document_id=new_doc.id,
+                content=kwargs.get("content", ""),
+            )
+            tag_obj.knowledge_document_id = new_doc.id
+            tag_obj.content = kwargs["content"]
+            tag_obj.save()
+        return JsonResponse({"result": True, "data": {"tag_id": tag_obj.id}})
+
+    @action(methods=["POST"], detail=False)
+    def remove_tag(self, request):
+        tag_obj = ConversationTag.objects.get(id=request.data.get("tag_id"))
+        doc_obj = KnowledgeDocument.objects.filter(id=tag_obj.knowledge_document_id).first()
+        with transaction.atomic():
+            if doc_obj:
+                doc_obj.delete()
+            tag_obj.delete()
+        return JsonResponse({"result": True})
+
+    @staticmethod
+    def get_or_create_tag(kwargs):
+        tag_obj = ConversationTag.objects.filter(id=kwargs["tag_id"]).first()
+        if tag_obj:
+            doc_obj = KnowledgeDocument.objects.filter(id=tag_obj.knowledge_document_id).first()
+            if doc_obj:
+                doc_obj.delete()
+            tag_obj.knowledge_base_id = kwargs["knowledge_base_id"]
+            tag_obj.question = kwargs["question"]
+        else:
+            tag_obj = ConversationTag.objects.create(
+                knowledge_base_id=kwargs["knowledge_base_id"],
+                answer_id=kwargs.get("answer_id"),
+                question=kwargs["question"],
+                knowledge_document_id=0,
+                content=kwargs["content"],
+            )
+        return tag_obj

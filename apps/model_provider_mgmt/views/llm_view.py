@@ -87,6 +87,8 @@ class LLMViewSet(AuthViewSet):
         }
         """
         params = request.data
+        params["username"] = request.user.username
+        params["user_id"] = request.user.id
         return_data = llm_service.chat(params)
         return JsonResponse({"result": True, "data": return_data})
 

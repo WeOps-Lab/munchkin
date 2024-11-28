@@ -20,3 +20,13 @@ class BotConversationHistory(MaintainerInfo):
     class Meta:
         verbose_name = "对话历史"
         verbose_name_plural = verbose_name
+
+
+class ConversationTag(models.Model):
+    question = models.TextField(verbose_name="问题")
+    answer = models.ForeignKey(
+        "bot_mgmt.BotConversationHistory", null=True, blank=True, on_delete=models.CASCADE, verbose_name="回答"
+    )
+    content = models.TextField(verbose_name="内容")
+    knowledge_base_id = models.IntegerField(verbose_name="知识库ID")
+    knowledge_document_id = models.IntegerField(verbose_name="知识文档ID")

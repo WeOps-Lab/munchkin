@@ -24,3 +24,16 @@ class DingTalkClient(object):
         if data.get("errcode") != 0:
             raise Exception(f"获取用户信息失败: {data.get('errmsg')}")
         return data["result"]
+
+    def get_user_department(self, user_id):
+        url = "https://oapi.dingtalk.com/topapi/v2/department/listparentbyuser"
+        params = {"access_token": self.get_access_token()}
+        kwargs = {"userid": user_id}
+        response = requests.post(url, params=params, json=kwargs)
+        data = response.json()
+        if data.get("errcode") != 0:
+            raise Exception(f"获取用户信息失败: {data.get('errmsg')}")
+        return_data = []
+        for i in data["result"].get("parent_list", []):
+            return_data.extend(i.get("parent_dept_id_list", []))
+        return list(set(return_data))

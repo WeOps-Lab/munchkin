@@ -1,9 +1,11 @@
+from django.db import transaction
 from django.http import JsonResponse
 from django.utils.translation import gettext as _
 from django_filters import filters
 from django_filters.rest_framework import FilterSet
 from rest_framework.decorators import action
 
+from apps.bot_mgmt.models import ConversationTag
 from apps.core.logger import logger
 from apps.core.utils.elasticsearch_utils import get_es_client
 from apps.core.utils.viewset_utils import AuthViewSet
@@ -55,7 +57,10 @@ class KnowledgeDocumentViewSet(AuthViewSet):
         instance: KnowledgeDocument = self.get_object()
         if instance.train_status == DocumentStatus.TRAINING:
             return JsonResponse({"result": False, "message": _("training document can not be deleted")})
-        return super().destroy(request, *args, **kwargs)
+        with transaction.atomic():
+            ConversationTag.objects.filter(knowledge_document_id=instance.id).delete()
+            instance.delete()
+        return JsonResponse({"result": True})
 
     @action(methods=["POST"], detail=False)
     def batch_train(self, request):
