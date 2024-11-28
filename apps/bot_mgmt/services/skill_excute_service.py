@@ -23,8 +23,8 @@ class SkillExecuteService:
             "chat_history": chat_history,  # 对话历史
             "conversation_window_size": 10,  # 对话窗口大小
             "temperature": llm_skill.temperature,
-            "username": user.name,
-            "user_id": user.user_id,
+            "username": user.name if user else sender_id,
+            "user_id": user.user_id if user else sender_id,
             "bot_id": bot.id,
         }
         result = llm_service.chat(params)
