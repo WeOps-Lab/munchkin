@@ -79,11 +79,11 @@ def skill_execute(request):
         channel = "web"
     api_token = request.META.get("HTTP_AUTHORIZATION").split("TOKEN")[-1].strip()
     if not api_token:
-        return JsonResponse({"result": "No authorization"})
+        return JsonResponse({"result": {"content": "No authorization"}})
     bot = Bot.objects.filter(id=bot_id, api_token=api_token).first()
     if not bot:
         logger.info(f"api_token: {api_token}")
-        return JsonResponse({"result": "No bot found"})
+        return JsonResponse({"result": {"content": "No bot found"}})
     result = SkillExecuteService.execute_skill(bot, skill_id, user_message, chat_history, sender_id, channel)
 
     return JsonResponse({"result": result})
