@@ -109,6 +109,27 @@ def get_token_consumption_overview(request):
     start_time_str = request.GET.get("start_time")
     end_time_str = request.GET.get("end_time")
     end_time, start_time = set_time_range(end_time_str, start_time_str)
+    num_days = (end_time - start_time).days + 1
+    all_dates = [start_time + datetime.timedelta(days=i) for i in range(num_days)]
+    formatted_dates = {date.strftime("%Y-%m-%d"): 0 for date in all_dates}
+    # 查询特定日期范围内的TokenConsumption，并按天分组统计input_tokens和output_tokens的总和
+    queryset = (
+        TokenConsumption.objects.filter(created_at__range=[start_time, end_time], bot_id=request.GET.get("bot_id"))
+        .annotate(date=TruncDate("created_at"))
+        .values("date")
+        .annotate(input_tokens_sum=Sum("input_tokens"), output_tokens_sum=Sum("output_tokens"))
+    )
+
+    # 更新字典与查询结果
+    for entry in queryset:
+        date = entry["date"].strftime("%Y-%m-%d")
+        input_tokens = entry["input_tokens_sum"] or 0
+        output_tokens = entry["output_tokens_sum"] or 0
+        formatted_dates[date] = input_tokens + output_tokens
+
+    # 转换为所需的输出格式
+    result = [{"time": date, "count": values} for date, values in sorted(formatted_dates.items())]
+    return JsonResponse({"result": True, "data": result})
 
 
 @HasRole("admin")
