@@ -44,12 +44,13 @@ def on_message(channel, method_frame, header_frame, body):
                 created_by=bot.created_by,
                 conversation_role=message["event"],
                 conversation=message["text"] or "",
+                citing_knowledge=message.get("citing_knowledge", []),
             )
     except Exception as e:
         logger.exception(f"对话历史保存失败: {e}")
     else:
         logger.info("消息处理完成")
-        channel.basic_ack(delivery_tag=method_frame.delivery_tag)
+        # channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
 
 def get_user_info(bot_id, input_channel, sender_id):

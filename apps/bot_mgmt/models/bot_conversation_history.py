@@ -13,6 +13,7 @@ class BotConversationHistory(MaintainerInfo):
     channel_user = models.ForeignKey(
         "bot_mgmt.ChannelUser", on_delete=models.CASCADE, verbose_name="通道用户", blank=True, null=True
     )
+    citing_knowledge = models.JSONField(verbose_name="引用知识", default=list, blank=True, null=True)
 
     def __str__(self):
         return self.conversation
