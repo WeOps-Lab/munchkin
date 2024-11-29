@@ -101,7 +101,7 @@ class HistoryViewSet(viewsets.ModelViewSet):
         page = int(request.data.get("page", 1))
         history_list = (
             BotConversationHistory.objects.filter(id__in=ids)
-            .values("id", "conversation_role", "conversation")
+            .values("id", "conversation_role", "conversation", "citing_knowledge")
             .order_by("created_at")
         )
         paginator = Paginator(history_list, page_size)
@@ -118,6 +118,7 @@ class HistoryViewSet(viewsets.ModelViewSet):
                     "id": i["id"],
                     "role": i["conversation_role"],
                     "content": i["conversation"],
+                    "citing_knowledge": i["citing_knowledge"],
                     "has_tag": i["id"] in tag_map,
                     "tag_id": tag_map.get(i["id"], 0),
                 }
