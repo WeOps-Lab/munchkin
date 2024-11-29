@@ -44,7 +44,7 @@ def on_message(channel, method_frame, header_frame, body):
                 created_by=bot.created_by,
                 conversation_role=message["event"],
                 conversation=message["text"] or "",
-                citing_knowledge=message.get("citing_knowledge", []),
+                citing_knowledge=message.get("metadata", {}).get("other_data", {}).get("citing_knowledge", []),
             )
     except Exception as e:
         logger.exception(f"对话历史保存失败: {e}")
