@@ -7,7 +7,7 @@ def set_time_range(end_time_str, start_time_str):
     if start_time_str:
         start_time = datetime.datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M:%S.%fZ")
     else:
-        start_time = today.replace(year=2024, month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        start_time = today.replace(hour=0, minute=0, second=0, microsecond=0)
     if end_time_str:
         end_time = datetime.datetime.strptime(end_time_str, "%Y-%m-%dT%H:%M:%S.%fZ")
     else:
