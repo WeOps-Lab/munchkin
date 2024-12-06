@@ -50,7 +50,7 @@ def on_message(channel, method_frame, header_frame, body):
         logger.exception(f"对话历史保存失败: {e}")
     else:
         logger.info("消息处理完成")
-        # channel.basic_ack(delivery_tag=method_frame.delivery_tag)
+        channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
 
 def get_user_info(bot_id, input_channel, sender_id):
