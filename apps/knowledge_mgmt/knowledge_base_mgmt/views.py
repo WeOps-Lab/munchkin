@@ -11,6 +11,8 @@ from apps.core.utils.keycloak_client import KeyCloakClient
 from apps.core.utils.viewset_utils import AuthViewSet
 from apps.knowledge_mgmt.knowledge_base_mgmt.serializers import KnowledgeBaseSerializer
 from apps.knowledge_mgmt.models import KnowledgeBase, KnowledgeDocument
+from apps.knowledge_mgmt.models.knowledge_document import DocumentStatus
+from apps.knowledge_mgmt.tasks import retrain_all
 from apps.model_provider_mgmt.models import EmbedProvider, RerankProvider
 
 
@@ -52,6 +54,14 @@ class KnowledgeBaseViewSet(AuthViewSet):
 
     @HasRole()
     def update(self, request, *args, **kwargs):
+        instance: KnowledgeBase = self.get_object()
+        params = request.data
+        if instance.embed_model_id != params["embed_model"]:
+            if instance.knowledgedocument_set.filter(train_status=DocumentStatus.TRAINING).exists():
+                return JsonResponse(
+                    {"result": False, "message": _("The knowledge base is training and cannot be modified.")}
+                )
+            retrain_all.delay(instance.id)
         return super().update(request, *args, **kwargs)
 
     @action(methods=["POST"], detail=True)
