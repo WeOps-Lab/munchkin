@@ -13,6 +13,7 @@ from apps.bot_mgmt.utils import set_time_range
 from apps.channel_mgmt.models import ChannelChoices
 from apps.knowledge_mgmt.knowledge_document_mgmt.utils import KnowledgeDocumentUtils
 from apps.knowledge_mgmt.models import KnowledgeDocument, ManualKnowledge
+from apps.knowledge_mgmt.tasks import invoke_document_to_es
 
 
 class HistoryViewSet(viewsets.ModelViewSet):
@@ -157,6 +158,7 @@ class HistoryViewSet(viewsets.ModelViewSet):
             tag_obj.knowledge_document_id = new_doc.id
             tag_obj.content = kwargs["content"]
             tag_obj.save()
+        invoke_document_to_es.delay(new_doc.id)
         return JsonResponse({"result": True, "data": {"tag_id": tag_obj.id}})
 
     @action(methods=["POST"], detail=False)

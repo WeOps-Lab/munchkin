@@ -70,6 +70,14 @@ class ChannelInitService:
             created_by=self.owner,
             defaults={"channel_config": {"rest": {}}},
         )
+
+        logger.info("初始化Web通道")
+        Channel.objects.get_or_create(
+            name=ChannelChoices.WECHAT_OFFICIAL_ACCOUNT.value,
+            channel_type=ChannelChoices.WECHAT_OFFICIAL_ACCOUNT,
+            created_by=self.owner,
+            defaults={"channel_config": {"rest": {}}},
+        )
         # ChannelUserGroup.objects.get_or_create(channel=obj, name="默认用户组", created_by=self.owner)
 
         # logger.info("初始化Gitlab通道")
