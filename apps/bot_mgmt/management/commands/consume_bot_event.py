@@ -5,6 +5,7 @@ import time
 import pika
 from django.conf import settings
 from django.core.management import BaseCommand
+from django.db import close_old_connections
 from wechatpy.enterprise import WeChatClient
 
 from apps.bot_mgmt.models import Bot, BotConversationHistory
@@ -22,6 +23,7 @@ def on_message(channel, method_frame, header_frame, body):
         message = json.loads(body.decode())
         logger.info(f"开始处理消息: {message}")
         if "text" in message:
+            close_old_connections()
             sender_id = message["sender_id"]
             bot_id = int(message.get("bot_id", 7))
             created_at = datetime.datetime.fromtimestamp(message["timestamp"], tz=datetime.timezone.utc)

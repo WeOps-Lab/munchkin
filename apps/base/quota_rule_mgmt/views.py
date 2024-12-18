@@ -1,4 +1,6 @@
 from django.http import JsonResponse
+from django_filters import filters
+from django_filters.rest_framework import FilterSet
 from rest_framework import viewsets
 from rest_framework.decorators import action
 
@@ -8,10 +10,15 @@ from apps.base.quota_rule_mgmt.serializers import QuotaRuleSerializer
 from apps.core.decorators.api_perminssion import HasRole
 
 
+class ObjFilter(FilterSet):
+    name = filters.CharFilter(field_name="name", lookup_expr="icontains")
+
+
 class QuotaRuleViewSet(viewsets.ModelViewSet):
     queryset = QuotaRule.objects.all()
     serializer_class = QuotaRuleSerializer
     ordering = ("-id",)
+    filterset_class = ObjFilter
 
     @HasRole("admin")
     def list(self, request, *args, **kwargs):
@@ -33,13 +40,20 @@ class QuotaRuleViewSet(viewsets.ModelViewSet):
     def my_quota(self, request):
         username = request.user.username
         teams = request.user.group_list
-        client = QuotaUtils(username, teams)
-        file_size_list = client.get_file_quota()
-        skill_count_list = client.get_skill_quota()
-        bot_count_list = client.get_bot_quota()
+        current_team = request.COOKIES.get("current_team")
+        if not current_team:
+            current_team = teams[0]
+        client = QuotaUtils(username, current_team)
+        all_file_size, used_file_size = client.get_file_quota()
+        skill_count, used_skill_count = client.get_skill_quota()
+        bot_count, used_bot_count = client.get_bot_quota()
+
         return_data = {
-            "file_size": min(file_size_list) if file_size_list else 0,
-            "skill_count": min(skill_count_list) if skill_count_list else 0,
-            "bot_count": min(bot_count_list) if bot_count_list else 0,
+            "used_file_size": used_file_size,
+            "used_skill_count": used_skill_count,
+            "used_bot_count": used_bot_count,
+            "all_file_size": all_file_size,
+            "all_skill_count": skill_count,
+            "all_bot_count": bot_count,
         }
         return JsonResponse({"result": True, "data": return_data})
