@@ -151,3 +151,7 @@ class KeyCloakClient:
                 return_data.extend(group_children)
                 exist_data.extend([u["id"] for u in group_children])
         return return_data
+
+    def get_group_user(self, group):
+        users = self.realm_client.get_group_members(group)
+        return [{"username": i["username"], "first_name": i["firstName"], "last_name": i["lastName"]} for i in users]

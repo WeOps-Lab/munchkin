@@ -8,13 +8,16 @@ from apps.core.models.time_info import TimeInfo
 
 
 class UserAPISecret(TimeInfo):
-    username = models.CharField(max_length=255, unique=True)
+    username = models.CharField(max_length=255)
     api_secret = models.CharField(max_length=64)
     team = models.CharField(max_length=100, default="", null=True, blank=True)
 
     @staticmethod
     def generate_api_secret():
         return binascii.hexlify(os.urandom(32)).decode()
+
+    class Meta:
+        unique_together = ("username", "team")
 
 
 class User(AbstractUser):

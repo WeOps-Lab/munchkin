@@ -6,6 +6,15 @@ from apps.knowledge_mgmt.models import FileKnowledge
 from apps.model_provider_mgmt.models import LLMSkill
 
 
+def get_quota_client(request):
+    teams = request.user.group_list
+    current_team = request.COOKIES.get("current_team")
+    if not current_team:
+        current_team = teams[0]
+    client = QuotaUtils(request.user.username, current_team)
+    return client
+
+
 class QuotaUtils(object):
     def __init__(self, username, team):
         self.username = username
@@ -33,7 +42,7 @@ class QuotaUtils(object):
             file_list = FileKnowledge.objects.filter(knowledge_document__knowledge_base__team=self.team)
         used_file_size_list = [i.file.size for i in file_list if i.file] + [0]
         used_file_size = sum(used_file_size_list)
-        return min(file_size_list) if file_size_list else 0, used_file_size
+        return min(file_size_list) if file_size_list else 0, round(used_file_size, 2), bool(file_size_map["private"])
 
     def get_skill_quota(self):
         skill_count_map = {"shared": [], "private": []}
@@ -47,7 +56,7 @@ class QuotaUtils(object):
             skill_count_list = skill_count_map["shared"]
             skill_count = LLMSkill.objects.filter(team__contains=self.team).count()
 
-        return min(skill_count_list) if skill_count_list else 0, skill_count
+        return min(skill_count_list) if skill_count_list else 0, skill_count, bool(skill_count_map["private"])
 
     def get_bot_quota(self):
         bot_count_map = {"shared": [], "private": []}
@@ -60,4 +69,4 @@ class QuotaUtils(object):
         else:
             bot_count_list = bot_count_map["shared"]
             bot_count = Bot.objects.filter(team__contains=self.team).count()
-        return min(bot_count_list) if bot_count_list else 0, bot_count
+        return min(bot_count_list) if bot_count_list else 0, bot_count, bool(bot_count_map["private"])

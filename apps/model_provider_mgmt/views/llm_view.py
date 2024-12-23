@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from apps.base.quota_rule_mgmt.quota_utils import get_quota_client
 from apps.core.decorators.api_perminssion import HasRole
 from apps.core.utils.viewset_utils import AuthViewSet
 from apps.core.viewsets.guardian_model_viewset import GuardianModelViewSet
@@ -26,6 +27,10 @@ class LLMViewSet(AuthViewSet):
 
     def create(self, request, *args, **kwargs):
         params = request.data
+        client = get_quota_client(request)
+        skill_count, used_skill_count, __ = client.get_skill_quota()
+        if skill_count <= used_skill_count:
+            return JsonResponse({"result": False, "message": _("Skill count exceeds quota limit.")})
         if LLMSkill.objects.filter(name=params["name"]).exists():
             return JsonResponse({"result": False, "message": _("The name already exists.")})
         params["enable_conversation_history"] = True

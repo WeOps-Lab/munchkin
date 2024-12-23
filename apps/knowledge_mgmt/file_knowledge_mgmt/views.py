@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.utils.translation import gettext as _
 from rest_framework.decorators import action
 
+from apps.base.quota_rule_mgmt.quota_utils import get_quota_client
 from apps.core.logger import logger
 from apps.core.utils.viewset_utils import AuthViewSet
 from apps.knowledge_mgmt.file_knowledge_mgmt.serializers import FileKnowledgeSerializer
@@ -20,7 +21,18 @@ class FileKnowledgeViewSet(AuthViewSet):
     @action(methods=["POST"], detail=False)
     def create_file_knowledge(self, request):
         kwargs = request.data
+        client = get_quota_client(request)
         files = request.FILES.getlist("files")
+        file_size = sum(i.size for i in files)
+        file_quota, used_file_size, __ = client.get_file_quota()
+        if file_quota < file_size + used_file_size:
+            no_used_file_size = file_quota - used_file_size
+            return JsonResponse(
+                {
+                    "result": False,
+                    "message": _(f"File size exceeds quota limit. Available size: {no_used_file_size} MB"),
+                }
+            )
         result = self.import_file_knowledge(files, kwargs, request.user.username)
         return JsonResponse(result)
 

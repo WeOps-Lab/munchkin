@@ -1,10 +1,12 @@
 from django.http import JsonResponse
+from django.utils.translation import gettext as _
 from rest_framework.decorators import action
 
+from apps.base.quota_rule_mgmt.quota_utils import get_quota_client
 from apps.bot_mgmt.models import Bot
 from apps.bot_mgmt.models.bot import BotChannel
 from apps.bot_mgmt.serializers import BotSerializer
-from apps.channel_mgmt.models import Channel
+from apps.channel_mgmt.models import Channel, ChannelChoices
 from apps.core.decorators.api_perminssion import HasRole
 from apps.core.utils.kubernetes_client import KubernetesClient
 from apps.core.utils.viewset_utils import AuthViewSet
@@ -17,13 +19,23 @@ class BotViewSet(AuthViewSet):
 
     def create(self, request, *args, **kwargs):
         data = request.data
+        client = get_quota_client(request)
+        bot_count, used_bot_count, __ = client.get_bot_quota()
+        if bot_count <= used_bot_count:
+            return JsonResponse({"result": False, "message": _("Bot count exceeds quota limit.")})
         bot_obj = Bot.objects.create(
             name=data.get("name"), introduction=data.get("introduction"), team=data.get("team"), channels=[]
         )
         channel_list = Channel.objects.all()
         BotChannel.objects.bulk_create(
             [
-                BotChannel(bot_id=bot_obj.id, name=i.name, channel_type=i.channel_type, channel_config=i.channel_config)
+                BotChannel(
+                    bot_id=bot_obj.id,
+                    name=i.name,
+                    channel_type=i.channel_type,
+                    channel_config=i.channel_config,
+                    enabled=i.channel_type == ChannelChoices.WEB,
+                )
                 for i in channel_list
             ]
         )
