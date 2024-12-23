@@ -6,7 +6,7 @@ class AuthViewSet(viewsets.ModelViewSet):
     def query_by_groups(self, request, queryset):
         if not request.user.is_superuser:
             current_team = request.COOKIES.get("current_team")
-            queryset = queryset.filter(team=current_team)
+            queryset = queryset.filter(team__contains=current_team)
         return self._list(queryset.order_by("-id"))
 
     def _list(self, queryset):

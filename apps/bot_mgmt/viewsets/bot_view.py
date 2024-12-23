@@ -23,8 +23,9 @@ class BotViewSet(AuthViewSet):
         bot_count, used_bot_count, __ = client.get_bot_quota()
         if bot_count <= used_bot_count:
             return JsonResponse({"result": False, "message": _("Bot count exceeds quota limit.")})
+        current_team = request.COOKIES.get("current_team")
         bot_obj = Bot.objects.create(
-            name=data.get("name"), introduction=data.get("introduction"), team=data.get("team"), channels=[]
+            name=data.get("name"), introduction=data.get("introduction"), team=[current_team], channels=[]
         )
         channel_list = Channel.objects.all()
         BotChannel.objects.bulk_create(
