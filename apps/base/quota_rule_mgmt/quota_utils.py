@@ -32,6 +32,8 @@ class QuotaUtils(object):
         unit_map = {"GB": 1024, "MB": 1}
         file_size_map = {"shared": [], "private": []}
         type_map = {"shared": "shared", "uniform": "private"}
+        if not self.quota_list:
+            return -1, 0, False
         for quota in self.quota_list:
             file_size_map[type_map[quota["rule_type"]]].append(quota["file_size"] * unit_map[quota["unit"]])
         if file_size_map["private"]:
@@ -47,6 +49,8 @@ class QuotaUtils(object):
     def get_skill_quota(self):
         skill_count_map = {"shared": [], "private": []}
         type_map = {"shared": "shared", "uniform": "private"}
+        if not self.quota_list:
+            return -1, 0, False
         for quota in self.quota_list:
             skill_count_map[type_map[quota["rule_type"]]].append(quota["skill_count"])
         if skill_count_map["private"]:
@@ -61,6 +65,8 @@ class QuotaUtils(object):
     def get_bot_quota(self):
         bot_count_map = {"shared": [], "private": []}
         type_map = {"shared": "shared", "uniform": "private"}
+        if not self.quota_list:
+            return -1, 0, False
         for quota in self.quota_list:
             bot_count_map[type_map[quota["rule_type"]]].append(quota["bot_count"])
         if bot_count_map["private"]:
