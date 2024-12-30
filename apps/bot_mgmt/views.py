@@ -11,7 +11,8 @@ from apps.bot_mgmt.models import Bot, BotConversationHistory
 from apps.bot_mgmt.models.bot import BotChannel
 from apps.bot_mgmt.services.skill_excute_service import SkillExecuteService
 from apps.bot_mgmt.utils import set_time_range
-from apps.core.decorators.api_perminssion import HasRole
+
+# from apps.core.decorators.api_perminssion import HasRole
 from apps.core.logger import logger
 from apps.core.utils.exempt import api_exempt
 from apps.model_provider_mgmt.models import TokenConsumption
@@ -89,7 +90,7 @@ def skill_execute(request):
     return JsonResponse({"result": result})
 
 
-@HasRole("admin")
+# @HasRole("admin")
 def get_total_token_consumption(request):
     start_time_str = request.GET.get("start_time")
     end_time_str = request.GET.get("end_time")
@@ -104,7 +105,7 @@ def get_total_token_consumption(request):
     return JsonResponse({"result": True, "data": total_combined_tokens})
 
 
-@HasRole("admin")
+# @HasRole("admin")
 def get_token_consumption_overview(request):
     start_time_str = request.GET.get("start_time")
     end_time_str = request.GET.get("end_time")
@@ -132,7 +133,7 @@ def get_token_consumption_overview(request):
     return JsonResponse({"result": True, "data": result})
 
 
-@HasRole("admin")
+# @HasRole("admin")
 def get_conversations_line_data(request):
     start_time_str = request.GET.get("start_time")
     end_time_str = request.GET.get("end_time")
@@ -150,7 +151,7 @@ def get_conversations_line_data(request):
     return JsonResponse({"result": True, "data": result})
 
 
-@HasRole("admin")
+# @HasRole("admin")
 def get_active_users_line_data(request):
     start_time_str = request.GET.get("start_time")
     end_time_str = request.GET.get("end_time")
