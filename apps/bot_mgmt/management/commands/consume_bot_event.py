@@ -6,6 +6,7 @@ import pika
 from django.conf import settings
 from django.core.management import BaseCommand
 from django.db import close_old_connections
+from wechatpy import WeChatClient as WeChatAccountClient
 from wechatpy.enterprise import WeChatClient
 
 from apps.bot_mgmt.models import Bot, BotConversationHistory
@@ -60,10 +61,9 @@ def get_user_info(bot_id, input_channel, sender_id):
         "socketio": ChannelChoices.WEB,
         "enterprise_wechat": ChannelChoices.ENTERPRISE_WECHAT,
         "dingtalk": ChannelChoices.DING_TALK,
+        "wechat_official_account": ChannelChoices.WECHAT_OFFICIAL_ACCOUNT,
     }
-    if input_channel == "socketio":
-        name = sender_id
-    elif input_channel == "enterprise_wechat":
+    if input_channel == "enterprise_wechat":
         channel_obj = BotChannel.objects.get(bot_id=bot_id, channel_type=ChannelChoices.ENTERPRISE_WECHAT)
         conf = channel_obj.decrypted_channel_config
         wechat_client = WeChatClient(
@@ -87,8 +87,20 @@ def get_user_info(bot_id, input_channel, sender_id):
         except Exception as e:
             logger.error(f"获取钉钉用户信息失败: {e}")
             name = sender_id
+    elif input_channel == "wechat_official_account":
+        channel_obj = BotChannel.objects.get(bot_id=bot_id, channel_type=ChannelChoices.WECHAT_OFFICIAL_ACCOUNT)
+        conf = channel_obj.decrypted_channel_config
+        client = WeChatAccountClient(
+            conf["channels.wechat_official_account_channel.WechatOfficialAccountChannel"]["appid"],
+            conf["channels.wechat_official_account_channel.WechatOfficialAccountChannel"]["secret"],
+        )
+        try:
+            name = client.user.get(sender_id)["nickname"]
+        except Exception as e:
+            logger.error(f"获取微信用户信息失败: {e}")
+            name = sender_id
     else:
-        raise Exception("暂不支持的通道类型")
+        name = sender_id
 
     if name == sender_id:
         fun = "get_or_create"

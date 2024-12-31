@@ -71,12 +71,21 @@ class ChannelInitService:
             defaults={"channel_config": {"rest": {}}},
         )
 
-        logger.info("初始化Web通道")
+        logger.info("初始化微信公众号通道")
         Channel.objects.get_or_create(
             name=ChannelChoices.WECHAT_OFFICIAL_ACCOUNT.value,
             channel_type=ChannelChoices.WECHAT_OFFICIAL_ACCOUNT,
             created_by=self.owner,
-            defaults={"channel_config": {"rest": {}}},
+            defaults={
+                "channel_config": {
+                    "channels.wechat_official_account_channel.WechatOfficialAccountChannel": {
+                        "appid": "",
+                        "secret": "",  # 加密
+                        "token": "",  # 加密
+                        "aes_key": "",  # 加密
+                    }
+                },
+            },
         )
         # ChannelUserGroup.objects.get_or_create(channel=obj, name="默认用户组", created_by=self.owner)
 

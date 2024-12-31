@@ -21,7 +21,7 @@ class QuotaRuleViewSet(viewsets.ModelViewSet):
     ordering = ("-id",)
     filterset_class = ObjFilter
 
-    @HasRole("admin")
+    # @HasRole("admin")
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
