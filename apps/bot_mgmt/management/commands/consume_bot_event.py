@@ -95,7 +95,8 @@ def get_user_info(bot_id, input_channel, sender_id):
             conf["channels.wechat_official_account_channel.WechatOfficialAccountChannel"]["secret"],
         )
         try:
-            name = client.user.get(sender_id)["nickname"]
+            user = client.user.get(sender_id)
+            name = user["nickname"] or user["remark"] or sender_id
         except Exception as e:
             logger.error(f"获取微信用户信息失败: {e}")
             name = sender_id
