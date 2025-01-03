@@ -74,7 +74,6 @@ MIDDLEWARE = (
 AUTHENTICATION_BACKENDS = (
     "apps.core.backends.KeycloakAuthBackend",  # this is default
     "apps.core.backends.APISecretAuthBackend",
-    "guardian.backends.ObjectPermissionBackend",
 )
 ROOT_URLCONF = "urls"
 
